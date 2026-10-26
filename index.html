@@ -1,0 +1,1502 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Інтерактивна інструкція до зварювального напівавтомата Dnipro-M MG-16DX: 2D-схема і 3D-модель на весь екран, живі ручки, режими MIG/MAG, FLUX, MMA, TIG LIFT і готові налаштування.">
+<style>:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Напівавтомат MG-16DX</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700&family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: the welder as a live machine on the left (sticky, 4 views), an operator's panel on the right; reference strip below. */
+:root{
+  --bg:#ebeae6; --surface:#f8f7f4; --ink:#1b1c1e; --muted:#5c5e62; --line:#d4d1ca;
+  --accent:#cf4510; --accent-ink:#ffffff; --tint:#f6e3d8; --tint-ink:#7d2905; --tip:#e4e6e2; --tip-ink:#2d3330;
+  --dev-bump:#0f1011; --dev-body:#1d1f22; --dev-face:#2a2c30; --dev-line:#474b52; --dev-text:#e6e4df; --dev-dim:#8e9198;
+  --dev-hole:#050505; --dev-press:#3b3f45; --orange:#ff6a1f; --dz-on:rgba(255,106,31,.16);
+  --dev-red:#d93a22; --brass:#c9a24a; --brass-dk:#7d6224; --setup:#f05a22;
+  --led-bg:#140606; --led-seg:#ff4a2a; --led-ghost:rgba(255,74,42,.09); --ind-on:#ff7a2a;
+  --cable:#0b0b0c; --wire:#b9875a; --arc:#cfe8ff; --spark:#ffd27a; --plate:#cfd2d6; --plate-ink:#1b1c1e;
+  --f-display:"Unbounded","Arial Black",system-ui,sans-serif;
+  --f-body:"Onest",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#131416; --surface:#1c1e21; --ink:#ecebe7; --muted:#a2a4a9; --line:#32353a;
+  --accent:#ff7a3a; --accent-ink:#1d0c03; --tint:#3a2014; --tint-ink:#ffc6a6; --tip:#24272b; --tip-ink:#d6d9dc;
+  --dev-body:#26292d; --dev-face:#32353a; --dev-line:#575b63; --plate:#b9bcc0;
+  color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#131416; --surface:#1c1e21; --ink:#ecebe7; --muted:#a2a4a9; --line:#32353a;
+  --accent:#ff7a3a; --accent-ink:#1d0c03; --tint:#3a2014; --tint-ink:#ffc6a6; --tip:#24272b; --tip-ink:#d6d9dc;
+  --dev-body:#26292d; --dev-face:#32353a; --dev-line:#575b63; --plate:#b9bcc0;
+  color-scheme:dark }
+
+body{background:var(--bg);color:var(--ink);font:16px/1.55 var(--f-body)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 56px}
+header{display:grid;gap:10px;max-width:70ch}
+.stripe{width:88px;height:7px;border-radius:2px;background:repeating-linear-gradient(-45deg,var(--accent) 0 8px,var(--ink) 8px 16px)}
+.kicker{font:500 12px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+h1{font:700 clamp(26px,4.2vw,42px)/1.08 var(--f-display);letter-spacing:-.01em;margin:0;text-wrap:balance}
+.lede{margin:0;color:var(--muted);max-width:62ch}
+
+.stage{display:grid;grid-template-columns:minmax(300px,420px) minmax(0,1fr);gap:40px;align-items:start;margin-top:28px}
+.dev-wrap{position:sticky;top:16px;display:grid;gap:10px}
+.views{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:4px}
+.views button{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font:600 13px var(--f-body);border:0;background:transparent;color:var(--muted);padding:7px 4px;border-radius:7px;cursor:pointer}
+.views button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+#dev{display:block;width:100%;height:auto;max-height:calc(100vh - 170px);margin:0 auto;touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.status{font:500 13px/1.5 var(--f-mono);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:grid;gap:4px}
+.status b{color:var(--ink)}
+.status .w{color:var(--tint-ink);background:var(--tint);border-radius:6px;padding:4px 8px}
+.status .ok{color:var(--muted)}
+
+.panel{min-width:0;display:grid;gap:18px}
+.tabs{display:inline-flex;justify-self:start;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px;gap:2px}
+.tabs button{font:600 14px var(--f-body);border:0;background:transparent;color:var(--muted);padding:8px 18px;border-radius:999px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+.tabs button:focus-visible,.chip:focus-visible,.views button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.picker{display:grid;gap:12px}
+.group{display:grid;gap:6px}
+.glabel{font:500 11px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:500 14px var(--f-body);border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:6px 12px;border-radius:8px;cursor:pointer;line-height:1.3}
+.chip:hover{border-color:var(--muted)}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px 24px;display:grid;gap:14px}
+.eyebrow{font:500 11px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.card h2{font:600 clamp(19px,2.4vw,24px)/1.2 var(--f-display);margin:0;text-wrap:balance}
+.card p{margin:0;max-width:65ch}
+.spec{font:500 13px/1.6 var(--f-mono);color:var(--muted);border-top:1px dashed var(--line);border-bottom:1px dashed var(--line);padding-block:8px;max-width:65ch}
+.spec b{color:var(--ink);font-weight:700}
+.setrows{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 14px;font:500 14px var(--f-mono);background:var(--tip);color:var(--tip-ink);border-radius:10px;padding:12px 14px;max-width:65ch}
+.setrows dt{color:var(--muted)} .setrows dd{margin:0;font-weight:700}
+.steps{list-style:none;counter-reset:s;margin:0;padding:0;display:grid;gap:10px;max-width:65ch}
+.steps li{counter-increment:s;display:grid;grid-template-columns:28px minmax(0,1fr);gap:10px;align-items:start}
+.steps li::before{content:counter(s);font:700 12px/24px var(--f-mono);text-align:center;width:24px;height:24px;border-radius:50%;border:1.5px solid var(--ink);margin-top:1px}
+.note{border-radius:10px;padding:12px 14px;font-size:15px;display:grid;gap:4px;max-width:65ch}
+.note b{font:600 11px var(--f-mono);letter-spacing:.1em;text-transform:uppercase}
+.note.warn{background:var(--tint);color:var(--tint-ink)}
+.note.tip{background:var(--tip);color:var(--tip-ink)}
+.result{font:500 14px/1.5 var(--f-mono);background:var(--tip);color:var(--tip-ink);border-radius:10px;padding:12px 14px;max-width:65ch}
+.acts{display:flex;flex-wrap:wrap;gap:8px}
+.sub{display:grid;gap:6px}
+table.tb{border-collapse:collapse;font:500 13px var(--f-mono);min-width:420px}
+table.tb th,table.tb td{border-bottom:1px solid var(--line);padding:6px 10px;text-align:left;white-space:nowrap}
+table.tb th{color:var(--muted);font-weight:500}
+.tbwrap{overflow-x:auto;max-width:100%}
+dl.gl{margin:0;display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 16px}
+dl.gl dt{font:700 14px var(--f-mono);white-space:nowrap}
+dl.gl dd{margin:0;color:var(--muted)}
+.ref{margin-top:48px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
+.ref h2{font:600 18px var(--f-display);margin:0 0 12px}
+.ref ul{margin:0;padding-left:20px;display:grid;gap:8px}
+.ref li::marker{color:var(--accent)}
+.foot{margin-top:28px;font-size:13px;color:var(--muted);max-width:75ch}
+
+/* SVG device */
+.sv-body{fill:var(--dev-body)} .sv-bump{fill:var(--dev-bump)}
+.sv-face{fill:var(--dev-face);stroke:var(--dev-line);stroke-width:1.5}
+.sv-line{stroke:var(--dev-line);stroke-width:1.5;fill:none}
+.sv-grill{stroke:var(--dev-bump);stroke-width:7;stroke-linecap:round}
+.sv-t{fill:var(--dev-dim);font:600 8px var(--f-mono);letter-spacing:.05em;text-anchor:middle}
+.sv-t2{fill:var(--dev-text);font:600 9px var(--f-body);letter-spacing:.1em;text-anchor:middle}
+.sv-model{fill:var(--dev-text);font:700 17px var(--f-display);text-anchor:middle;letter-spacing:.03em}
+.sv-brand{fill:var(--dev-red);font:700 15px var(--f-display);letter-spacing:.02em}
+.sv-red{stroke:var(--dev-red);stroke-width:1.5}
+.lbl{fill:var(--dev-text);font:600 8px var(--f-mono);text-anchor:middle}
+.lbl.big{font-size:10px}
+.knob{fill:var(--dev-bump);stroke:var(--dev-line);stroke-width:1.5}
+.kcap{fill:url(#metal);stroke:var(--dev-line);stroke-width:1}
+.kptr{stroke:var(--dev-text);stroke-width:3;stroke-linecap:round}
+.ktick{stroke:var(--dev-text);stroke-width:1.4}
+.karc{fill:none;stroke:var(--dev-text);stroke-width:2.5;stroke-dasharray:1.4 2.4}
+.setup{fill:var(--setup);stroke:#ff9a6a;stroke-width:1.5}
+.btn.press .setup{fill:#b53d10}
+.ledbox{fill:var(--led-bg);stroke:var(--dev-line);stroke-width:1}
+.seg{fill:var(--led-ghost)} .seg.on{fill:var(--led-seg)}
+.mind{fill:var(--dev-face);stroke:var(--dev-dim);stroke-width:1}
+.mind.on{fill:var(--ind-on);stroke:var(--ind-on)}
+.mtxt{fill:var(--dev-dim);font:700 6.5px var(--f-mono);text-anchor:middle}
+.mind.on + .mtxt, .mtxt.on{fill:#1b0700}
+.ind{fill:var(--dev-dim)} .ind.on{fill:var(--ind-on)} .ind.heat.on{fill:#ffcb2a}
+.brassr{fill:var(--brass);stroke:var(--brass-dk);stroke-width:1.5}
+.brassd{fill:var(--brass-dk)}
+.sock{fill:var(--dev-bump);stroke:var(--dev-line);stroke-width:2}
+.sockin{fill:var(--brass)}
+.cab{fill:none;stroke:var(--cable);stroke-width:9;stroke-linecap:round}
+.cabe{fill:none;stroke:var(--dev-line);stroke-width:12;stroke-linecap:round}
+.plug{fill:var(--cable);stroke:var(--dev-line);stroke-width:1.5}
+.plugtx{fill:var(--dev-text);font:600 8px var(--f-body);text-anchor:middle}
+.ctag{fill:var(--surface);stroke:var(--line)} .ctagt{fill:var(--ink);font:600 9px var(--f-body);text-anchor:middle}
+.rocker{fill:#d62a1c;stroke:#7a120a;stroke-width:1.5}
+.fan{fill:none;stroke:var(--dev-dim);stroke-width:1.5}
+.nplate{fill:var(--plate)} .npt{fill:var(--plate-ink);font:600 7.5px var(--f-mono)}
+.warnplate{fill:var(--dev-red)}
+.spool{fill:#1a1a1c;stroke:var(--dev-line);stroke-width:2}
+.spoolw{fill:var(--wire);opacity:.85}
+.feedplate{fill:#8d9196;stroke:var(--dev-line);stroke-width:1.5}
+.roll{fill:#c7cbd0;stroke:#4a4f55;stroke-width:1.5}
+.arm{fill:#2c2f34;stroke:var(--dev-line);stroke-width:1.5}
+.tens{fill:#2c2f34;stroke:var(--dev-dim);stroke-width:1.2}
+.wirep{fill:none;stroke:var(--wire);stroke-width:2.2}
+.wirep.run{stroke-dasharray:6 4;animation:feed .35s linear infinite}
+@keyframes feed{to{stroke-dashoffset:-10}}
+.torch{fill:#151618;stroke:var(--dev-line);stroke-width:1.5}
+.trig{fill:var(--dev-red);stroke:#7a120a;stroke-width:1.5}
+.btn.press .trig{fill:#9b2112}
+.nozzle{fill:#cfd3d8;stroke:#5c6168;stroke-width:1.5}
+.ctip{fill:#c88a4a;stroke:#6e4a22;stroke-width:1}
+.arcg{opacity:0} .arcg.on{opacity:1}
+.arcglow{fill:var(--arc);opacity:.55} .arccore{fill:#ffffff}
+.sparkl{stroke:var(--spark);stroke-width:1.6;stroke-linecap:round}
+.arcg.on .arcglow{animation:flick .12s steps(2) infinite}
+@keyframes flick{50%{opacity:.25}}
+.work{fill:#6b7077}
+.hot{cursor:pointer;outline:none}
+.hit{fill:rgba(0,0,0,0);stroke:none}
+.sel .hit,.sel .selring{stroke:var(--orange);stroke-width:3;fill:var(--dz-on)}
+.selring{fill:none;stroke:transparent;stroke-width:3}
+.hot:focus-visible .hit,.hot:focus-visible .selring{stroke:var(--orange);stroke-width:2.5;stroke-dasharray:4 3}
+.knobg{touch-action:none}
+.navbar{display:grid;gap:18px;min-width:0}
+.dimrow{display:flex;gap:8px;align-items:stretch;min-width:0}
+.dimrow .views{flex:1;min-width:0}
+.dim{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:4px;flex:none}
+.dim button{font:700 13px var(--f-mono);border:0;background:transparent;color:var(--muted);padding:7px 10px;border-radius:7px;cursor:pointer}
+.dim button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.dim button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#dev3d{position:relative;width:100%;aspect-ratio:400/470;max-height:calc(100vh - 190px);border-radius:14px;overflow:hidden;background:radial-gradient(120% 90% at 50% 30%,var(--surface),var(--bg))}
+#cv3d{display:block;width:100%;height:100%;touch-action:none;cursor:grab;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+#load3d{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:24px;font:500 14px/1.5 var(--f-body);color:var(--muted)}
+.stage.is3d{grid-template-columns:minmax(340px,560px) minmax(0,1fr)}
+.fsbtn{position:absolute;top:10px;right:10px;z-index:2;font:600 13px var(--f-body);background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:8px 13px;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.14)}
+.fsbtn:focus-visible,.fsx:focus-visible,.fsviews button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#dev3d.fs{position:fixed;inset:0;z-index:40;width:auto;height:auto;aspect-ratio:auto;max-height:none;border-radius:0}
+:root.fslock,:root.fslock body{overflow:hidden}
+.fsbar{position:absolute;top:0;left:0;right:0;z-index:3;display:grid;gap:8px;padding-top:max(10px,env(safe-area-inset-top,0px));padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px));padding-bottom:8px;pointer-events:none}
+.fsbar>*{pointer-events:auto}
+.fsrow{display:flex;gap:8px;align-items:center;min-width:0}
+.fsx{flex:none;width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 16px var(--f-body);cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.14)}
+.fsviews{display:flex;gap:2px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:4px;overflow-x:auto;scrollbar-width:none;min-width:0;box-shadow:0 2px 10px rgba(0,0,0,.1)}
+.fsviews button{white-space:nowrap;font:600 13px var(--f-body);border:0;background:transparent;color:var(--muted);padding:7px 12px;border-radius:7px;cursor:pointer}
+.fsviews button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.fschips{flex-wrap:wrap}
+.fschips .chip{white-space:nowrap;flex:none;box-shadow:0 1px 6px rgba(0,0,0,.1)}
+.fschips::-webkit-scrollbar,.fsviews::-webkit-scrollbar{display:none}
+.fssep{flex:none;width:1px;height:28px;background:var(--line)}
+.fsstep{display:inline-flex;align-items:center;gap:2px;flex:none;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:2px;box-shadow:0 1px 6px rgba(0,0,0,.1)}
+.fsstep .chip{border:0;box-shadow:none;padding:4px 12px;font-weight:700}
+.fsstep b{font:700 14px var(--f-mono);min-width:58px;text-align:center}
+.fsstatus{position:absolute;left:max(12px,env(safe-area-inset-left,0px));right:max(12px,env(safe-area-inset-right,0px));bottom:max(12px,env(safe-area-inset-bottom,0px));z-index:3;max-width:620px;margin:0 auto;box-shadow:0 2px 12px rgba(0,0,0,.14)}
+.hint3d{margin:0;text-align:center;font:500 12px/1.45 var(--f-mono);color:var(--muted)}
+#dev g[hidden],[hidden]{display:none!important}
+.navbar>*,#scenwrap>*{min-width:0}
+#tt{position:fixed;z-index:30;pointer-events:none;background:var(--ink);color:var(--bg);border-radius:8px;padding:6px 10px;font:600 13px/1.35 var(--f-body);max-width:240px;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+#tt small{display:block;font:500 11.5px/1.4 var(--f-mono);opacity:.75;margin-top:2px}
+.hot.hl .hit,.hot.hl .selring{stroke:var(--orange);stroke-width:3;fill:var(--dz-on)}
+.hot.hl .plug,.hot.sel .plug{stroke:var(--orange);stroke-width:3}
+.hot.hl{animation:hlp 1s ease-in-out infinite}
+@keyframes hlp{50%{opacity:.75}}
+.setrows [data-hl]{cursor:pointer}
+.setrows dt[data-hl]{text-decoration:underline dotted;text-underline-offset:3px}
+.setrows .on{color:var(--accent)}
+.holdg{fill:#1a1b1d;stroke:var(--dev-line);stroke-width:1.5}
+.holdr{fill:var(--dev-red)}
+.jaw{fill:#b8763c;stroke:#6e4a22;stroke-width:1.2}
+.rod{fill:#8d8a80;stroke:#55534c;stroke-width:1}
+.rodbare{fill:#c9ccd0}
+.cup{fill:#d9a37c;stroke:#8a5a36;stroke-width:1.2}
+.tung{fill:#9aa3ad;stroke:#5c636b;stroke-width:.8}
+.valve{fill:var(--brass);stroke:var(--brass-dk);stroke-width:1.2}
+@media (prefers-reduced-motion:reduce){.hot.hl{animation:none}}
+.card>*,.sub>*{min-width:0}
+
+@media (max-width:780px){
+  h1{font-size:26px} .lede{font-size:15px}
+  .stage,.stage.is3d{grid-template-columns:minmax(0,1fr);gap:14px;margin-top:18px}
+  .stage>.panel{display:contents}
+  .navbar{order:1;position:sticky;top:env(safe-area-inset-top,0px);z-index:6;background:var(--bg);gap:10px;
+    margin-left:calc(-1 * max(16px,env(safe-area-inset-left,0px)));margin-right:calc(-1 * max(16px,env(safe-area-inset-right,0px)));
+    padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:8px 10px;
+    border-bottom:1px solid var(--line)}
+  .navbar .tabs{justify-self:stretch;display:grid;grid-template-columns:1fr 1fr}
+  .navbar .tabs button{padding:9px 10px}
+  .dev-wrap{order:2;position:static}
+  #pane-dev,#pane-how{order:3}
+  #dev{height:min(52vh,520px);width:auto;max-width:100%;max-height:none}
+  #dev3d{height:min(56vh,540px);aspect-ratio:auto;max-height:none}
+  .views button{font-size:12.5px;padding:7px 2px}
+  .dim button{padding:7px 8px}
+  .views button{font-size:12px;padding:7px 1px}
+  .fschips{flex-wrap:nowrap;overflow-x:auto;-webkit-mask-image:linear-gradient(90deg,#000 88%,transparent);mask-image:linear-gradient(90deg,#000 88%,transparent);padding-right:24px}
+  .fsviews button{padding:7px 9px}
+  .fsbtn{top:8px;right:8px;padding:7px 11px;font-size:12.5px}
+  .fsstatus{font-size:12px;padding:8px 10px}
+  .picker,#scenchips{display:flex;flex-wrap:nowrap;overflow-x:auto;position:relative;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;
+    -webkit-mask-image:linear-gradient(90deg,#000 88%,transparent);mask-image:linear-gradient(90deg,#000 88%,transparent);padding-right:28px}
+  .picker::-webkit-scrollbar,#scenchips::-webkit-scrollbar{display:none}
+  .picker{gap:14px}
+  .picker .group{display:flex;flex:none;gap:6px;align-items:center}
+  .picker .group+.group{border-left:1px solid var(--line);padding-left:14px}
+  .picker .glabel,#scenwrap .glabel{display:none}
+  .picker .chips{flex-wrap:nowrap}
+  .navbar .chip{white-space:nowrap;padding:8px 13px;flex:none}
+  .ref{grid-template-columns:minmax(0,1fr)}
+  .card{padding:18px}
+}
+@media (prefers-reduced-motion:reduce){ .wirep.run,.arcg.on .arcglow{animation:none} }
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <header>
+    <div class="stripe" aria-hidden="true"></div>
+    <div class="kicker">Dnipro-M · MG-16DX · MIG/MAG · FLUX · MMA · TIG LIFT · 20–160 А</div>
+    <h1>Як користуватися напівавтоматом MG-16DX</h1>
+    <p class="lede">Крутіть ручки, натискайте SETUP, тримайте курок пальника чи електродотримач, перемикайте вид: перед, зад, відсік подачі дроту і те, що у вас у руці в обраному режимі. Наведіть на будь-яку деталь, щоб побачити її назву. Кнопка 3D відкриває об'ємну модель, яку можна обертати. Праворуч описано кожен орган керування, а у вкладці «Як зварювати» зібрані готові налаштування для профільної труби, електродів, газу й TIG.</p>
+  </header>
+
+  <section class="stage">
+    <div class="dev-wrap" id="devwrap">
+      <div class="dimrow">
+        <div class="dim" role="group" aria-label="Вигляд схеми">
+          <button data-dim="2d" aria-pressed="true">2D</button>
+          <button data-dim="3d" aria-pressed="false">3D</button>
+        </div>
+        <div class="views" id="views" role="group" aria-label="Вид апарата">
+          <button data-view="front" aria-pressed="true">Перед</button>
+          <button data-view="rear" aria-pressed="false">Зад</button>
+          <button data-view="feed" aria-pressed="false">Подача</button>
+          <button data-view="torch" aria-pressed="false">Пальник</button>
+          <button data-view="all" aria-pressed="false" id="viewall" hidden>Усе</button>
+        </div>
+      </div>
+      <svg id="dev" viewBox="0 0 400 470" aria-label="Схема зварювального напівавтомата Dnipro-M MG-16DX">
+        <defs>
+          <radialGradient id="metal" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#9aa0a7"></stop><stop offset=".6" stop-color="#3a3e44"></stop><stop offset="1" stop-color="#1c1e21"></stop></radialGradient>
+        </defs>
+        <g id="v-front"></g>
+        <g id="v-rear" hidden></g>
+        <g id="v-feed" hidden></g>
+        <g id="v-torch" hidden></g>
+      </svg>
+      <div id="dev3d" hidden><canvas id="cv3d" aria-label="3D-модель зварювального напівавтомата MG-16DX: тягніть, щоб обертати"></canvas><div id="load3d" hidden></div>
+        <button class="fsbtn" id="fsopen" type="button">⤢ На весь екран</button>
+        <div class="fsbar" id="fsbar" hidden></div>
+        <div class="status fsstatus" id="fsstatus" hidden aria-live="polite"></div></div>
+      <p class="hint3d" id="hint3d" hidden>Ліва кнопка: обертати · права кнопка, Shift або середня: зсунути вбік · коліщатко: масштаб · подвійне клацання: центр у цю точку · стрілки/WASD: рух · на телефоні два пальці: зсув і масштаб · «Усе» показує апарат і інструмент разом · «На весь екран» відкриває модель з кнопками режимів</p>
+      <div class="status" id="status" aria-live="polite"></div>
+    </div>
+
+    <div class="panel">
+      <div class="navbar" id="navbar">
+        <div class="tabs" role="tablist" aria-label="Розділи">
+          <button role="tab" id="tab-dev" aria-selected="true" aria-controls="pane-dev">Органи керування</button>
+          <button role="tab" id="tab-how" aria-selected="false" aria-controls="pane-how">Як зварювати</button>
+        </div>
+        <div class="picker" id="picker"></div>
+        <div class="group" id="scenwrap" hidden><div class="glabel">Що потрібно зробити</div><div class="chips" id="scenchips"></div></div>
+      </div>
+      <div id="pane-dev" role="tabpanel" aria-labelledby="tab-dev" class="panel">
+        <article class="card" id="info" aria-live="polite"></article>
+      </div>
+      <div id="pane-how" role="tabpanel" aria-labelledby="tab-how" class="panel" hidden>
+        <article class="card" id="scen" aria-live="polite"></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="ref">
+    <div class="card">
+      <h2>Безпека</h2>
+      <ul>
+        <li>Тільки заземлена розетка. Автомат на лінії не менше 25 А, переріз кабелю живлення чи подовжувача не менше 3,5 мм².</li>
+        <li>Котушку, газ, кабелі й полярність міняйте лише з вимкненим апаратом і витягнутою вилкою.</li>
+        <li>Маска з автозатемненням, щільні шкіряні рукавиці, закритий одяг без синтетики. Дуга обпікає очі й шкіру навіть за кілька секунд.</li>
+        <li>Горючі матеріали не ближче 15 м від місця зварювання, поруч вогнегасник. Після роботи 30–60 хвилин стежте, чи ніщо не тліє.</li>
+        <li>Оцинковку, фарбу й свинцевий припій зачищайте до металу: дим цинку й кадмію отруйний. Працюйте з вентиляцією, а з такими металами в респіраторі.</li>
+        <li>Не зварюйте мокрі деталі й не працюйте під дощем: ступінь захисту IP21S.</li>
+        <li>Не накривайте апарат і не ставте вентилятором до стіни: охолодження примусове.</li>
+        <li>Людям з кардіостимулятором не наближатися до дуги ближче 15 м.</li>
+        <li>У режимі MMA електрод під напругою весь час, поки апарат увімкнений. Не кладіть тримач на стіл чи масу.</li>
+        <li>Балон з газом кріпіть вертикально ланцюгом, не торкайтеся його пальником і масою.</li>
+        <li>Не відігрівайте апаратом замерзлі труби.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>Позначення й терміни</h2>
+      <dl class="gl" id="gloss"></dl>
+    </div>
+  </section>
+
+  <p class="foot">Неофіційна шпаргалка, не пов'язана з Dnipro-M. Функції, межі й характеристики звірені з офіційною інструкцією Dnipro-M до MG-16DX (UA-MG0424-004) і табличкою апарата. Живлення 230 В ±10%, 50 Гц, максимальний вхідний струм 28 А, ефективний 22,4 А; від генератора від 6 кВт. Дріт 0,6–0,8 мм на котушці до Ø200 мм, електроди 1,6–4 мм. У комплекті: рукав пальника з євророз'ємом 3 м, кабель з електродотримачем 3 м, кабель маси 2,5 м, газовий шланг з двома хомутами, ключ для наконечників і два контактні наконечники. Пальник для TIG LIFT не входить. Робоча температура −10…+40 °C.</p>
+</div>
+
+
+<script>
+(function(){
+const NS='http://www.w3.org/2000/svg';
+const svg=document.getElementById('dev');
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $=id=>document.getElementById(id);
+function svgPt(e){const p=svg.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(svg.getScreenCTM().inverse())}
+function angleAt(e,cx,cy){const p=svgPt(e);return Math.atan2(p.x-cx,cy-p.y)*180/Math.PI}
+const f1=n=>n.toFixed(1);
+function pol(cx,cy,a,r){const t=a*Math.PI/180;return[cx+r*Math.sin(t),cy-r*Math.cos(t)]}
+
+/* ---------- data ---------- */
+const MODES=[
+  {id:'mma',l1:'MMA',l2:'',chip:'MMA · електрод',kind:'mma'},
+  {id:'co2',l1:'0.8',l2:'CO₂',chip:'0.8 CO₂',kind:'mig',pol:'+'},
+  {id:'arco2',l1:'0.8',l2:'Ar·CO₂',chip:'0.8 Ar-CO₂',kind:'mig',pol:'+'},
+  {id:'flux',l1:'FLUX',l2:'CORED',chip:'FLUX · без газу',kind:'mig',pol:'-'},
+  {id:'tig',l1:'TIG',l2:'LIFT',chip:'TIG LIFT',kind:'tig'}
+];
+const MI=Object.fromEntries(MODES.map((m,i)=>[m.id,i]));
+const kind=()=>MODES[MI[S.mode]].kind;
+
+const MODEINFO={
+  mma:{title:'MMA: зварювання електродом',
+    what:'Ручне дугове зварювання покритими електродами 1,6–4 мм. Ні дроту, ні газу не потрібно. Електродотримач і маса вставляються в байонетні гнізда «+» і «−», кабель полярності пальника при цьому не підключений. Апарат сам допомагає дузі: Hot Start підвищує струм у момент підпалу, Arc Force не дає електроду приварюватися, Anti Stick знижує струм, якщо електрод усе ж прилип.',
+    spec:'<b>20–160 А</b> · електроди <b>1,6–4 мм</b> · ПВ <b>33%</b> на 160 А, <b>100%</b> на 125 А (при 40 °C) · U₀ 55 В',
+    steps:['Вимкніть апарат. Вийміть кабель полярності з гнізда.','Тримач у «+», масу в «−» (зворотна полярність, для УОНИ 13/55 обов\'язково). Поверніть байонети за годинниковою стрілкою до упору.','Увімкніть апарат, кнопкою SETUP оберіть MMA.','Правою ручкою виставте струм за діаметром електрода (мітки 1.6…4 на шкалі).','Масу закріпіть якнайближче до шва на зачищеному металі.'],
+    note:['tip','Електроди МР-3, АНО-21 можна варити на будь-якій полярності. Пряма (тримач у «−») дає більше тепла в деталь, зворотна (тримач у «+») м\'якша і краща для тонкого металу.']},
+  co2:{title:'0.8 CO₂: напівавтомат з вуглекислим газом',
+    what:'Зварювання суцільним омідненим дротом 0,8 мм у вуглекислому газі (MAG). Найдешевший газ для звичайної сталі: проплавлення глибоке, але бризок більше, ніж із сумішшю.',
+    spec:'Дріт <b>0,8 мм</b> · полярність <b>зворотна</b>: кабель полярності в «+» · газ за таблицею <b>8–15 л/хв</b>',
+    steps:['Кабель полярності в «+», маса в «−».','Шланг від редуктора на штуцер GAS INPUT ззаду, затягніть хомутом.','Ролик подачі і наконечник пальника на 0,8.','SETUP: оберіть 0.8 CO₂, правою ручкою струм за товщиною.','Відкрийте балон, натисніть курок кілька секунд без дотику до металу, щоб продути рукав газом.'],
+    note:['warn','Після роботи закрийте вентиль балона.']},
+  arco2:{title:'0.8 Ar-CO₂: напівавтомат із сумішшю',
+    what:'Той самий дріт 0,8 мм, але в суміші аргону з CO₂ (зазвичай 82/18). Дуга м\'якша, бризок помітно менше, шов рівніший. Найкращий вибір для меблів і рам, якщо є газ.',
+    spec:'Дріт <b>0,8 мм</b> · полярність <b>зворотна</b>: кабель у «+» · газ <b>10–15 л/хв</b>',
+    steps:['Кабель полярності в «+», маса в «−».','Газ на штуцер GAS INPUT, ролик і наконечник 0,8.','SETUP: 0.8 Ar-CO₂, струм за товщиною.','Відкрийте балон і продуйте рукав курком.'],
+    note:null},
+  flux:{title:'FLUX CORED: порошковий дріт без газу',
+    what:'Самозахисний порошковий дріт (FCAW): захист від повітря дає флюс усередині дроту, тому балон не потрібен. Зручно вдома й на вулиці, навіть на легкому вітрі. Після зварювання на шві лишається тонкий шлак, його збивають щіткою.',
+    spec:'Дріт <b>0,8 мм</b> порошковий · полярність <b>пряма</b>: кабель полярності в «−», маса в «+» · газ не потрібен',
+    steps:['Вимкніть апарат. Кабель полярності переставте в «−».','Масу в «+».','Ролик подачі переверніть на 0,8 (для порошкового дроту краще ролик із насічкою, якщо є), притиск середній.','SETUP: FLUX CORED, струм за товщиною.','Вентиль балона не потрібен, штуцер GAS INPUT лишається вільним.'],
+    note:['warn','Найчастіша помилка: порошковий дріт на «+». Дуга тоді тріщить, сильно бризкає, шов пористий.']},
+  tig:{title:'TIG LIFT: аргонодугове зварювання',
+    what:'Неплавкий вольфрамовий електрод в аргоні. Дуга запалюється дотиком: торкнулися вольфрамом металу й підняли. Підходить для нержавійки й тонкої сталі, де потрібен акуратний шов. Потрібен окремий TIG-пальник з вентилем і байонетом (у комплекті його немає) і балон з чистим аргоном.',
+    spec:'<b>20–160 А</b> · пальник у <b>«−»</b>, маса в <b>«+»</b> · газ: чистий аргон',
+    steps:['Вийміть кабель полярності. TIG-пальник у «−», масу в «+».','Газовий шланг пальника на редуктор аргону, перевірте герметичність.','SETUP: TIG LIFT, оберіть струм.','Відкрийте балон і вентиль на пальнику.','Покладіть сопло на деталь, торкніться вольфрамом, плавно підніміть: з\'явиться дуга.'],
+    note:['tip','Алюміній цим апаратом не зварити: TIG тут лише на постійному струмі.']}
+};
+
+const C={
+  'k:cur':{v:'front',eye:'Ручка · 6',title:'Регулятор зварювального струму',
+    what:'Головна ручка. Задає струм від 20 до 160 А, його видно на правому дисплеї A. Окремої ручки швидкості дроту на панелі немає: у напівавтоматичних режимах апарат підбирає подачу дроту під струм сам (за паспортом 2–15 м/хв). Мітки 1.6, 2, 2.5, 3.2, 4 на шкалі відповідають діаметрам електродів.',
+    spec:'<b>20–160 А</b> · ПВ при 40 °C: MIG <b>50%</b> на 160 А, <b>100%</b> на 135 А · MMA <b>33%</b> на 160 А, <b>100%</b> на 125 А',
+    note:['tip','Крутіть пальцем або мишею, коліщатком, стрілками клавіатури. Під схемою одразу видно, для якого металу підходить значення.']},
+  'k:trim':{v:'front',eye:'Ручка · 5',title:'Мікрорегулятор проварювання',
+    what:'Тонке налаштування дуги в напівавтоматичних режимах. Нуль угорі відповідає налаштуванню апарата для вибраного струму. Поворот у «+» робить дугу гарячішою, проплавлення глибшим, валик пласкішим. Поворот у «−» дає м\'якшу, холоднішу дугу для тонкого металу. Зміну видно на лівому дисплеї V.',
+    spec:'Діє в <b>CO₂ · Ar-CO₂ · FLUX</b> · у MMA і TIG, найімовірніше, не впливає',
+    note:['tip','Почніть з нуля. Дріт «стріляє» і впирається в деталь: додайте в «+». Дуга довга, дріт плавиться кулькою над металом: зменште в «−».']},
+  'b:setup':{v:'front',eye:'Кнопка · 9',title:'SETUP: режими і протяжка дроту',hold:true,
+    what:'Коротке натискання перемикає режим по колу: MMA → 0.8 CO₂ → 0.8 Ar-CO₂ → FLUX CORED → TIG LIFT. Обраний режим підсвічується під дисплеями. Утримання протягує дріт через рукав без дуги: так заправляють нову котушку. Тримайте, поки дріт не вийде з пальника на 50–100 мм.',
+    acts:[['setup-short','Натиснути: наступний режим'],['setup-hold','Тримати: протяжка дроту']],
+    note:['warn','Перед протяжкою зніміть сопло й викрутіть контактний наконечник, інакше дріт може застрягти й зім\'ятися.']},
+  'd:v':{v:'front',eye:'Дисплей',title:'Дисплей V: напруга',
+    what:'Лівий дисплей показує напругу дуги. У напівавтоматичних режимах вона залежить від струму й мікрорегулятора проварювання. На схемі показано умовну робочу напругу за табличкою апарата.',
+    spec:'MIG: <b>12 В</b> на 20 А … <b>22 В</b> на 160 А · MMA: <b>21 … 26,4 В</b> · холостий хід 55 В'},
+  'd:a':{v:'front',eye:'Дисплей',title:'Дисплей A: струм',
+    what:'Правий дисплей показує струм, виставлений правою ручкою, у амперах.',
+    spec:'<b>20–160 А</b>'},
+  'l:modes':{v:'front',eye:'Індикатори',title:'Індикатори режимів',
+    what:'П\'ять віконець під дисплеями. Світиться те, який режим зараз обрано кнопкою SETUP: MMA, 0.8 CO₂, 0.8 Ar-CO₂, FLUX CORED, TIG LIFT. Цифра 0.8 нагадує, що програми розраховані на дріт 0,8 мм.'},
+  'l:power':{v:'front',eye:'Індикатор · 7',title:'Індикатор мережі',
+    what:'Світиться, коли апарат увімкнений вимикачем ззаду і на нього подано живлення.'},
+  'l:heat':{v:'front',eye:'Індикатор · 8',title:'Індикатор перегріву',
+    what:'Загоряється, коли спрацював захист від перегріву. Зварювання вимикається, вентилятор далі охолоджує апарат. Коли апарат охолоне, індикатор згасне і можна працювати далі. Нічого вимикати не треба.',
+    acts:[['heat','Показати перегрів']],
+    note:['tip','Спрацьовує, якщо довго варити на великому струмі, особливо в спеку. На 160 А апарат за паспортом працює 5 хвилин з 10 у MIG і 3,3 хвилини з 10 у MMA.']},
+  's:euro':{v:'front',eye:'Роз\'єм · 4',title:'Євророз\'єм пальника',
+    what:'Сюди підключається рукав пальника MIG (3 м у комплекті). Через роз\'єм ідуть дріт, газ, струм і сигнал курка. Вставте штекер рукава і затягніть накидну гайку від руки.',
+    note:['tip','Струм на євророз\'єм іде через кабель полярності: від того, в яке гніздо він вставлений, залежить полярність пальника.']},
+  's:plus':{v:'front',eye:'Гніздо · 2',title:'Байонетне гніздо «+»',
+    what:'CO₂ і Ar-CO₂: сюди кабель полярності (зворотна полярність). FLUX: сюди маса. MMA: зазвичай тримач електрода. TIG: маса.',
+    acts:[['swap','Перекинути кабелі між «+» і «−»']]},
+  's:minus':{v:'front',eye:'Гніздо · 1',title:'Байонетне гніздо «−»',
+    what:'FLUX: сюди кабель полярності (пряма полярність). CO₂ і Ar-CO₂: маса. MMA: зазвичай маса. TIG: пальник.',
+    acts:[['swap','Перекинути кабелі між «+» і «−»']]},
+  'c:pol':{v:'front',eye:'Кабель · 3',title:'Кабель вибору полярності пальника',
+    what:'Короткий кабель, що виходить з передньої панелі. Ним подається струм на пальник MIG. Для газу вставляйте в «+», для порошкового дроту без газу в «−». Маса йде у вільне гніздо. У MMA і TIG його виймають, щоб звільнити гнізда.',
+    acts:[['swap','Перекинути в інше гніздо']],
+    note:['warn','Перекидайте лише з вимкненим апаратом. Байонет вставте і поверніть за годинниковою стрілкою до упору: розхитаний роз\'єм гріється й обгорає.']},
+  'r:sw':{v:'rear',eye:'Ззаду · 12',title:'Мережевий вимикач',
+    what:'Червона клавіша на задній панелі. I вмикає апарат (загоряється індикатор мережі, починає працювати вентилятор), O вимикає.',
+    acts:[['power','Увімкнути / вимкнути']],
+    note:['tip','Не лишайте увімкнений апарат без нагляду, після роботи вимикайте і витягайте вилку.']},
+  'r:gas':{v:'rear',eye:'Ззаду · 11',title:'Штуцер подачі газу',
+    what:'Латунний штуцер GAS INPUT. Сюди одягають шланг від редуктора балона й затягують гвинтовим хомутом (два в комплекті). Для FLUX, MMA і TIG не використовується.',
+    spec:'Витрата за інструкцією: <b>8–15 л/хв</b> залежно від товщини',
+    note:['tip','Перевірте з\'єднання мильним розчином: бульбашки показують витік.']},
+  'r:cord':{v:'rear',eye:'Ззаду · 13',title:'Шнур живлення',
+    what:'Підключайте лише в заземлену розетку з автоматом не менше 25 А. Подовжувач, якщо потрібен, перерізом не менше 3,5 мм². Тонкий подовжувач просаджує напругу: дуга слабшає й рветься.',
+    spec:'<b>230 В ±10%, 50 Гц</b> · I₁max 28 А · I₁eff 22,4 А · 5,9 кВА · працює без втрати ККД від 170 В'},
+  'r:fan':{v:'rear',eye:'Ззаду · 14',title:'Вентилятор',
+    what:'Примусове охолодження. Працює, поки апарат увімкнений, і продовжує охолоджувати після спрацювання захисту від перегріву. Не закривайте решітку й бокові жалюзі, раз на кілька місяців продувайте стисненим повітрям.'},
+  'f:door':{v:'feed',eye:'Відсік · 15',title:'Відсік механізму подачі',
+    what:'Бокові дверцята з засувкою. Відкриваються, якщо посунути замок угору. Усередині котушка дроту і механізм подачі.',
+    note:['warn','Відкривайте лише з вимкненим апаратом.']},
+  'f:spool':{v:'feed',eye:'Відсік',title:'Котушка зварювального дроту',
+    what:'Ставиться на шпиндель так, щоб при подачі оберталася проти годинникової стрілки (дріт сходить знизу). Фіксується притискною шайбою і гайкою за годинниковою стрілкою. Натисніть на котушку на схемі, щоб змінити діаметр дроту.',
+    spec:'Котушка <b>до Ø200 мм</b> (≈5 кг) · дріт <b>0,6–0,8 мм</b>',
+    acts:[['wire','Змінити діаметр дроту']],
+    note:['tip','Кінець дроту на котушці завжди тримайте затиснутим, інакше витки розкрутяться.']},
+  'f:tension':{v:'feed',eye:'Подача · 2',title:'Регулятор натягу',
+    what:'Гвинт з рукояткою, яким притискний ролик тисне на дріт. Потягніть рукоятку на себе, щоб звільнити кронштейн. Ставте середній тиск. Слабко: ролик прослизає, дріт подається ривками. Сильно: дріт сплющується, порошковий ламається.',
+    note:['tip','Перевірка: затисніть дріт на виході з пальника пальцями в рукавиці й натисніть курок. Ролик має прослизати, а не мнути дріт.']},
+  'f:arm':{v:'feed',eye:'Подача · 4, 5',title:'Притискний ролик і кронштейн',
+    what:'Кронштейн притискає дріт до протяжного ролика. Підніміть його (натисніть на схемі), щоб завести дріт, потім опустіть і заблокуйте рукояткою натягу.',
+    acts:[['arm','Підняти / опустити кронштейн']]},
+  'f:roll':{v:'feed',eye:'Подача · 3, 7',title:'Протяжний ролик',
+    what:'Ролик з двома канавками: 0,6 і 0,8 мм. Розмір вибито на торці. Щоб змінити канавку, викрутіть фіксатор, переверніть ролик і закрутіть назад. Натисніть на ролик на схемі, щоб перевернути.',
+    acts:[['roll','Перевернути ролик']]},
+  'f:guide':{v:'feed',eye:'Подача · 1, 6',title:'Направляюча трубка й вхід рукава',
+    what:'Дріт заводять через направляючу трубку, по канавці ролика і далі на 50–100 мм у отвір рукава пальника. Кінець дроту перед заправкою відкусіть рівно і зачистіть від задирок.'},
+  't:trig':{v:'torch',eye:'Пальник',title:'Курок пальника',hold:true,
+    what:'Натиснули й тримаєте: йде газ, дріт і зварювальний струм, від дотику дроту до металу запалюється дуга. Відпустили: усе зупиняється. Тримайте курок на схемі, щоб побачити дугу.',
+    note:['tip','Наприкінці шва відведіть пальник і відпустіть курок через 1,5–2 секунди, щоб газ захистив гарячий метал.']},
+  'h:holder':{v:'torch',eye:'MMA',title:'Електродотримач',hold:true,
+    what:'Затискач на кабелі 3 м з комплекту. Натисніть на важіль, вставте електрод голим кінцем у губки й відпустіть. Курка немає: напруга на електроді є весь час, поки апарат увімкнений. Тримайте тримач на схемі, щоб запалити дугу.',
+    note:['warn','Не кладіть тримач з електродом на стіл чи деталь: дуга спалахне сама. На перерві виймайте електрод.']},
+  'h:rod':{v:'torch',eye:'MMA',title:'Електрод',
+    what:'Покритий електрод 1,6–4 мм. Від діаметра залежить струм. Натисніть на електрод на схемі, щоб змінити діаметр.',
+    acts:[['rod','Інший діаметр']],
+    note:['tip','Після зварювання на кінці лишається кільце обмазки 1–2 мм. Збийте його перед новим підпалом, інакше дуга не запалиться.']},
+  'g:torch':{v:'torch',eye:'TIG LIFT',title:'TIG-пальник і кнопка',hold:true,
+    what:'Пальник з байонетом під гніздо «−», власним газовим шлангом і вентилем. У комплект не входить. Тримайте кнопку на схемі, щоб подати струм. Справжня дуга в режимі LIFT запалюється дотиком вольфраму до металу й відривом.'},
+  'g:valve':{v:'torch',eye:'TIG LIFT',title:'Вентиль газу на пальнику',
+    what:'Відкриває аргон на пальнику. Газ іде весь час, поки вентиль відкритий, тому після роботи закривайте і його, і балон. Натисніть на схемі, щоб відкрити або закрити.',
+    acts:[['valve','Відкрити / закрити']]},
+  'g:cup':{v:'torch',eye:'TIG LIFT',title:'Керамічне сопло',
+    what:'Спрямовує аргон на ванну. Вольфрам виступає з сопла на 3–5 мм.'},
+  'g:tung':{v:'torch',eye:'TIG LIFT',title:'Вольфрамовий електрод',
+    what:'Неплавкий електрод. Заточуйте конусом уздовж, довжина конуса 2–2,5 діаметра. Торкнулися вольфрамом ванни: кінчик забруднений, заточіть заново.'},
+  't:nozzle':{v:'torch',eye:'Пальник · 8',title:'Газове сопло',
+    what:'Спрямовує газ на зварювальну ванну. Знімається обертанням. Бризки, що налипли всередину, порушують газовий захист: чистіть сопло, можна змастити антипригарною пастою.'},
+  't:tip':{v:'torch',eye:'Пальник · 9',title:'Контактний наконечник',
+    what:'Мідна трубка, через яку на дріт іде струм. Діаметр отвору має збігатися з дротом, розмір вибито на наконечнику. Викручується спеціальним ключем з комплекту, запасних наконечників два. Натисніть на схемі, щоб змінити розмір.',
+    acts:[['tip','Змінити наконечник']],
+    note:['tip','Розбитий овалом отвір дає нестабільну дугу: такий наконечник міняйте.']}
+};
+
+const GROUPS=[
+  ['Режими · 5',MODES.map(m=>['m:'+m.id,m.chip])],
+  ['Передня панель',[['k:cur','Струм'],['k:trim','Проварювання'],['b:setup','SETUP'],['d:v','Дисплей V'],['d:a','Дисплей A'],['l:modes','Індикатори режимів'],['l:power','Мережа'],['l:heat','Перегрів']]],
+  ['Роз\'єми',[['s:euro','Євророз\'єм'],['c:pol','Кабель полярності'],['s:plus','Гніздо +'],['s:minus','Гніздо −']]],
+  ['Ззаду',[['r:sw','Вимикач'],['r:gas','Газ'],['r:cord','Живлення'],['r:fan','Вентилятор']]],
+  ['Подача дроту',[['f:door','Відсік'],['f:spool','Котушка'],['f:tension','Натяг'],['f:arm','Притискний ролик'],['f:roll','Протяжний ролик'],['f:guide','Трубка']]],
+];
+function toolGroup(){const k=kind();
+  if(k==='mma')return['Електродотримач',[['h:holder','Тримач'],['h:rod','Електрод']]];
+  if(k==='tig')return['TIG-пальник',[['g:torch','Пальник і кнопка'],['g:valve','Вентиль'],['g:cup','Сопло'],['g:tung','Вольфрам']]];
+  return['Пальник',[['t:trig','Курок'],['t:nozzle','Сопло'],['t:tip','Наконечник']]]}
+
+const MMATAB=[[1.6,'1,5–2',50,75],[2,'1,5–3',60,100],[2.5,'1,5–5',70,120],[3.2,'2–12',110,140],[4,'4–20',130,160]];
+const MIGTAB=[['0,8','0','0,6','13–15','2,5–3,5','8–9'],['1','0','0,6','15–17','2,5–3,5','8–10'],['1,2','0','0,8','17–18','2,5–4,5','10–12'],['1,6','0','0,8','18–19','3,5–5,5','10–15'],['2','0–0,5','0,8','19–20','5,5–7,5','10–15']];
+
+const GLOSS=[
+  ['MIG / MAG','напівавтомат у газі: інертному (аргон) / активному (CO₂, суміш)'],
+  ['FCAW · FLUX','порошковий самозахисний дріт, без балона'],
+  ['MMA','ручне зварювання покритим електродом'],
+  ['TIG LIFT','вольфрам в аргоні, дуга запалюється дотиком і відривом'],
+  ['Зворотна','«+» на пальнику чи електроді: газ, УОНИ 13/55'],
+  ['Пряма','«−» на пальнику: порошковий дріт, TIG'],
+  ['X · ПВ','тривалість увімкнення з 10 хвилин: 50% = 5 хв варимо, 5 хв відпочинок'],
+  ['U₀ 55 В','напруга холостого ходу на виході'],
+  ['Hot Start','підвищений струм у момент підпалу дуги'],
+  ['Arc Force','короткий підйом струму, щоб електрод не приварився'],
+  ['Anti Stick','зниження струму, якщо електрод прилип'],
+  ['IP21S','захист від пальців і вертикальних крапель; не від дощу'],
+  ['Виліт','довжина дроту від наконечника до дуги, зазвичай 6–10 мм']
+];
+
+/* scenarios */
+const SCEN=[
+  {id:'start',chip:'Перше ввімкнення',set:{power:true,view:'rear'},title:'Перше ввімкнення і підключення до мережі',
+    rows:[['Розетка','заземлена, автомат ≥ 25 А'],['Подовжувач','≥ 3,5 мм² або без нього'],['Вимикач','I']],
+    steps:['Поставте апарат на рівну поверхню, вентилятором не до стіни. Якщо апарат був на морозі, дайте йому прогрітися й висохнути від конденсату.','Перевірте, що розетка заземлена, а лінія захищена автоматом не менше 25 А.','Вставте вилку і переведіть червоний вимикач ззаду в положення I.','Має засвітитися індикатор мережі й заробити вентилятор. Дисплеї покажуть напругу і струм.'],
+    result:'Від генератора: потрібен генератор від 6 кВт, щоб варити на максимумі. Апарат тримає потужність при просіданні мережі до 160–170 В.',
+    warn:'Без заземлення працювати заборонено.'},
+  {id:'load',chip:'Заправити дріт',set:{power:true,mode:'flux',view:'feed',wire:0.8,roll:0.8,tip:0.8,arm:false},title:'Встановити котушку й заправити дріт 0,8',
+    rows:[['Котушка','0,8 мм, проти годинникової'],['Ролик','канавка 0,8'],['Притиск','середній'],['Наконечник','0,8 (поки знятий)']],
+    steps:['Вимкніть апарат з мережі. Відкрийте відсік, посунувши замок угору.','Відкрутіть гайку шпинделя, зніміть шайбу. Поставте котушку так, щоб дріт сходив знизу, а котушка оберталася проти годинникової стрілки. Поверніть шайбу і гайку.','Потягніть рукоятку натягу на себе й підніміть кронштейн притискного ролика.','Перевірте, що протяжний ролик стоїть канавкою 0,8 (розмір на торці). Якщо ні, викрутіть фіксатор і переверніть ролик.','Відкусіть кінець дроту рівно, заведіть у трубку, по канавці і на 5–10 см у рукав.','Опустіть кронштейн, заблокуйте рукояткою натягу, виставте середній тиск.','Зніміть з пальника сопло і викрутіть наконечник. Увімкніть апарат, затисніть SETUP і тримайте, поки дріт не вийде з пальника на 50–100 мм.','Накрутіть наконечник 0,8 і сопло.'],
+    result:'Дріт виходить рівно, без ривків. Котушка не розкручується після зупинки.',
+    warn:'Під час протяжки не направляйте пальник на обличчя: дріт виходить з силою і гострий.'},
+  {id:'tube2',chip:'Профтруба 2 мм без газу',set:{power:true,mode:'flux',cur:80,trim:0,pol:'-',view:'front',wire:0.8,roll:0.8,tip:0.8,arm:false},title:'Профільна труба 2 мм порошковим дротом',
+    rows:[['Режим','FLUX CORED'],['Струм','80 А'],['Проварювання','0'],['Кабель полярності','«−»'],['Маса','«+»'],['Дріт','0,8 порошковий']],
+    steps:['Вимкніть апарат і перекиньте кабель полярності в «−», масу в «+».','Зачистіть метал болгаркою на 2 см від шва і місце під масу, до блиску.','SETUP: FLUX CORED, правою ручкою 80 А, проварювання на нуль.','Виставте деталі, зробіть 3–4 прихватки по кутах.','Пальник під кутом 60–70°, тягніть на себе. Виліт дроту 8–10 мм.','Варіть короткими ділянками 2–3 см, переходячи на протилежний бік рами, щоб її не повело.','Збийте шлак щіткою.'],
+    result:'Рівний валик без пор, метал прогрітий наскрізь, але без пропалів. Пропалює: зменште до 70 А або «−1» на проварюванні. Валик опуклий і не розтікається: додайте до 90 А.',
+    warn:'Порошковий дріт сильно димить: працюйте з провітрюванням.'},
+  {id:'thin',chip:'Тонка труба 1–1,5 мм',set:{power:true,mode:'flux',cur:55,trim:-1,pol:'-',view:'front',wire:0.8,roll:0.8,tip:0.8},title:'Тонкий метал 1–1,5 мм без пропалів',
+    rows:[['Режим','FLUX CORED'],['Струм','55 А'],['Проварювання','−1'],['Кабель полярності','«−»']],
+    steps:['Полярність пряма: кабель у «−», маса в «+».','SETUP: FLUX CORED, 55 А, проварювання трохи в «−».','Стик без зазору, деталі щільно стиснуті струбцинами.','Не ведіть довгий шов: ставте точки по 1–2 секунди, кожну наступну з перекриттям на половину попередньої.','Давайте металу охолонути, перескакуйте між ділянками.'],
+    result:'Шов з дрібних лусочок, без дірок. Якщо пропалює навіть точками, зменште струм до 45 А.'},
+  {id:'tack',chip:'Прихватки рами',set:{power:true,mode:'flux',cur:90,trim:0,pol:'-',view:'torch'},title:'Прихватки перед зварюванням рами',
+    rows:[['Режим','FLUX CORED'],['Струм','90 А'],['Проварювання','0']],
+    steps:['Зберіть раму на рівному столі, перевірте діагоналі рулеткою.','Прихватка: короткий імпульс 0,5–1 с курком у кут стику.','Спочатку по дві прихватки на кожному вузлі з протилежних боків, потім перевірте кути і діагоналі ще раз.','Лише після цього варіть повні шви.'],
+    result:'Прихватки дрібні, але тримають. Розміри рами не поїхали.'},
+  {id:'mma25',chip:'Електрод 2,5 мм',set:{power:true,mode:'mma',cur:85,hpol:'+',rod:2.5,view:'front'},title:'Метал 3–4 мм електродом 2,5 мм',
+    rows:[['Режим','MMA'],['Струм','85 А'],['Тримач','«+»'],['Маса','«−»'],['Електрод','2,5 мм']],
+    steps:['Вимкніть апарат, вийміть кабель полярності. Тримач у «+», масу в «−».','SETUP: MMA, правою ручкою 85 А (мітка 2.5 на шкалі).','Підпаліть дугу чирканням, як сірником, або легким дотиком і підйомом.','Тримайте дугу короткою, приблизно діаметр електрода: 2,5–3 мм. Кут 30–60° від вертикалі.','Після кожного проходу збивайте шлак.'],
+    result:'Рівна луска, шлак відходить легко. Електрод прилипає: додайте 5–10 А. Сильно бризкає й прорізає край: зменште.',
+    warn:'Електроди УОНИ перед роботою прожарюють, сирі дають пори.'},
+  {id:'mma32',chip:'Метал 4–6 мм, електрод 3,2',set:{power:true,mode:'mma',cur:120,hpol:'+',rod:3.2,view:'front'},title:'Перемички й кутники 4–6 мм електродом 3,2 мм',
+    rows:[['Режим','MMA'],['Струм','120 А'],['Тримач','«+»'],['Електрод','3,2 мм']],
+    steps:['Тримач у «+», маса в «−». SETUP: MMA, 120 А.','Від 3 мм і товще зробіть на кромках фаску болгаркою (V-подібна обробка).','Корінь шва першим проходом, зачистіть шлак, потім закриваючий прохід.','Таврове з\'єднання: електрод під 45° до обох деталей.'],
+    result:'На 120 А апарат працює без зупинок (100% ПВ до 125 А). На 140 А і вище чекайте пауз від захисту від перегріву.'},
+  {id:'co2',chip:'Газ CO₂, 1,2 мм',set:{power:true,mode:'co2',cur:70,trim:0,pol:'+',view:'front',wire:0.8,roll:0.8,tip:0.8},title:'Лист 1,2 мм у вуглекислому газі',
+    rows:[['Режим','0.8 CO₂'],['Струм','70 А'],['Кабель полярності','«+»'],['Газ','10–12 л/хв'],['Дріт','0,8 суцільний']],
+    steps:['Кабель полярності в «+», маса в «−».','Шланг редуктора на GAS INPUT, хомут затягніть. Редуктор на 10–12 л/хв.','SETUP: 0.8 CO₂, 70 А.','Відкрийте балон, натисніть курок 2–3 с у повітря для продування.','Пальник на 6–8 мм від металу, кут 60–70°.'],
+    result:'За таблицею інструкції для 1,2 мм: напруга 17–18 В, дріт 2,5–4,5 м/хв, газ 10–12 л/хв.',
+    warn:'Після роботи закрийте балон. На вулиці газ здуває: для вітру краще FLUX.'},
+  {id:'arco2',chip:'Суміш Ar-CO₂, 2 мм',set:{power:true,mode:'arco2',cur:100,trim:0,pol:'+',view:'front',wire:0.8,roll:0.8,tip:0.8},title:'Метал 2 мм у суміші Ar-CO₂',
+    rows:[['Режим','0.8 Ar-CO₂'],['Струм','100 А'],['Кабель полярності','«+»'],['Газ','10–15 л/хв'],['Зазор','0–0,5 мм']],
+    steps:['Кабель полярності в «+», маса в «−», газ на GAS INPUT.','SETUP: 0.8 Ar-CO₂, 100 А.','Зазор у стику до 0,5 мм.','Варіть рівномірно, швидкість така, щоб ванна трималася ширини 4–6 мм.'],
+    result:'За таблицею інструкції для 2 мм: 19–20 В, дріт 5,5–7,5 м/хв, газ 10–15 л/хв. Бризок мінімум.'},
+  {id:'tig',chip:'TIG нержавійка',set:{power:true,mode:'tig',cur:55,tpol:'-',valve:true,view:'front'},title:'Нержавійка 1,5 мм у режимі TIG LIFT',
+    rows:[['Режим','TIG LIFT'],['Струм','55 А'],['TIG-пальник','«−»'],['Маса','«+»'],['Газ','аргон, вентиль на пальнику відкритий']],
+    steps:['Потрібен окремий TIG-пальник з вентилем. Вийміть кабель полярності, пальник у «−», масу в «+».','Шланг пальника на редуктор аргону, перевірте з\'єднання.','SETUP: TIG LIFT, 55 А. Відкрийте балон і вентиль пальника.','Покладіть сопло на деталь, щоб вольфрам не торкався металу. Нахиліть пальник, щоб вольфрам торкнувся, і плавно поверніть назад: з\'явиться дуга.','Дочекайтеся ванни, ведіть пальник під кутом близько 75°, подаючи присадку збоку.','Щоб погасити дугу, різко відведіть пальник і не прибирайте газ кілька секунд.'],
+    result:'Сріблястий або солом\'яний шов без сірого нальоту. Сірий і пористий: мало газу або протяг.'},
+  {id:'heat',chip:'Спрацював перегрів',set:{power:true,heat:true,mode:'mma',cur:150,rod:4,view:'front'},title:'Апарат перестав варити, горить індикатор перегріву',
+    rows:[['Індикатор','перегрів'],['Вентилятор','працює']],
+    steps:['Не вимикайте апарат: вентилятор має працювати, щоб його охолодити.','Зачекайте кілька хвилин, поки індикатор згасне.','Далі варіть з паузами або зменште струм: до 125 А в MMA і до 135 А в MIG апарат працює без перерв.','Перевірте, що решітки не перекриті, а апарат не стоїть на сонці.'],
+    result:'На 160 А ПВ 50% в MIG і 33% в MMA: на кожні 10 хвилин 5 або 3,3 хвилини дуги.'}
+];
+
+const S={power:true,mode:'flux',cur:80,trim:0,pol:'-',hpol:'+',tpol:'-',wire:0.8,roll:0.8,tip:0.8,arm:false,rod:2.5,valve:true,hl:null,inch:false,trig:false,heat:false,
+  view:'front',focus:'m:flux',tab:'dev',scen:'tube2'};
+
+/* ---------- helpers ---------- */
+function el(tag,attrs,html){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(html)e.innerHTML=html;return e}
+function hot(pick,label,extra){return el('g',Object.assign({class:'hot','data-pick':pick,tabindex:'0',role:'button','aria-label':label},extra||{}))}
+const SEGS={'0':'abcdef','1':'bc','2':'abdeg','3':'abcdg','4':'bcfg','5':'acdfg','6':'acdefg','7':'abc','8':'abcdefg','9':'abcdfg','-':'g',' ':''};
+function hseg(x,y,L,t){return `${x},${y+t/2} ${x+t/2},${y} ${x+L-t/2},${y} ${x+L},${y+t/2} ${x+L-t/2},${y+t} ${x+t/2},${y+t}`}
+function vseg(x,y,L,t){return `${x+t/2},${y} ${x+t},${y+t/2} ${x+t},${y+L-t/2} ${x+t/2},${y+L} ${x},${y+L-t/2} ${x},${y+t/2}`}
+function make7(id,x0,y,n,W,H,T,step){let h='';for(let i=0;i<n;i++){const x=x0+i*step,hl=W-T-2,vl=H/2-T/2-2;
+  const P={a:hseg(x+T/2+1,y,hl,T),g:hseg(x+T/2+1,y+H/2-T/2,hl,T),d:hseg(x+T/2+1,y+H-T,hl,T),f:vseg(x,y+T/2+1,vl,T),b:vseg(x+W-T,y+T/2+1,vl,T),e:vseg(x,y+H/2+1,vl,T),c:vseg(x+W-T,y+H/2+1,vl,T)};
+  for(const s in P)h+=`<polygon class="seg" data-disp="${id}" data-d="${i}" data-s="${s}" points="${P[s]}"></polygon>`;
+  h+=`<rect class="seg" data-disp="${id}" data-d="${i}" data-s="p" x="${x+W+1}" y="${y+H-4}" width="4" height="4"></rect>`}return h}
+function show7(id,txt,n){const chars=[];if(txt){for(const ch of txt){if(ch==='.'&&chars.length)chars[chars.length-1].p=true;else chars.push({c:ch,p:false})}}
+  while(chars.length<n)chars.unshift({c:' ',p:false});const use=chars.slice(-n);
+  svg.querySelectorAll(`[data-disp="${id}"]`).forEach(p=>{const c=use[+p.dataset.d],s=p.dataset.s;p.classList.toggle('on',s==='p'?c.p:(SEGS[c.c]||'').includes(s))})}
+
+/* ---------- FRONT ---------- */
+const KC={cx:300,cy:206,min:20,max:160}, KT={cx:100,cy:206,min:-2.5,max:2.5};
+const A0=-135,A1=135;
+const ang=(k,v)=>A0+(v-k.min)/(k.max-k.min)*(A1-A0);
+(function(){
+  const g=$('v-front');
+  let h=`<rect class="sv-bump" x="6" y="6" width="388" height="458" rx="26"></rect><rect class="sv-body" x="16" y="14" width="368" height="444" rx="18"></rect>
+  <rect class="sv-face" x="30" y="26" width="340" height="236" rx="10"></rect>`;
+  /* grille */
+  for(let y=282;y<=440;y+=16)h+=`<line class="sv-grill" x1="40" y1="${y}" x2="360" y2="${y}"></line>`;
+  g.innerHTML=h;
+  /* indicators */
+  const li=hot('l:heat','Індикатор перегріву');li.innerHTML=`<circle class="hit" cx="46" cy="50" r="12"></circle><path id="i-heat" class="ind heat" d="M44,42 h4 v10 a4,4 0 1 1 -4,0 z"></path>`;g.appendChild(li);
+  const lp=hot('l:power','Індикатор мережі');lp.innerHTML=`<circle class="hit" cx="46" cy="78" r="12"></circle><path id="i-pow" class="ind" d="M48,69 L41,80 L46,80 L44,88 L51,77 L46,77 Z"></path>`;g.appendChild(lp);
+  /* displays */
+  [['v',62,'V'],['a',214,'A']].forEach(([id,x,lab])=>{const d=hot('d:'+id,'Дисплей '+lab);
+    d.innerHTML=`<rect class="hit selring" x="${x-4}" y="32" width="132" height="74" rx="8"></rect><text class="lbl big" x="${x+62}" y="44">${lab}</text><rect class="ledbox" x="${x}" y="48" width="124" height="52" rx="4"></rect>`+make7(id,x+14,56,3,26,36,5,36);g.appendChild(d)});
+  /* mode indicators */
+  const lm=hot('l:modes','Індикатори режимів');let mh=`<rect class="hit selring" x="76" y="108" width="248" height="34" rx="6"></rect>`;
+  MODES.forEach((m,i)=>{const x=104+i*48;mh+=`<rect id="mi-${m.id}" class="mind" x="${x-20}" y="112" width="40" height="26" rx="3"></rect><text id="mt-${m.id}" class="mtxt" x="${x}" y="${m.l2?123:128}">${m.l1}</text>${m.l2?`<text id="mt2-${m.id}" class="mtxt" x="${x}" y="133">${m.l2}</text>`:''}`});
+  lm.innerHTML=mh;g.appendChild(lm);
+  /* knobs */
+  function knob(k,pick,label,labels,id){
+    const kg=hot(pick,label,{class:'hot knobg'});
+    let s=`<circle class="hit" cx="${k.cx}" cy="${k.cy}" r="52"></circle>`;
+    const [x1,y1]=pol(k.cx,k.cy,A0,38),[x2,y2]=pol(k.cx,k.cy,A1,38);
+    s+=`<path class="karc" d="M${f1(x1)},${f1(y1)} A38,38 0 1 1 ${f1(x2)},${f1(y2)}"></path>`;
+    labels.forEach(([v,t])=>{const a=ang(k,v),[tx,ty]=pol(k.cx,k.cy,a,50),[a1,b1]=pol(k.cx,k.cy,a,35),[a2,b2]=pol(k.cx,k.cy,a,42);
+      s+=`<line class="ktick" x1="${f1(a1)}" y1="${f1(b1)}" x2="${f1(a2)}" y2="${f1(b2)}"></line><text class="lbl" x="${f1(tx)}" y="${f1(ty+3)}">${t}</text>`});
+    s+=`<circle class="knob" cx="${k.cx}" cy="${k.cy}" r="29"></circle><g id="${id}"><circle class="kcap" cx="${k.cx}" cy="${k.cy}" r="22"></circle><line class="kptr" x1="${k.cx}" y1="${k.cy-12}" x2="${k.cx}" y2="${k.cy-24}"></line></g>`;
+    kg.innerHTML=s;g.appendChild(kg);return kg}
+  const kt=knob(KT,'k:trim','Мікрорегулятор проварювання',[[-2.5,'−'],[-2,'-2'],[-1,'-1'],[0,'0'],[1,'+1'],[2,'+2'],[2.5,'+']],'kp-trim');
+  const kc=knob(KC,'k:cur','Регулятор зварювального струму',[[20,'MIN'],[62,'1.6'],[80,'2'],[95,'2.5'],[125,'3.2'],[145,'4'],[160,'MAX']],'kp-cur');
+  KT.el=kt;KC.el=kc;
+  /* SETUP */
+  const sb=hot('b:setup','Кнопка SETUP: натиснути — режим, тримати — протяжка дроту',{class:'hot btn','data-setup':'1'});
+  sb.innerHTML=`<circle class="hit" cx="200" cy="172" r="24"></circle><circle class="setup" cx="200" cy="172" r="15"></circle><path d="M193,170 a7.5,7.5 0 0 1 13,-4 M207,174 a7.5,7.5 0 0 1 -13,4" stroke="#fff" stroke-width="1.6" fill="none" stroke-linecap="round"></path><path d="M206,162 l1,5 -5,0 z M194,182 l-1,-5 5,0 z" fill="#fff"></path><text class="lbl" x="200" y="200">SET UP</text>`;
+  g.appendChild(sb);
+  g.insertAdjacentHTML('beforeend',`<text class="sv-t2" x="200" y="226" style="font-size:7.5px">WELDING MACHINE</text><line class="sv-red" x1="160" y1="231" x2="240" y2="231"></line><text class="sv-model" x="200" y="252">MG-16DX</text>`);
+  /* connectors */
+  const eu=hot('s:euro','Євророз\'єм пальника');
+  eu.innerHTML=`<circle class="hit" cx="98" cy="330" r="38"></circle><circle class="sock" cx="98" cy="330" r="34"></circle><circle class="brassr" cx="98" cy="330" r="25"></circle><circle class="brassd" cx="98" cy="330" r="15"></circle><circle fill="#2a2a2a" cx="98" cy="326" r="5"></circle><circle fill="#2a2a2a" cx="104" cy="335" r="2.6"></circle><circle fill="#2a2a2a" cx="92" cy="335" r="2.6"></circle><g id="europlug"></g>`;
+  g.appendChild(eu);
+  [['plus',205,'+','Гніздо плюс'],['minus',300,'−','Гніздо мінус']].forEach(([id,x,t,l])=>{const s=hot('s:'+id,l);
+    s.innerHTML=`<circle class="hit" cx="${x}" cy="350" r="30"></circle><text class="lbl big" x="${x}" y="318" style="font-size:16px">${t}</text><circle class="sock" cx="${x}" cy="350" r="24"></circle><circle class="sockin" cx="${x}" cy="350" r="11"></circle><circle fill="#2a2a2a" cx="${x}" cy="350" r="5"></circle>`;g.appendChild(s)});
+  g.insertAdjacentHTML('beforeend',`<circle class="sock" cx="352" cy="288" r="11"></circle><g id="cables"></g>`);
+})();
+
+/* cables on front: polarity cable, mass, holder, TIG torch */
+const SX={'+':205,'-':300};const sk=x=>x===205?'s:plus':'s:minus';
+function plugAt(x,y,label){return `<circle class="plug" cx="${x}" cy="${y}" r="17"></circle><circle fill="#2c2f34" cx="${x}" cy="${y}" r="9"></circle><text class="plugtx" x="${x}" y="${y+3}">${label}</text>`}
+function tag(x,y,t){const w=t.length*5.4+14;return `<rect class="ctag" x="${f1(x-w/2)}" y="${y-11}" width="${f1(w)}" height="16" rx="8"></rect><text class="ctagt" x="${x}" y="${y}">${t}</text>`}
+function drawCables(){
+  const k=kind();let h='';let ep='';
+  const other=s=>s==='+'?'-':'+';
+  if(k==='mig'){
+    const x=SX[S.pol];
+    h+=`<g class="hot" data-pick="c:pol" tabindex="-1" data-name="Кабель полярності · у гнізді «${S.pol==='+'?'+':'−'}»"><path class="cabe" d="M352,288 C390,300 ${x+40},330 ${x},350"></path><path class="cab" d="M352,288 C390,300 ${x+40},330 ${x},350"></path>${plugAt(x,350,'пол.')}</g>`;
+    const mx=SX[other(S.pol)];
+    h+=`<g class="hot" data-pick="${sk(mx)}" tabindex="-1" data-name="Кабель маси · у гнізді «${mx===205?'+':'−'}»"><path class="cabe" d="M${mx},350 L${mx},470"></path><path class="cab" d="M${mx},350 L${mx},470"></path>${plugAt(mx,350,'маса')}${tag(mx,420,'маса')}</g>`;
+    ep=`<path class="cabe" d="M98,330 C98,400 60,420 40,470"></path><path class="cab" d="M98,330 C98,400 60,420 40,470" style="stroke-width:13"></path><circle class="plug" cx="98" cy="330" r="22"></circle><circle fill="#d93a22" cx="98" cy="330" r="6"></circle>${tag(70,430,'пальник')}`;
+  }else{
+    /* parked polarity cable */
+    h+=`<g class="hot" data-pick="c:pol" tabindex="-1" data-name="Кабель полярності · вийнятий, у MMA і TIG не потрібен"><path class="cabe" d="M352,288 C372,320 372,360 366,392"></path><path class="cab" d="M352,288 C372,320 372,360 366,392"></path><rect class="plug" x="356" y="388" width="20" height="30" rx="6"></rect></g>`;
+    const hp=k==='mma'?S.hpol:S.tpol, hx=SX[hp], mx=SX[other(hp)];
+    const name=k==='mma'?'тримач':'TIG';
+    h+=`<g class="hot" data-pick="${sk(hx)}" tabindex="-1" data-name="${k==='mma'?'Кабель електродотримача':'Кабель TIG-пальника'} · у гнізді «${hp==='+'?'+':'−'}»"><path class="cabe" d="M${hx},350 L${hx},470"></path><path class="cab" d="M${hx},350 L${hx},470"></path>${plugAt(hx,350,name)}${tag(hx,420,k==='mma'?'тримач':'TIG-пальник')}</g>`;
+    h+=`<g class="hot" data-pick="${sk(mx)}" tabindex="-1" data-name="Кабель маси · у гнізді «${mx===205?'+':'−'}»"><path class="cabe" d="M${mx},350 L${mx},470"></path><path class="cab" d="M${mx},350 L${mx},470"></path>${plugAt(mx,350,'маса')}${tag(mx,445,'маса')}</g>`;
+    h+=tag(330,276,'вийнятий');
+  }
+  $('cables').innerHTML=h;$('europlug').innerHTML=ep;
+}
+
+/* ---------- REAR ---------- */
+(function(){
+  const g=$('v-rear');
+  g.innerHTML=`<rect class="sv-bump" x="6" y="6" width="388" height="458" rx="26"></rect><rect class="sv-body" x="16" y="14" width="368" height="444" rx="18"></rect><rect class="sv-face" x="34" y="30" width="332" height="410" rx="10"></rect>`;
+  const sw=hot('r:sw','Мережевий вимикач');
+  sw.innerHTML=`<rect class="hit selring" x="58" y="48" width="84" height="104" rx="8"></rect><text class="lbl" x="100" y="62">ON</text><rect fill="#111" x="74" y="70" width="52" height="64" rx="4"></rect><g id="rocker"></g><text class="lbl" x="100" y="146">OFF</text>`;
+  g.appendChild(sw);
+  const gs=hot('r:gas','Штуцер подачі газу');
+  gs.innerHTML=`<rect class="hit selring" x="190" y="50" width="110" height="78" rx="8"></rect><circle class="brassr" cx="226" cy="88" r="15"></circle><rect class="brassr" x="241" y="82" width="26" height="12" rx="3"></rect><circle class="brassd" cx="226" cy="88" r="6"></circle><text class="lbl" x="245" y="66">GAS INPUT</text><g id="gashose"></g>`;
+  g.appendChild(gs);
+  const cd=hot('r:cord','Шнур живлення');
+  cd.innerHTML=`<rect class="hit selring" x="58" y="168" width="100" height="74" rx="8"></rect><circle class="sock" cx="100" cy="206" r="18"></circle><path class="cabe" d="M100,206 C60,240 40,300 30,330"></path><path class="cab" d="M100,206 C60,240 40,300 30,330"></path><text class="lbl" x="110" y="252">230V ±10% 50Hz</text>`;
+  g.appendChild(cd);
+  let np=`<rect class="nplate" x="196" y="150" width="152" height="146" rx="3"></rect>`;
+  ['MODEL: MG-16DX','EN 60974-6','MIG 20A/12V–160A/22V','MMA 20A/21V–160A/26.4V','X   50%  33%  100%','I2 160A 160A 135A 125A','U0 = 55V   U1 = 230V','I1max 28A  I1eff 22.4A','IP21S'].forEach((t,i)=>np+=`<text class="npt" x="204" y="${166+i*14}">${t}</text>`);
+  np+=`<rect class="warnplate" x="196" y="300" width="152" height="14" rx="2"></rect><text class="npt" x="204" y="310" style="fill:#fff">УВАГА!</text>`;
+  g.insertAdjacentHTML('beforeend',np);
+  const fn=hot('r:fan','Вентилятор');
+  let fh=`<circle class="hit" cx="112" cy="350" r="66"></circle><circle class="fan" cx="112" cy="350" r="60"></circle>`;
+  for(let r=12;r<=52;r+=10)fh+=`<circle class="fan" cx="112" cy="350" r="${r}"></circle>`;
+  fh+=`<line class="fan" x1="52" y1="350" x2="172" y2="350"></line><line class="fan" x1="112" y1="290" x2="112" y2="410"></line><g id="fanblades"><path d="M112,350 L112,310 A40,40 0 0 1 140,322 Z M112,350 L152,350 A40,40 0 0 1 140,378 Z M112,350 L112,390 A40,40 0 0 1 84,378 Z M112,350 L72,350 A40,40 0 0 1 84,322 Z" fill="var(--dev-dim)" opacity=".25"></path></g>`;
+  fn.innerHTML=fh;g.appendChild(fn);
+})();
+
+/* ---------- FEED ---------- */
+(function(){
+  const g=$('v-feed');
+  g.innerHTML=`<rect class="sv-bump" x="6" y="6" width="388" height="458" rx="26"></rect><rect class="sv-body" x="16" y="14" width="368" height="444" rx="18"></rect><rect class="sv-face" x="30" y="40" width="340" height="360" rx="8"></rect><text class="lbl big" x="200" y="30">Відсік подачі дроту (дверцята відкриті)</text>`;
+  const dr=hot('f:door','Дверцята відсіку і замок');
+  dr.innerHTML=`<rect class="hit selring" x="160" y="404" width="80" height="50" rx="8"></rect><rect fill="#111" x="186" y="414" width="28" height="30" rx="4" stroke="var(--dev-line)"></rect><rect fill="var(--dev-dim)" x="194" y="418" width="12" height="12" rx="2"></rect><path d="M200,436 l-4,5 h8 z" fill="var(--dev-text)" transform="rotate(180 200 438)"></path>`;
+  g.appendChild(dr);
+  const sp=hot('f:spool','Котушка дроту');
+  let sh=`<circle class="hit" cx="130" cy="210" r="104"></circle><circle class="spool" cx="130" cy="210" r="100"></circle><circle class="spoolw" cx="130" cy="210" r="86"></circle><circle class="spool" cx="130" cy="210" r="44"></circle>`;
+  for(let i=0;i<8;i++){const[x,y]=pol(130,210,i*45,44),[x2,y2]=pol(130,210,i*45,26);sh+=`<line stroke="var(--dev-line)" stroke-width="3" x1="${f1(x)}" y1="${f1(y)}" x2="${f1(x2)}" y2="${f1(y2)}"></line>`}
+  sh+=`<circle fill="#2c2f34" stroke="var(--dev-dim)" cx="130" cy="210" r="16"></circle><polygon fill="var(--dev-dim)" points="130,201 138,205 138,215 130,219 122,215 122,205"></polygon>
+  <path d="M188,138 A90,90 0 0 0 72,138" fill="none" stroke="var(--orange)" stroke-width="2.5"></path><path d="M72,138 l2,-10 l7,8 z" fill="var(--orange)"></path>
+  <text id="spoollbl" class="plugtx" x="130" y="168" style="fill:#2a1a0a;font-size:10px">0.8</text>`;
+  sp.innerHTML=sh;g.appendChild(sp);
+  /* wire path */
+  g.insertAdjacentHTML('beforeend',`<rect class="feedplate" x="232" y="212" width="132" height="120" rx="6"></rect>`);
+  g.insertAdjacentHTML('beforeend',`<path id="wirepath" class="wirep" d="M130,296 C180,300 200,288 236,288 L370,288"></path>`);
+  const gd=hot('f:guide','Направляюча трубка і вхід рукава');
+  gd.innerHTML=`<rect class="hit selring" x="230" y="278" width="40" height="24" rx="4"></rect><rect fill="#c9a24a" x="238" y="285" width="26" height="10" rx="2"></rect><rect class="hit selring" x="346" y="276" width="30" height="28" rx="4"></rect><rect fill="#c9a24a" x="350" y="282" width="22" height="16" rx="2"></rect>`;
+  g.appendChild(gd);
+  const rl=hot('f:roll','Протяжний ролик');
+  rl.innerHTML=`<circle class="hit" cx="304" cy="306" r="22"></circle><circle class="roll" cx="304" cy="306" r="17"></circle><circle fill="#4a4f55" cx="304" cy="306" r="5"></circle><text id="rolllbl" class="plugtx" x="304" y="326" style="fill:#111;font-size:8px">0.8</text>`;
+  g.appendChild(rl);
+  const ar=hot('f:arm','Притискний ролик і кронштейн');
+  ar.innerHTML=`<rect class="hit selring" x="262" y="234" width="80" height="50" rx="6"></rect><g id="armg"><rect class="arm" x="266" y="258" width="62" height="16" rx="5"></rect><circle class="roll" cx="304" cy="274" r="11"></circle><circle fill="#2c2f34" cx="270" cy="266" r="5"></circle></g>`;
+  g.appendChild(ar);
+  const tn=hot('f:tension','Регулятор натягу');
+  tn.innerHTML=`<rect class="hit selring" x="328" y="216" width="32" height="56" rx="6"></rect><rect fill="#777" x="341" y="246" width="6" height="22"></rect><rect class="tens" x="332" y="220" width="24" height="28" rx="4"></rect><line stroke="var(--dev-dim)" x1="338" y1="224" x2="338" y2="244"></line><line stroke="var(--dev-dim)" x1="344" y1="224" x2="344" y2="244"></line><line stroke="var(--dev-dim)" x1="350" y1="224" x2="350" y2="244"></line>`;
+  g.appendChild(tn);
+  g.insertAdjacentHTML('beforeend',`<text class="lbl" x="372" y="316" style="text-anchor:end">→ рукав</text>`);
+})();
+
+/* ---------- TOOL VIEW: MIG torch / electrode holder / TIG torch ---------- */
+const R='rotate(-38 200 230)';
+(function(){
+  const g=$('v-torch');
+  g.innerHTML=`<rect x="0" y="0" width="400" height="470" fill="var(--dev-face)" rx="18" opacity=".18"></rect><text id="tooltitle" class="lbl big" x="200" y="26" style="fill:var(--muted)"></text>
+  <rect class="work" x="20" y="352" width="200" height="14" rx="2"></rect><text class="lbl" x="120" y="384" style="fill:var(--muted)">деталь</text>`;
+  /* MIG */
+  const mig=el('g',{id:'tool-mig'});g.appendChild(mig);
+  const T=el('g',{transform:R});
+  T.innerHTML=`<path class="torch" d="M330,214 C360,214 380,214 430,214 L430,246 L330,246 Z"></path>
+    ${Array.from({length:6},(_,i)=>`<rect class="torch" x="${300+i*7}" y="210" width="6" height="40" rx="2"></rect>`).join('')}
+    <path class="torch" d="M170,206 C200,196 270,196 300,206 L300,252 C270,262 220,262 200,250 C185,242 172,236 170,230 Z"></path>
+    <text x="235" y="226" style="fill:var(--dev-red);font:700 8px var(--f-display)">DNIPRO-M</text>
+    <path class="torch" d="M100,222 C120,224 150,220 172,214 L172,230 C150,236 120,238 100,236 Z"></path>`;
+  mig.appendChild(T);
+  const tr=hot('t:trig','Курок пальника',{class:'hot btn','data-hold':'trig',transform:R});
+  tr.innerHTML=`<rect class="hit" x="190" y="244" width="50" height="40" rx="8"></rect><path class="trig" d="M200,252 L228,252 C228,266 220,276 206,278 Z"></path>`;
+  mig.appendChild(tr);
+  const nz=hot('t:nozzle','Газове сопло',{transform:R});
+  nz.innerHTML=`<rect class="hit" x="38" y="208" width="66" height="44" rx="6"></rect><rect class="nozzle" x="44" y="215" width="58" height="29" rx="5"></rect><line stroke="#5c6168" x1="86" y1="215" x2="86" y2="244"></line>`;
+  mig.appendChild(nz);
+  const tp=hot('t:tip','Контактний наконечник',{transform:R});
+  tp.innerHTML=`<rect class="hit" x="20" y="214" width="30" height="32" rx="6"></rect><rect class="ctip" x="32" y="224" width="14" height="11" rx="2"></rect><line stroke="var(--wire)" stroke-width="2" x1="32" y1="229.5" x2="20" y2="229.5"></line><text id="tiplbl" class="lbl" x="36" y="208" style="fill:var(--dev-text)">0.8</text>`;
+  mig.appendChild(tp);
+  /* MMA: electrode holder */
+  const mma=el('g',{id:'tool-mma'});g.appendChild(mma);
+  const hb=hot('h:holder','Електродотримач',{class:'hot btn','data-hold':'strike',transform:R});
+  let hh=`<rect class="hit" x="94" y="186" width="346" height="80" rx="12"></rect><path class="cab" d="M300,230 L440,230" style="stroke-width:12"></path>
+    <path class="holdg" d="M140,210 C175,200 265,200 302,210 L302,250 C265,260 175,260 140,250 Z"></path>`;
+  for(let i=0;i<7;i++)hh+=`<line stroke="var(--dev-line)" stroke-width="1.5" x1="${180+i*14}" y1="206" x2="${180+i*14}" y2="254"></line>`;
+  hh+=`<rect class="holdr" x="132" y="208" width="10" height="44" rx="3"></rect>
+    <path class="jaw" d="M96,220 L134,212 L134,226 L100,229 Z"></path><path class="jaw" d="M96,240 L134,248 L134,234 L100,231 Z"></path>
+    <path class="holdg" d="M118,212 C135,188 175,182 228,192 L226,202 C182,194 146,198 130,214 Z"></path>
+    <text x="236" y="234" style="fill:var(--dev-red);font:700 8px var(--f-display)">DNIPRO-M</text>`;
+  hb.innerHTML=hh;mma.appendChild(hb);
+  const rod=hot('h:rod','Електрод',{transform:R});
+  rod.innerHTML=`<rect class="hit" x="14" y="214" width="92" height="32" rx="6"></rect><rect id="rodbody" class="rod" x="26" y="226" width="70" height="8" rx="2"></rect><rect id="rodbare" class="rodbare" x="94" y="227" width="12" height="6"></rect><text id="rodlbl" class="lbl" x="60" y="212" style="fill:var(--dev-text)">2.5</text>`;
+  mma.appendChild(rod);
+  /* TIG torch */
+  const tig=el('g',{id:'tool-tig'});g.appendChild(tig);
+  const TB=el('g',{transform:R});
+  TB.innerHTML=`<path class="cab" d="M300,230 L440,230" style="stroke-width:12"></path>
+    <path class="torch" d="M140,212 C175,204 265,204 300,214 L300,246 C265,256 175,256 140,248 Z"></path>
+    <rect class="torch" x="84" y="214" width="58" height="32" rx="8"></rect>
+    <rect class="torch" x="98" y="146" width="20" height="70" rx="6"></rect>`;
+  tig.appendChild(TB);
+  const tb=hot('g:torch','Кнопка TIG-пальника',{class:'hot btn','data-hold':'tigbtn',transform:R});
+  tb.innerHTML=`<rect class="hit" x="178" y="186" width="54" height="30" rx="8"></rect><rect class="trig" x="190" y="198" width="30" height="10" rx="4"></rect>`;
+  tig.appendChild(tb);
+  const cu=hot('g:cup','Керамічне сопло',{transform:R});
+  cu.innerHTML=`<rect class="hit" x="36" y="206" width="52" height="48" rx="6"></rect><polygon class="cup" points="42,220 86,212 86,248 42,240"></polygon>`;
+  tig.appendChild(cu);
+  const tu=hot('g:tung','Вольфрамовий електрод',{transform:R});
+  tu.innerHTML=`<rect class="hit" x="16" y="216" width="30" height="28" rx="6"></rect><polygon class="tung" points="26,230 32,227.5 44,227.5 44,232.5 32,232.5"></polygon>`;
+  tig.appendChild(tu);
+  const va=hot('g:valve','Вентиль газу на пальнику',{transform:R});
+  va.innerHTML=`<rect class="hit" x="300" y="196" width="40" height="40" rx="8"></rect><rect class="valve" x="306" y="214" width="26" height="16" rx="3"></rect><g id="valveknob"><rect class="valve" x="314" y="200" width="10" height="16" rx="2"></rect></g>`;
+  tig.appendChild(va);
+  g.insertAdjacentHTML('beforeend',`<g id="arc" class="arcg"><circle class="arcglow" cx="60" cy="346" r="26"></circle><circle class="arccore" cx="60" cy="346" r="7"></circle>${[[-24,-18],[26,-20],[-30,4],[32,6],[-12,-30],[14,-32]].map(([dx,dy])=>`<line class="sparkl" x1="${60+dx*.4}" y1="${346+dy*.4}" x2="${60+dx}" y2="${346+dy}"></line>`).join('')}</g>`);
+})();
+const TOOLNAME={mig:'Пальник',mma:'Тримач',tig:'TIG'};
+const TOOLTITLE={mig:'Пальник MIG з рукавом 3 м',mma:'Електродотримач на кабелі 3 м',tig:'TIG-пальник (купується окремо)'};
+
+/* ---------- animated turn ---------- */
+const cur={};const anim={};
+function turnTo(id,a,cx,cy){const set=v=>$(id).setAttribute('transform',`rotate(${v.toFixed(2)} ${cx} ${cy})`);
+  if(cur[id]===undefined||reduce){cur[id]=a;set(a);return}
+  if(Math.abs(cur[id]-a)<0.01){set(a);return}
+  cancelAnimationFrame(anim[id]);const from=cur[id],t0=performance.now();
+  const ease=t=>1+2.4*Math.pow(t-1,3)+1.4*Math.pow(t-1,2);
+  (function step(now){const t=Math.min(1,(now-t0)/360);const v=from+(a-from)*ease(t);set(v);if(t<1)anim[id]=requestAnimationFrame(step);else cur[id]=a})(t0)}
+function setNow(id,a,cx,cy){cancelAnimationFrame(anim[id]);cur[id]=a;$(id).setAttribute('transform',`rotate(${a.toFixed(2)} ${cx} ${cy})`)}
+
+/* ---------- knobs ---------- */
+let dragging=false;
+function makeKnob({k,step,get,set,id}){
+  const elx=k.el;const clamp=v=>Math.min(k.max,Math.max(k.min,v)),snap=v=>+(Math.round(v/step)*step).toFixed(4);
+  let last=null,raw=0,moved=false;
+  elx.addEventListener('pointerdown',e=>{e.preventDefault();elx.setPointerCapture(e.pointerId);last=angleAt(e,k.cx,k.cy);raw=get();moved=false;dragging=true});
+  elx.addEventListener('pointermove',e=>{if(last===null)return;let a=angleAt(e,k.cx,k.cy),d=a-last;if(d>180)d-=360;if(d<-180)d+=360;last=a;
+    if(Math.abs(d)>0.3)moved=true;raw=clamp(raw+d/(A1-A0)*(k.max-k.min));set(snap(raw),true)});
+  ['pointerup','pointercancel'].forEach(t=>elx.addEventListener(t,()=>{if(last!==null){last=null;dragging=false;render()}}));
+  elx.addEventListener('wheel',e=>{e.preventDefault();set(snap(clamp(get()-Math.sign(e.deltaY)*step)))},{passive:false});
+  elx.addEventListener('keydown',e=>{const kk={ArrowUp:1,ArrowRight:1,ArrowDown:-1,ArrowLeft:-1,PageUp:10,PageDown:-10}[e.key];
+    if(kk){e.preventDefault();set(snap(clamp(get()+kk*step)))}});
+}
+makeKnob({k:KC,step:1,get:()=>S.cur,set:(v,live)=>{S.cur=v;S.focus='k:cur';live?renderLive():render()}});
+makeKnob({k:KT,step:0.5,get:()=>S.trim,set:(v,live)=>{S.trim=v;S.focus='k:trim';live?renderLive():render()}});
+
+/* ---------- derived ---------- */
+function volts(){const k=kind();if(k==='mig')return Math.max(10,14+0.05*S.cur+S.trim);if(k==='mma')return 20+0.04*S.cur;return 10+0.04*S.cur}
+function needPol(){const m=MODES[MI[S.mode]];return m.pol}
+function issues(){const out=[];const k=kind();
+  if(!S.power)out.push('Апарат вимкнений: вимикач ззаду в положенні O.');
+  if(k==='mig'&&S.pol!==needPol())out.push(S.mode==='flux'?'Порошковий дріт на «+»: переставте кабель полярності в «−».':'Для газу кабель полярності має бути в «+».');
+  if(k==='tig'&&S.tpol!=='-')out.push('TIG-пальник має бути в «−», маса в «+».');
+  if(k==='mig'){if(S.roll!==S.wire)out.push(`Ролик стоїть на ${S.roll}, а дріт ${S.wire}: переверніть ролик.`);
+    if(S.tip!==S.wire)out.push(`Наконечник ${S.tip} не під дріт ${S.wire}.`);
+    if(S.arm)out.push('Притискний ролик піднятий: дріт не подаватиметься.');}
+  if(k==='tig'&&!S.valve)out.push('Вентиль газу на TIG-пальнику закритий: вольфрам згорить без аргону.');
+  if(k==='mma'){const r=MMATAB.find(x=>x[0]===S.rod);if(r&&(S.cur<r[2]||S.cur>r[3]))out.push(`Для електрода ${String(S.rod).replace('.',',')} мм потрібно ${r[2]}–${r[3]} А, зараз ${S.cur} А.`)}
+  if(S.heat)out.push('Спрацював захист від перегріву: зачекайте, поки апарат охолоне.');
+  return out}
+function hint(){const I=S.cur,k=kind();
+  if(k==='mma'){const ok=MMATAB.filter(r=>I>=r[2]&&I<=r[3]).map(r=>`${String(r[0]).replace('.',',')} мм (метал ${r[1]} мм)`);
+    return ok.length?'Електрод '+ok.join(' або '):(I<50?'Замало навіть для електрода 1,6 мм':'Вище діапазонів таблиці');}
+  if(k==='mig'){let t=I<40?'тонкий лист до 0,8–1 мм':I<60?'метал 1–1,5 мм':I<85?'метал 1,5–2 мм, профтруба 2 мм':I<110?'метал 2–3 мм':I<135?'метал 3–4 мм':'метал 4 мм і товще, з фаскою';return 'Орієнтовно: '+t}
+  return 'Орієнтовно: '+(I<45?'нержавійка 0,8–1 мм':I<70?'нержавійка 1–2 мм':I<110?'метал 2–3 мм':'метал 3 мм і товще')}
+function duty(){const k=kind(),I=S.cur;if(k==='mma')return I<=125?'ПВ 100%':I>=160?'ПВ 33%':'ПВ ≈ '+Math.round(100-(I-125)/35*67)+'%';
+  if(k==='mig')return I<=135?'ПВ 100%':I>=160?'ПВ 50%':'ПВ ≈ '+Math.round(100-(I-135)/25*50)+'%';return ''}
+
+/* ---------- render ---------- */
+const MODENAME=Object.fromEntries(MODES.map(m=>[m.id,m.chip]));
+function renderFs(){const b=$('fsbar');if(!b||b.hidden)return;const k=kind();const row=b.querySelector('.fschips'),sl=row?row.scrollLeft:0;
+  const vw=[['all','Усе'],['front','Перед'],['rear','Зад'],['feed','Подача'],['torch',k==='mma'?'Тримач':k==='tig'?'TIG-пальник':'Пальник']];
+  const q=x=>x==='+'?'«+»':'«−»';
+  b.innerHTML=`<div class="fsrow"><button class="fsx" type="button" data-fsclose aria-label="Закрити повноекранний режим">✕</button><div class="fsviews" role="group" aria-label="Вид">${vw.map(([v,t])=>`<button type="button" data-view="${v}" aria-pressed="${S.view===v}">${t}</button>`).join('')}</div></div>
+  <div class="fsrow fschips">${MODES.map(m=>`<button class="chip" type="button" data-fsmode="${m.id}" aria-pressed="${S.mode===m.id}">${m.chip}</button>`).join('')}<span class="fssep" aria-hidden="true"></span>
+  <span class="fsstep"><button class="chip" type="button" data-act="cur-" aria-label="Зменшити струм на 5 А">−</button><b>${S.cur} А</b><button class="chip" type="button" data-act="cur+" aria-label="Збільшити струм на 5 А">+</button></span>
+  ${k==='mig'?`<button class="chip" type="button" data-act="swap">Полярність ${q(S.pol)}</button><button class="chip" type="button" data-act="wire">Дріт ${String(S.wire).replace('.',',')} мм</button>`:''}
+  ${k==='mma'?`<button class="chip" type="button" data-act="rod">Електрод ${String(S.rod).replace('.',',')} мм</button><button class="chip" type="button" data-act="swap">Тримач у ${q(S.hpol)}</button>`:''}
+  ${k==='tig'?`<button class="chip" type="button" data-act="valve">Газ на пальнику: ${S.valve?'відкритий':'закритий'}</button><button class="chip" type="button" data-act="swap">Пальник у ${q(S.tpol)}</button>`:''}
+  <button class="chip" type="button" data-act="power" aria-pressed="${!S.power}">${S.power?'Вимкнути':'Увімкнути'}</button></div>`;
+  const nr=b.querySelector('.fschips');if(nr)nr.scrollLeft=sl}
+function setModeOnly(id){S.mode=id;S.power=true;S.heat=false;const m=MODES[MI[id]];if(m.pol)S.pol=m.pol;if(id==='tig')S.tpol='-';if(id==='mma')S.hpol='+';S.focus='m:'+id;render()}
+function renderLive(){renderFs();drawDevice();renderStatus();if(S.tab==='dev'&&(S.focus==='k:cur'||S.focus==='k:trim'||S.focus.startsWith('m:')))renderInfo()}
+let V3=null;
+function drawDevice(){if(V3&&V3.on)V3.sync();
+  const v2=S.view==='all'?'front':S.view;
+  ['front','rear','feed','torch'].forEach(v=>$('v-'+v).toggleAttribute('hidden',v2!==v));
+  document.querySelectorAll('[data-view]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.view===S.view));
+  const on=S.power;
+  $('i-pow').classList.toggle('on',on);$('i-heat').classList.toggle('on',on&&S.heat);
+  MODES.forEach(m=>{const a=on&&S.mode===m.id;$('mi-'+m.id).classList.toggle('on',a);$('mt-'+m.id).classList.toggle('on',a);const t2=$('mt2-'+m.id);if(t2)t2.classList.toggle('on',a)});
+  show7('v',on?volts().toFixed(1):'',3);show7('a',on?String(S.cur):'',3);
+  const ac=ang(KC,S.cur),at=ang(KT,S.trim);
+  if(dragging){setNow('kp-cur',ac,KC.cx,KC.cy);setNow('kp-trim',at,KT.cx,KT.cy)}else{turnTo('kp-cur',ac,KC.cx,KC.cy);turnTo('kp-trim',at,KT.cx,KT.cy)}
+  drawCables();
+  $('rocker').innerHTML=on?`<path class="rocker" d="M78,74 h44 v24 h-44 z"></path><path class="rocker" d="M78,98 h44 l-6,32 h-32 z" style="filter:brightness(.7)"></path><text x="100" y="91" fill="#fff" font-size="12" text-anchor="middle" font-weight="700">I</text>`
+    :`<path class="rocker" d="M84,74 h32 l6,32 h-44 z" style="filter:brightness(.7)"></path><path class="rocker" d="M78,106 h44 v24 h-44 z"></path><text x="100" y="123" fill="#fff" font-size="12" text-anchor="middle" font-weight="700">O</text>`;
+  const gas=on&&(S.mode==='co2'||S.mode==='arco2');
+  $('gashose').innerHTML=(S.mode==='co2'||S.mode==='arco2')?`<path class="cabe" d="M266,88 C300,88 320,60 350,40" style="stroke-width:9"></path><path class="cab" d="M266,88 C300,88 320,60 350,40" style="stroke-width:6"></path><rect fill="#bbb" x="258" y="80" width="8" height="16" rx="2"></rect>`:'';
+  $('fanblades').style.transformOrigin='112px 350px';$('fanblades').style.transformBox='view-box';
+  $('fanblades').style.animation=on&&!reduce?'spin .6s linear infinite':'none';
+  $('spoollbl').textContent=String(S.wire);$('rolllbl').textContent=String(S.roll);$('tiplbl').textContent=String(S.tip);
+  $('armg').setAttribute('transform',S.arm?'rotate(-22 270 266)':'');
+  const tk=kind();['mig','mma','tig'].forEach(t=>$('tool-'+t).toggleAttribute('hidden',tk!==t));
+  $('tooltitle').textContent=TOOLTITLE[tk];document.querySelector('#views [data-view="torch"]').textContent=TOOLNAME[tk];
+  const rh=4+S.rod*1.6;$('rodbody').setAttribute('y',(230-rh/2).toFixed(1));$('rodbody').setAttribute('height',rh.toFixed(1));$('rodlbl').textContent=String(S.rod);
+  $('valveknob').setAttribute('transform',S.valve?'':'rotate(90 319 214)');
+  const feeding=on&&(S.inch||(S.trig&&kind()==='mig'&&!S.heat))&&!S.arm;
+  $('wirepath').classList.toggle('run',feeding);
+  $('arc').classList.toggle('on',on&&S.trig&&!S.heat&&(tk==='mig'?!S.arm:tk==='tig'?S.valve:true));
+  document.querySelectorAll('[data-setup]').forEach(b=>b.classList.toggle('press',S.inch));
+  document.querySelectorAll('[data-hold]').forEach(b=>b.classList.toggle('press',S.trig));
+  svg.querySelectorAll('.hot').forEach(h=>h.classList.toggle('hl',!!S.hl&&h.dataset.pick===S.hl));
+  svg.querySelectorAll('.hot').forEach(h=>h.classList.toggle('sel',S.tab==='dev'&&(h.dataset.pick===S.focus||(S.focus.startsWith('m:')&&h.dataset.pick==='l:modes'))));
+}
+function renderStatus(){
+  const k=kind();const iss=issues();
+  let h=`<div><b>${MODENAME[S.mode]}</b> · ${S.cur} А${k==='mig'?` · проварювання ${S.trim>0?'+':''}${String(S.trim).replace('.',',')}`:''}${duty()?' · '+duty():''}</div><div class="ok">${hint()}</div>`;
+  if(S.inch)h+=`<div class="ok">Протяжка дроту: дріт іде без дуги й газу</div>`;
+  if(k==='mma')h+=`<div class="ok">Електрод у тримачі: ${String(S.rod).replace('.',',')} мм</div>`;
+  iss.forEach(t=>h+=`<div class="w">${t}</div>`);
+  $('status').innerHTML=h;const fss=$('fsstatus');if(fss&&!fss.hidden)fss.innerHTML=h;
+}
+function noteHtml(n){return n?`<div class="note ${n[0]}"><b>${n[0]==='warn'?'Увага':'Порада'}</b><span>${n[1]}</span></div>`:''}
+function renderInfo(){
+  const f=S.focus;let h='';
+  if(f.startsWith('m:')){const id=f.slice(2),mi=MODEINFO[id];
+    h=`<div class="eyebrow">Режим · SETUP</div><h2>${mi.title}</h2><p>${mi.what}</p><div class="spec">${mi.spec}</div>`;
+    h+=`<div class="sub"><div class="glabel">Як підготувати</div><ol class="steps">${mi.steps.map(s=>`<li><span>${s}</span></li>`).join('')}</ol></div>`;
+    if(id==='mma')h+=`<div class="sub"><div class="glabel">Струм за діаметром електрода (з інструкції)</div><div class="tbwrap"><table class="tb"><tr><th>Електрод, мм</th><th>Метал, мм</th><th>Струм, А</th></tr>${MMATAB.map(r=>`<tr><td>${String(r[0]).replace('.',',')}</td><td>${r[1]}</td><td>${r[2]}–${r[3]}</td></tr>`).join('')}</table></div></div>`;
+    if(id==='co2'||id==='arco2')h+=`<div class="sub"><div class="glabel">Таблиця режимів MIG/MAG з інструкції</div><div class="tbwrap"><table class="tb"><tr><th>Метал, мм</th><th>Зазор</th><th>Дріт</th><th>Напруга, В</th><th>Дріт, м/хв</th><th>Газ, л/хв</th></tr>${MIGTAB.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</table></div></div>`;
+    h+=noteHtml(mi.note);
+  }else{const c=C[f];if(!c){$('info').innerHTML='';return}
+    h=`<div class="eyebrow">${c.eye}</div><h2>${c.title}</h2><p>${c.what}</p>`;
+    if(c.spec)h+=`<div class="spec">${c.spec}</div>`;
+    if(f==='k:cur')h+=`<div class="result">${S.cur} А · ${MODENAME[S.mode]}<br>${hint()}${duty()?'<br>'+duty():''}</div>`;
+    if(f==='h:rod'){const r=MMATAB.find(x=>x[0]===S.rod);h+=`<div class="result">Електрод ${String(S.rod).replace('.',',')} мм · метал ${r[1]} мм · струм ${r[2]}–${r[3]} А</div>`}
+    if(f==='k:trim')h+=`<div class="result">Зараз: ${S.trim>0?'+':''}${String(S.trim).replace('.',',')} · напруга на дисплеї ${volts().toFixed(1)} В${kind()!=='mig'?'<br>У режимі '+MODENAME[S.mode]+' ця ручка, найімовірніше, не діє':''}</div>`;
+    if(c.acts)h+=`<div class="acts">${c.acts.map(([a,t])=>`<button class="chip" data-act="${a}">${t}</button>`).join('')}</div>`;
+    h+=noteHtml(c.note);
+  }
+  $('info').innerHTML=h;
+}
+function setRowsFor(sc){return `<dl class="setrows">${sc.rows.map(([a,b])=>{const k=rowKey(a);const at=k?` data-hl="${k}" title="Показати на апараті"`:'';return `<dt${at}>${a}</dt><dd${at}>${b}</dd>`}).join('')}</dl>`}
+function renderScen(){const sc=SCEN.find(s=>s.id===S.scen);
+  $('scen').innerHTML=`<div class="eyebrow">Налаштування</div><h2>${sc.title}</h2>${setRowsFor(sc)}<div class="sub"><div class="glabel">Кроки</div><ol class="steps">${sc.steps.map(s=>`<li><span>${s}</span></li>`).join('')}</ol></div><div class="result">${sc.result}</div>${sc.warn?noteHtml(['warn',sc.warn]):''}`}
+function renderPicker(){
+  const pk=$('picker'),sl=pk.scrollLeft;
+  pk.innerHTML=[...GROUPS,toolGroup()].map(([g,items])=>`<div class="group"><div class="glabel">${g}</div><div class="chips">${items.map(([k,t])=>`<button class="chip" data-focus="${k}" aria-pressed="${S.focus===k}">${t}</button>`).join('')}</div></div>`).join('');
+  pk.scrollLeft=sl;
+  const sc=$('scenchips'),sl2=sc.scrollLeft;
+  sc.innerHTML=SCEN.map(s=>`<button class="chip" data-scen="${s.id}" aria-pressed="${S.scen===s.id}">${s.chip}</button>`).join('');sc.scrollLeft=sl2;
+}
+function renderTabs(){const d=S.tab==='dev';$('tab-dev').setAttribute('aria-selected',d);$('tab-how').setAttribute('aria-selected',!d);
+  $('pane-dev').hidden=!d;$('pane-how').hidden=d;$('picker').hidden=!d;$('scenwrap').hidden=d}
+function render(){renderFs();drawDevice();renderTabs();renderPicker();renderStatus();if(S.tab==='dev')renderInfo();else renderScen()}
+
+/* ---------- actions ---------- */
+const mobile=()=>matchMedia('(max-width:780px)').matches;
+function keepActive(){if(!mobile())return;const a=document.querySelector('.navbar .chip[aria-pressed="true"]');if(!a)return;const row=a.closest('.picker,#scenchips');if(!row)return;
+  const r=a.getBoundingClientRect(),rr=row.getBoundingClientRect();if(r.left<rr.left||r.right>rr.right-28)row.scrollTo({left:row.scrollLeft+r.left-rr.left-16,behavior:reduce?'auto':'smooth'})}
+function revealDev(){if(!mobile())return;const nb=$('navbar').getBoundingClientRect().height;const t=$('devwrap').getBoundingClientRect().top;
+  if(t<nb||t>innerHeight*0.5)scrollTo({top:scrollY+t-nb-8,behavior:reduce?'auto':'smooth'})}
+function focusOn(k,fromChip){S.focus=k;
+  if(k.startsWith('m:')){const id=k.slice(2);S.mode=id;S.power=true;S.heat=false;const m=MODES[MI[id]];if(m.pol)S.pol=m.pol;if(id==='tig')S.tpol='-';if(id==='mma')S.hpol='+';S.view='front'}
+  else if(C[k])S.view=C[k].v;
+  render();if(fromChip){keepActive();revealDev()}}
+function act(a){
+  if(a==='swap'){const k=kind();if(k==='mig')S.pol=S.pol==='+'?'-':'+';else if(k==='mma')S.hpol=S.hpol==='+'?'-':'+';else S.tpol=S.tpol==='+'?'-':'+'}
+  else if(a==='power'){S.power=!S.power;S.heat=false}
+  else if(a==='heat'){S.heat=!S.heat;S.power=true}
+  else if(a==='wire')S.wire=S.wire===0.8?0.6:0.8;
+  else if(a==='roll')S.roll=S.roll===0.8?0.6:0.8;
+  else if(a==='tip')S.tip=S.tip===0.8?0.6:0.8;
+  else if(a==='arm')S.arm=!S.arm;
+  else if(a==='rod'){const d=[1.6,2,2.5,3.2,4];S.rod=d[(d.indexOf(S.rod)+1)%d.length]}
+  else if(a==='valve')S.valve=!S.valve;
+  else if(a==='cur+'||a==='cur-'){S.cur=Math.min(160,Math.max(20,S.cur+(a==='cur+'?5:-5)));S.focus='k:cur'}
+  else if(a==='setup-short'){nextMode();return}
+  else if(a==='setup-hold'){S.inch=true;S.view='feed';render();setTimeout(()=>{S.inch=false;render()},1800);return}
+  render()}
+function nextMode(){if(!S.power)return;S.mode=MODES[(MI[S.mode]+1)%MODES.length].id;if(S.focus.startsWith('m:'))S.focus='m:'+S.mode;render()}
+function applyScen(id){const sc=SCEN.find(s=>s.id===id);S.scen=id;S.inch=false;S.trig=false;S.heat=false;S.hl=null;Object.assign(S,sc.set);render();keepActive();revealDev()}
+
+/* clicks on the device */
+const CLICKACT={'h:rod':'rod','g:valve':'valve','r:sw':'power','f:roll':'roll','t:tip':'tip','f:arm':'arm','f:spool':'wire','c:pol':'swap'};
+function pickClick(k,tipFn){
+  if(S.tab==='how'){if(CLICKACT[k])act(CLICKACT[k]);if(tipFn)tipFn();return}
+  S.focus=k;
+  if(CLICKACT[k]){act(CLICKACT[k]);return}
+  if(k==='l:modes'){S.focus='m:'+S.mode}
+  render()}
+svg.addEventListener('click',e=>{const h=e.target.closest('.hot');if(!h)return;
+  if(h.classList.contains('knobg')||h.dataset.setup||h.dataset.hold)return;
+  pickClick(h.dataset.pick,()=>showTip(h,e,true))});
+svg.addEventListener('keydown',e=>{if(e.key!=='Enter'&&e.key!==' ')return;const h=e.target.closest('.hot');if(!h||h.classList.contains('knobg')||h.dataset.setup||h.dataset.hold)return;e.preventDefault();h.dispatchEvent(new MouseEvent('click',{bubbles:true}))});
+svg.addEventListener('pointerdown',e=>{const h=e.target.closest('.knobg');if(h&&S.focus!==h.dataset.pick){S.focus=h.dataset.pick;renderPicker();renderInfo();drawDevice()}});
+
+/* SETUP: short = next mode, hold ≥550 ms = wire inching while held */
+let suT=null,suHeld=false,suDown=false;
+function setupStart(){if(suDown)return;suDown=true;suHeld=false;S.focus='b:setup';suT=setTimeout(()=>{suHeld=true;S.inch=true;render()},550)}
+function setupEnd(){if(!suDown)return;suDown=false;clearTimeout(suT);if(suHeld){S.inch=false;render()}else nextMode()}
+function setupCancel(){suDown=false;clearTimeout(suT);if(S.inch){S.inch=false;render()}}
+(function(){const b=svg.querySelector('[data-setup]');const start=setupStart,end=setupEnd;
+  b.addEventListener('pointerdown',e=>{e.preventDefault();b.setPointerCapture(e.pointerId);start()});
+  b.addEventListener('pointerup',end);b.addEventListener('pointercancel',setupCancel);
+  b.addEventListener('contextmenu',e=>e.preventDefault());
+  b.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&!e.repeat){e.preventDefault();start()}});
+  b.addEventListener('keyup',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();end()}});
+})();
+/* momentary holds: MIG trigger, electrode holder, TIG button */
+let holdOn=null;
+function holdStart(k){if(holdOn)return;holdOn=k;S.trig=true;S.focus=k;render()}
+function holdEnd(){if(!holdOn)return;holdOn=null;S.trig=false;render()}
+svg.querySelectorAll('[data-hold]').forEach(b=>{
+  const dn=()=>holdStart(b.dataset.pick),up=holdEnd;
+  b.addEventListener('pointerdown',e=>{e.preventDefault();b.setPointerCapture(e.pointerId);dn()});
+  ['pointerup','pointercancel'].forEach(t=>b.addEventListener(t,up));window.addEventListener('blur',up);
+  b.addEventListener('contextmenu',e=>e.preventDefault());
+  b.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&!e.repeat){e.preventDefault();dn()}});
+  b.addEventListener('keyup',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();up()}});
+});
+
+/* tooltips: name of every part + what it does on press */
+const tt=document.createElement('div');tt.id='tt';tt.hidden=true;tt.setAttribute('role','tooltip');document.body.appendChild(tt);
+const ACTHINT={power:'натисніть: увімкнути / вимкнути',roll:'натисніть: перевернути ролик',tip:'натисніть: змінити наконечник',arm:'натисніть: підняти / опустити',wire:'натисніть: змінити діаметр дроту',swap:'натисніть: перекинути полярність',rod:'натисніть: інший діаметр',valve:'натисніть: відкрити / закрити'};
+const HOLDHINT={trig:'тримайте: дріт, газ і дуга',strike:'тримайте: запалити дугу',tigbtn:'тримайте: струм на вольфрам'};
+function tipText(h){return tipFor({pick:h.dataset.pick,name:h.dataset.name,knob:h.classList.contains('knobg'),setup:!!h.dataset.setup,hold:h.dataset.hold,label:h.getAttribute('aria-label')})}
+function tipFor(d){const k=d.pick;
+  const name=d.name||(C[k]&&C[k].title)||d.label||'';
+  let hint='';
+  if(d.knob)hint=k==='k:cur'?`крутіть · зараз ${S.cur} А`:`крутіть · зараз ${S.trim>0?'+':''}${String(S.trim).replace('.',',')}`;
+  else if(d.setup)hint='натисніть: режим · тримайте: протяжка дроту';
+  else if(d.hold)hint=HOLDHINT[d.hold];
+  else if(CLICKACT[k])hint=ACTHINT[CLICKACT[k]];
+  else hint=S.tab==='dev'?'натисніть: опис праворуч':'';
+  return `${name}${hint?`<small>${hint}</small>`:''}`}
+let ttTimer=null,ttFor=null;
+function placeTip(x,y,above){tt.hidden=false;const r=tt.getBoundingClientRect();
+  let left=Math.min(innerWidth-r.width-8,Math.max(8,x+(above?-r.width/2:14)));let top=above?y-r.height-28:y+18;
+  if(top+r.height>innerHeight-8)top=y-r.height-14;if(top<8)top=y+24;tt.style.left=left+'px';tt.style.top=top+'px'}
+function showTip(h,e,brief){ttFor=h;tt.innerHTML=tipText(h);
+  if(e&&e.clientX!==undefined&&(e.clientX||e.clientY))placeTip(e.clientX,e.clientY,brief);else{const r=h.getBoundingClientRect();placeTip(r.left+r.width/2,r.top,true)}
+  clearTimeout(ttTimer);if(brief)ttTimer=setTimeout(hideTip,1800)}
+function hideTip(){tt.hidden=true;ttFor=null}
+svg.addEventListener('pointermove',e=>{if(e.pointerType==='touch')return;const h=e.target.closest('.hot');if(!h){if(ttFor&&!ttTimer)hideTip();return}
+  clearTimeout(ttTimer);ttTimer=null;if(h!==ttFor||h.classList.contains('knobg'))tt.innerHTML=tipText(h);ttFor=h;placeTip(e.clientX,e.clientY,false)});
+svg.addEventListener('pointerleave',e=>{if(e.pointerType!=='touch'&&!dragging)hideTip()});
+svg.addEventListener('pointerdown',e=>{if(e.pointerType!=='touch')return;const h=e.target.closest('.hot');if(h)showTip(h,e,true)});
+svg.addEventListener('focusin',e=>{const h=e.target.closest('.hot');if(h)showTip(h,null,false)});
+svg.addEventListener('focusout',hideTip);
+addEventListener('scroll',()=>{if(ttTimer)hideTip()},{passive:true});
+
+/* scenario rows highlight their part on the machine */
+function viewOf(k){if(!k)return null;if(C[k])return C[k].v;return 'front'}
+function rowKey(l){const k=kind();const opp=x=>x==='+'?'-':'+';
+  const mass=sk(SX[k==='mig'?opp(S.pol):opp(k==='mma'?S.hpol:S.tpol)]);
+  const M={'Режим':'l:modes','Струм':'k:cur','Проварювання':'k:trim','Кабель полярності':'c:pol','Маса':mass,'Дріт':'f:spool','Котушка':'f:spool','Ролик':'f:roll','Притиск':'f:tension','Наконечник':'t:tip',
+    'Тримач':sk(SX[S.hpol]),'TIG-пальник':sk(SX[S.tpol]),'Газ':k==='tig'?'g:valve':'r:gas','Вимикач':'r:sw','Розетка':'r:cord','Подовжувач':'r:cord','Електрод':'h:rod','Індикатор':'l:heat','Вентилятор':'r:fan'};
+  return M[l]||null}
+function highlight(k,reveal){S.hl=k;const v=viewOf(k);if(v)S.view=v;drawDevice();
+  document.querySelectorAll('#scen [data-hl]').forEach(x=>x.classList.toggle('on',x.dataset.hl===k));if(reveal)revealDev()}
+$('scen').addEventListener('mouseover',e=>{const r=e.target.closest('[data-hl]');if(r&&S.hl!==r.dataset.hl)highlight(r.dataset.hl)});
+$('scen').addEventListener('mouseleave',()=>{if(S.hl){S.hl=null;drawDevice();document.querySelectorAll('#scen [data-hl]').forEach(x=>x.classList.remove('on'))}});
+$('scen').addEventListener('click',e=>{const r=e.target.closest('[data-hl]');if(r)highlight(r.dataset.hl,true)});
+
+document.addEventListener('click',e=>{
+  const fm=e.target.closest('[data-fsmode]');if(fm){setModeOnly(fm.dataset.fsmode);return}
+  if(e.target.closest('[data-fsclose]')){if(V3)V3.fs(false);return}
+  if(e.target.closest('#fsopen')){if(V3)V3.fs(true);return}
+  const v=e.target.closest('[data-view]');if(v){S.view=v.dataset.view;drawDevice();if(V3&&V3.on)V3.goView(S.view);return}
+  const fc=e.target.closest('[data-focus]');if(fc){focusOn(fc.dataset.focus,true);return}
+  const sc=e.target.closest('[data-scen]');if(sc){applyScen(sc.dataset.scen);return}
+  const a=e.target.closest('[data-act]');if(a){act(a.dataset.act);return}
+});
+$('tab-dev').addEventListener('click',()=>{S.tab='dev';S.hl=null;render()});
+$('tab-how').addEventListener('click',()=>{S.tab='how';applyScen(S.scen)});
+$('gloss').innerHTML=GLOSS.map(([a,b])=>`<dt>${a}</dt><dd>${b}</dd>`).join('');
+const st=document.createElement('style');st.textContent='@keyframes spin{to{transform:rotate(360deg)}}';document.head.appendChild(st);
+render();
+window.__S=S;
+/* ================= 3D view (three.js r128, loaded on demand) ================= */
+(function(){
+const box=$('dev3d'),cv=$('cv3d'),msg=$('load3d');
+const api={on:false};V3=api;
+let T,ren,scene,cam,ray,ready=false,initP=null,raf=0,lastT=0,needR=true;
+const D2R=Math.PI/180,MM=0.01,ZF=2.11,ZR=-2.11;
+const FB='"Onest",system-ui,sans-serif',FM='"JetBrains Mono",ui-monospace,monospace',FD='"Unbounded","Arial Black",sans-serif';
+let V,fp,rp;
+const M={},picks=[],P={},TL={};
+let lastKind=null,hover=null,doorOpen=false,doorA=0,armA=0,lastView=null,lastScreen='',cableKey='',screenTex,screenCv,arcLight,arcGlow,sparks,spoolG,driveRoll,fanG,rocker,setupBtn,doorPivot,armPivot,gasHose,cablesG,labels={};
+const orb={tgt:null,th:.45,ph:1.25,r:6.8};let tween=null;
+const VIEWS={front:{t:[0.25,1.4,0.9],th:.42,ph:1.27,rad:2.2},rear:{t:[0,1.5,-0.6],th:Math.PI+.4,ph:1.22,rad:2.1},
+  feed:{t:[-0.4,1.4,-0.1],th:-Math.PI/2+.32,ph:1.32,rad:2.26},torch:{t:[2.5,0.8,3.0],th:.12,ph:1.2,rad:1.26},
+  all:{t:[1.0,0.95,1.3],th:.6,ph:1.18,rad:3.0}};
+const ARC=[3.3,0.07,3.2];
+
+function rr(x,a,b,w,h,r){x.beginPath();x.moveTo(a+r,b);x.arcTo(a+w,b,a+w,b+h,r);x.arcTo(a+w,b+h,a,b+h,r);x.arcTo(a,b+h,a,b,r);x.arcTo(a,b,a+w,b,r);x.closePath()}
+function canvas(wmm,hmm,k){const c=document.createElement('canvas');c.width=Math.round(wmm*k);c.height=Math.round(hmm*k);const x=c.getContext('2d');x.scale(k,k);return[c,x]}
+function tex(c){const t=new T.CanvasTexture(c);t.anisotropy=Math.min(8,ren.capabilities.getMaxAnisotropy());return t}
+function txt(x,s,px,py,font,color,align){x.font=font;x.fillStyle=color;x.textAlign=align||'center';x.textBaseline='middle';x.fillText(s,px,py)}
+
+/* ---------- geometry helpers ---------- */
+function mesh(g,m){return new T.Mesh(g,m)}
+function boxM(w,h,d,m,x,y,z){const o=mesh(new T.BoxGeometry(w,h,d),m);o.position.set(x||0,y||0,z||0);return o}
+function cylBetween(a,b,r1,r2,m,seg){const d=new T.Vector3().subVectors(b,a),L=d.length();const o=mesh(new T.CylinderGeometry(r2,r1,L,seg||24),m);
+  o.position.copy(a).addScaledVector(d,.5);o.quaternion.setFromUnitVectors(V(0,1,0),d.normalize());return o}
+function cylZ(r,len,m,pos,seg){const o=mesh(new T.CylinderGeometry(r,r,len,seg||32),m);o.rotation.x=Math.PI/2;o.position.copy(pos);return o}
+function tube(pts,r,m){const c=new T.CatmullRomCurve3(pts,false,'catmullrom',.5);return mesh(new T.TubeGeometry(c,80,r,10,false),m)}
+function hitPlane(w,h,pos,rotY){const o=mesh(new T.PlaneGeometry(w,h),new T.MeshBasicMaterial({color:0xff6a1f,transparent:true,opacity:0,depthWrite:false}));
+  o.userData.hitPlane=true;o.position.copy(pos);if(rotY)o.rotation.y=rotY;return o}
+function hitCyl(a,b,r){const o=cylBetween(a,b,r,r,new T.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}),10);o.userData.ghost=true;return o}
+function mark(obj,pick,ud){obj.userData.pick=pick;Object.assign(obj.userData,ud||{});
+  obj.traverse(o=>{if(o.isMesh&&!o.userData.shared){o.material=o.material.clone();o.userData.base=o.material.emissive?o.material.emissive.getHex():0}});
+  picks.push(obj);return obj}
+function label(t){const c=document.createElement('canvas');c.width=160;c.height=64;const tx=new T.CanvasTexture(c);
+  const sp=new T.Sprite(new T.SpriteMaterial({map:tx,transparent:true}));sp.scale.set(.42,.17,1);sp.userData.noHit=true;
+  sp.userData.set=s=>{if(sp.userData.t===s)return;sp.userData.t=s;const x=c.getContext('2d');x.clearRect(0,0,160,64);x.fillStyle='rgba(18,18,20,.88)';rr(x,6,8,148,48,12);x.fill();
+    txt(x,s,80,33,'700 28px '+FM,'#ffd9a0');tx.needsUpdate=true};sp.userData.set(t);return sp}
+
+/* ---------- materials ---------- */
+function mats(){const std=(c,r,m,ex)=>new T.MeshStandardMaterial(Object.assign({color:c,roughness:r,metalness:m},ex||{}));
+  Object.assign(M,{body:std(0x202226,.55,.12),frame:std(0x111214,.7,.05),inner:std(0x4a4e55,.7,.2),knob:std(0x0d0e0f,.45,.15),metal:std(0xb3b9c0,.28,.45),
+    brass:std(0xd1aa52,.32,.45),brassDk:std(0x6e5520,.5,.3),red:std(0xd62a1c,.45,.05),setup:std(0xf05a22,.35,.05,{emissive:0x501400}),
+    cable:std(0x0c0c0d,.72,0),rubber:std(0x17181a,.78,0),copper:std(0xc98a48,.32,.45),nozzle:std(0xd4d8dd,.22,.5),wire:std(0xc58d55,.35,.45),
+    spool:std(0x1b1b1d,.6,.1),plate:std(0x7a7f86,.45,.45),cup:std(0xe0a982,.75,0),tung:std(0xa9b2bc,.28,.55),roll:std(0xcbd0d5,.28,.5),
+    feed:std(0x8d9196,.45,.35),rod:std(0x9a978c,.85,0),bare:std(0xc9ccd0,.3,.5),grey:std(0x5c6168,.5,.3),dark:std(0x09090a,.8,0),
+    bladeM:std(0x3a3d42,.6,.1,{side:T.DoubleSide})})}
+
+/* ---------- canvas textures ---------- */
+function scale(x,cx,cy,K,lbls){const a0=-135,a1=135;x.strokeStyle='#e6e4df';x.lineWidth=1.1;x.setLineDash([.6,1.2]);x.beginPath();
+  x.arc(cx,cy,20,(a0-90)*D2R,(a1-90)*D2R);x.stroke();x.setLineDash([]);
+  lbls.forEach(([v,s])=>{const a=(a0+(v-K.min)/(K.max-K.min)*(a1-a0))*D2R;x.lineWidth=.6;x.beginPath();x.moveTo(cx+17*Math.sin(a),cy-17*Math.cos(a));x.lineTo(cx+21.5*Math.sin(a),cy-21.5*Math.cos(a));x.stroke();
+    txt(x,s,cx+27*Math.sin(a),cy-27*Math.cos(a)+.3,'600 4.4px '+FM,'#e6e4df')})}
+function panelTex(){const[c,x]=canvas(192,290,4);
+  x.fillStyle='#141517';x.fillRect(0,0,192,290);
+  rr(x,10,12,172,148,6);x.fillStyle='#26282c';x.fill();x.strokeStyle='#42464d';x.lineWidth=.6;x.stroke();
+  scale(x,48,112,KT,[[-2.5,'−'],[-2,'-2'],[-1,'-1'],[0,'0'],[1,'+1'],[2,'+2'],[2.5,'+']]);
+  scale(x,144,112,KC,[[20,'MIN'],[62,'1.6'],[80,'2'],[95,'2.5'],[125,'3.2'],[145,'4'],[160,'MAX']]);
+  txt(x,'SET UP',96,103,'600 4.2px '+FB,'#e6e4df');
+  txt(x,'WELDING MACHINE',96,124,'600 4.2px '+FB,'#e6e4df');x.fillStyle='#d93a22';x.fillRect(74,127.5,44,.7);
+  txt(x,'MG-16DX',96,140,'700 10px '+FD,'#e6e4df');
+  rr(x,10,164,172,120,6);x.fillStyle='#0e0f10';x.fill();
+  for(let y=170;y<=278;y+=9){rr(x,14,y,164,4.6,2.3);x.fillStyle='#1d1f22';x.fill()}
+  [[50,215,24],[110,232,16],[152,232,16],[172,178,8]].forEach(([a,b,r])=>{x.beginPath();x.arc(a,b,r,0,7);x.fillStyle='#08080a';x.fill()});
+  txt(x,'+',110,211,'700 10px '+FB,'#e6e4df');txt(x,'−',152,211,'700 10px '+FB,'#e6e4df');
+  return tex(c)}
+function rearTex(){const[c,x]=canvas(192,290,4);
+  x.fillStyle='#141517';x.fillRect(0,0,192,290);rr(x,12,12,168,266,6);x.fillStyle='#26282c';x.fill();
+  txt(x,'ON',40,17,'600 4.5px '+FM,'#e6e4df');txt(x,'OFF',40,64,'600 4.5px '+FM,'#e6e4df');
+  x.strokeStyle='#e6e4df';x.lineWidth=.5;x.strokeRect(30,20,20,4);
+  txt(x,'GAS INPUT',140,40,'600 4.5px '+FM,'#e6e4df');
+  rr(x,58,106,44,11,1);x.stroke();txt(x,'230V (±10%) 50HZ',80,111.5,'600 3.8px '+FM,'#e6e4df');
+  rr(x,108,78,66,108,1.5);x.fillStyle='#cfd2d6';x.fill();
+  ['MODEL: MG-16DX','EN 60974-6','MIG 20A/12V–160A/22V','MMA 20A/21V–160A/26.4V','X    50%  33%  100%','I2  160A 160A 135A','           125A','U0 = 55V  U1 = 230V','I1max 28A','I1eff 22.4A','IP21S'].forEach((s,i)=>txt(x,s,112,86+i*8.6,'600 4px '+FM,'#1b1c1e','left'));
+  rr(x,108,190,66,9,1);x.fillStyle='#e8551e';x.fill();txt(x,'⚠ УВАГА!',141,194.7,'700 4.4px '+FB,'#fff');
+  x.fillStyle='#ececec';x.fillRect(108,252,66,12);x.fillStyle='#111';for(let i=0;i<40;i++)if((i*7)%3)x.fillRect(110+i*1.55,253.5,.9,9);
+  x.beginPath();x.arc(60,215,44,0,7);x.fillStyle='#0b0b0c';x.fill();
+  return tex(c)}
+function sideTex(door){const w=386,h=270;const[c,x]=canvas(w,h,2);x.fillStyle='#202226';x.fillRect(0,0,w,h);
+  if(!door){for(let i=0;i<11;i++){rr(x,26,70+i*12,90,5,2.5);x.fillStyle='#0d0e10';x.fill()}
+    txt(x,'DNIPRO-M',300,62,'700 30px '+FD,'#d93a22');txt(x,'WELDING MACHINE',318,206,'600 7px '+FB,'#e6e4df');x.fillStyle='#d93a22';x.fillRect(282,212,72,1.2);txt(x,'MG-16DX',318,226,'700 14px '+FD,'#e6e4df')}
+  else{txt(x,'DNIPRO-M',96,62,'700 30px '+FD,'#d93a22');txt(x,'WELDING MACHINE',76,206,'600 7px '+FB,'#e6e4df');x.fillStyle='#d93a22';x.fillRect(40,212,72,1.2);txt(x,'MG-16DX',76,226,'700 14px '+FD,'#e6e4df');
+    x.strokeStyle='#33363b';x.lineWidth=1;rr(x,4,4,w-8,h-8,6);x.stroke()}
+  return tex(c)}
+function draw7(x,x0,y0,s,n,w,h,t,step){const ch=[];for(const c of s){if(c==='.'&&ch.length)ch[ch.length-1].p=true;else ch.push({c,p:false})}
+  while(ch.length<n)ch.unshift({c:' ',p:false});ch.slice(-n).forEach((d,i)=>{const X=x0+i*step,hl=w-t-1,vl=h/2-t/2-1;
+    const sg={a:['h',X+t/2+.5,y0,hl],g:['h',X+t/2+.5,y0+h/2-t/2,hl],d:['h',X+t/2+.5,y0+h-t,hl],f:['v',X,y0+t/2+.5,vl],b:['v',X+w-t,y0+t/2+.5,vl],e:['v',X,y0+h/2+.5,vl],c:['v',X+w-t,y0+h/2+.5,vl]};
+    for(const k in sg){const[o,a,b,L]=sg[k],on=(SEGS[d.c]||'').includes(k);x.fillStyle=on?'#ff5030':'rgba(255,74,42,.09)';x.beginPath();
+      if(o==='h'){x.moveTo(a,b+t/2);x.lineTo(a+t/2,b);x.lineTo(a+L-t/2,b);x.lineTo(a+L,b+t/2);x.lineTo(a+L-t/2,b+t);x.lineTo(a+t/2,b+t)}
+      else{x.moveTo(a+t/2,b);x.lineTo(a+t,b+t/2);x.lineTo(a+t,b+L-t/2);x.lineTo(a+t/2,b+L);x.lineTo(a,b+L-t/2);x.lineTo(a,b+t/2)}x.closePath();x.fill()}
+    x.fillStyle=d.p?'#ff5030':'rgba(255,74,42,.09)';x.fillRect(X+w+.6,y0+h-t,t,t)})}
+function drawScreen(){const x=screenCv.getContext('2d');x.setTransform(4,0,0,4,0,0);const on=S.power;
+  x.fillStyle='#26282c';x.fillRect(0,0,164,60);
+  x.fillStyle=on&&S.heat?'#ffcb2a':'#5d6066';x.fillRect(4.6,6,2.8,8);x.beginPath();x.arc(6,15.5,2.6,0,7);x.fill();
+  x.fillStyle=on?'#ff7a2a':'#5d6066';x.beginPath();x.moveTo(7.5,21);x.lineTo(3.5,28);x.lineTo(6.3,28);x.lineTo(5,34);x.lineTo(9,26.5);x.lineTo(6.3,26.5);x.closePath();x.fill();
+  [['V',16,on?volts().toFixed(1):''],['A',90,on?String(S.cur):'']].forEach(([l,x0,v])=>{txt(x,l,x0+29,4.6,'700 4.6px '+FM,'#e6e4df');
+    rr(x,x0,8,58,27,2);x.fillStyle='#140606';x.fill();x.strokeStyle='#4a4e55';x.lineWidth=.5;x.stroke();draw7(x,x0+6,12.5,v,3,11,18,2.4,16)});
+  MODES.forEach((m,i)=>{const cx=22+i*30,a=on&&S.mode===m.id;rr(x,cx-13,41,26,15,1.5);x.fillStyle=a?'#ff7a2a':'#2b2d31';x.fill();x.strokeStyle=a?'#ff7a2a':'#8e9198';x.lineWidth=.5;x.stroke();
+    const col=a?'#1b0700':'#9a9da3';if(m.l2){txt(x,m.l1,cx,45.8,'700 4.2px '+FM,col);txt(x,m.l2,cx,51.6,'700 3.8px '+FM,col)}else txt(x,m.l1,cx,48.6,'700 4.4px '+FM,col)});
+  screenTex.needsUpdate=true}
+function blobTex(){const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d');const g=x.createRadialGradient(64,64,4,64,64,64);
+  g.addColorStop(0,'rgba(0,0,0,.55)');g.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=g;x.fillRect(0,0,128,128);return new T.CanvasTexture(c)}
+function glowTex(){const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d');const g=x.createRadialGradient(64,64,0,64,64,64);
+  g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(.18,'rgba(220,240,255,.95)');g.addColorStop(.45,'rgba(140,190,255,.35)');g.addColorStop(1,'rgba(120,170,255,0)');x.fillStyle=g;x.fillRect(0,0,128,128);return new T.CanvasTexture(c)}
+
+/* ---------- build ---------- */
+function build(){
+  scene.add(new T.HemisphereLight(0xffffff,0x404448,.8));
+  const d1=new T.DirectionalLight(0xffffff,.85);d1.position.set(5,8,7);scene.add(d1);
+  const d2=new T.DirectionalLight(0xdfe6ff,.4);d2.position.set(-7,4,-5);scene.add(d2);
+  scene.add(new T.AmbientLight(0xffffff,.12));
+  const blob=mesh(new T.PlaneGeometry(1,1),new T.MeshBasicMaterial({map:blobTex(),transparent:true,depthWrite:false}));blob.rotation.x=-Math.PI/2;blob.scale.set(3.6,6,1);blob.position.y=.002;blob.userData.noHit=true;scene.add(blob);
+
+  /* body */
+  const g=new T.Group();scene.add(g);
+  [ZF-.09,ZR+.09].forEach(z=>g.add(boxM(1.92,2.9,.18,M.frame,0,1.45,z)));
+  const core=mesh(new T.BoxGeometry(1.0,2.7,3.86),[M.body,M.inner,M.body,M.body,M.body,M.body]);core.position.set(.4,1.45,0);g.add(core);
+  g.add(boxM(1.84,.04,3.86,M.body,0,2.82,0));g.add(boxM(1.84,.04,3.86,M.inner,0,.12,0));
+  const sideR=mesh(new T.PlaneGeometry(3.86,2.7),new T.MeshStandardMaterial({map:sideTex(false),roughness:.6,metalness:.1}));sideR.rotation.y=Math.PI/2;sideR.position.set(.902,1.45,0);g.add(sideR);
+  [-.95,.95].forEach(z=>g.add(boxM(.34,.3,.22,M.frame,0,2.99,z)));g.add(boxM(.36,.16,2.24,M.frame,0,3.2,0));
+  const pf=mesh(new T.PlaneGeometry(1.92,2.9),new T.MeshStandardMaterial({map:panelTex(),roughness:.65,metalness:.05}));pf.position.set(0,1.45,ZF+.002);g.add(pf);
+  const pr=mesh(new T.PlaneGeometry(1.92,2.9),new T.MeshStandardMaterial({map:rearTex(),roughness:.65,metalness:.05}));pr.position.set(0,1.45,ZR-.002);pr.rotation.y=Math.PI;g.add(pr);
+
+  /* screen with displays and mode indicators */
+  screenCv=document.createElement('canvas');screenCv.width=656;screenCv.height=240;screenTex=tex(screenCv);
+  const sc=mesh(new T.PlaneGeometry(1.64,.6),new T.MeshBasicMaterial({map:screenTex}));sc.position.copy(fp(96,46,.004));g.add(sc);
+  [['l:heat',20,28,10,13],['l:power',20,44,10,13],['d:v',59,36,62,32],['d:a',133,36,62,32],['l:modes',96,65,152,18]].forEach(([k,x,y,w,h])=>{
+    const hp=hitPlane(w*MM,h*MM,fp(x,y,.008));scene.add(hp);mark(hp,k)});
+
+  /* knobs */
+  [['k:cur',144,KC],['k:trim',48,KT]].forEach(([k,x,K])=>{const grp=new T.Group();grp.position.copy(fp(x,112,0));
+    grp.add(cylZ(.15,.03,M.frame,V(0,0,.015),40));
+    const inner=new T.Group();grp.add(inner);
+    inner.add(cylZ(.13,.15,M.knob,V(0,0,.1),36));
+    for(let i=0;i<24;i++){const a=i/24*Math.PI*2;const r=boxM(.012,.012,.13,M.knob,Math.cos(a)*.132,Math.sin(a)*.132,.1);inner.add(r)}
+    inner.add(cylZ(.105,.02,M.metal,V(0,0,.185),40));
+    inner.add(boxM(.016,.075,.012,new T.MeshBasicMaterial({color:0xf2f0ea}),0,.06,.2));
+    const kh=mesh(new T.CircleGeometry(.24,32),new T.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}));kh.position.z=.21;kh.userData.ghost=true;grp.add(kh);
+    grp.userData.inner=inner;grp.userData.K=K;scene.add(grp);mark(grp,k);P[k]=grp});
+
+  /* SETUP */
+  setupBtn=new T.Group();setupBtn.position.copy(fp(96,92,0));
+  setupBtn.add(cylZ(.095,.02,M.frame,V(0,0,.01),32));
+  const cap=cylZ(.07,.05,M.setup,V(0,0,.04),32);setupBtn.add(cap);
+  const [ic,ix]=canvas(32,32,4);ix.strokeStyle='#fff';ix.lineWidth=2.2;ix.lineCap='round';ix.beginPath();ix.arc(16,16,8,-2.6,-.2);ix.stroke();ix.beginPath();ix.arc(16,16,8,.55,2.95);ix.stroke();
+  ix.fillStyle='#fff';ix.beginPath();ix.moveTo(25.5,11);ix.lineTo(24,17);ix.lineTo(19.5,13.5);ix.fill();ix.beginPath();ix.moveTo(6.5,21);ix.lineTo(8,15);ix.lineTo(12.5,18.5);ix.fill();
+  const icp=mesh(new T.CircleGeometry(.065,32),new T.MeshBasicMaterial({map:new T.CanvasTexture(ic),transparent:true}));icp.position.z=.0655;icp.userData.shared=true;setupBtn.add(icp);
+  setupBtn.userData.cap=cap;scene.add(setupBtn);mark(setupBtn,'b:setup');
+
+  /* front connectors */
+  const eu=new T.Group();eu.position.copy(fp(50,215,0));
+  eu.add(cylZ(.21,.05,M.frame,V(0,0,.025),40));eu.add(cylZ(.15,.09,M.brass,V(0,0,.07),40));eu.add(cylZ(.09,.095,M.brassDk,V(0,0,.072),32));
+  [[0,.035,.03],[.05,-.035,.016],[-.05,-.035,.016]].forEach(([a,b,r])=>eu.add(cylZ(r,.1,M.dark,V(a,b,.075),16)));
+  scene.add(eu);mark(eu,'s:euro');
+  [['s:plus',110],['s:minus',152]].forEach(([k,x])=>{const s=new T.Group();s.position.copy(fp(x,232,0));
+    s.add(cylZ(.14,.06,M.frame,V(0,0,.03),36));s.add(cylZ(.075,.065,M.brass,V(0,0,.035),28));s.add(cylZ(.04,.07,M.dark,V(0,0,.04),20));scene.add(s);mark(s,k);P[k]=s});
+  scene.add(cylZ(.075,.06,M.rubber,fp(172,178,.03),24));
+
+  /* rear */
+  const rk=new T.Group();rk.position.copy(rp(40,40,0));rk.add(boxM(.34,.4,.06,M.dark,0,0,-.03));
+  rocker=new T.Group();rocker.position.z=-.05;rk.add(rocker);rocker.add(boxM(.26,.32,.06,M.red,0,0,0));
+  const [rc,rx]=canvas(26,32,6);rx.fillStyle='#fff';txt(rx,'I',13,8,'700 7px '+FB,'#fff');txt(rx,'O',13,24,'700 7px '+FB,'#fff');
+  const rl=mesh(new T.PlaneGeometry(.26,.32),new T.MeshBasicMaterial({map:new T.CanvasTexture(rc),transparent:true}));rl.rotation.y=Math.PI;rl.position.z=-.031;rl.userData.shared=true;rocker.add(rl);
+  scene.add(rk);mark(rk,'r:sw');
+  const gf=new T.Group();gf.position.copy(rp(100,40,0));gf.add(cylZ(.075,.05,M.brass,V(0,0,-.025),6));gf.add(cylZ(.042,.16,M.brass,V(0,0,-.1),20));gf.add(cylZ(.018,.17,M.dark,V(0,0,-.1),12));
+  scene.add(gf);mark(gf,'r:gas');
+  const cd=new T.Group();cd.add(cylZ(.1,.08,M.rubber,rp(40,112,.04),24));
+  const c0=rp(40,112,.05);cd.add(tube([c0,V(c0.x,c0.y,c0.z-.25),V(c0.x+.2,.5,ZR-.9),V(.7,.05,ZR-1.8),V(1.4,.05,ZR-3.2)],.05,M.cable));scene.add(cd);mark(cd,'r:cord');
+  fanG=new T.Group();const fan=new T.Group();fan.position.copy(rp(60,215,0));fan.add(fanG);fanG.position.z=.04;
+  for(let i=0;i<5;i++){const b=mesh(new T.PlaneGeometry(.14,.34),M.bladeM);b.userData.shared=true;b.position.set(Math.sin(i*1.2566)*.2,Math.cos(i*1.2566)*.2,0);b.rotation.z=-i*1.2566;b.rotation.y=.5;fanG.add(b)}
+  fanG.position.z=-.03;fanG.add(cylZ(.07,.04,M.grey,V(0,0,0),20));
+  for(let r=.1;r<=.43;r+=.075){const t=mesh(new T.TorusGeometry(r,.007,6,48),M.metal);t.position.z=-.07;fan.add(t)}
+  fan.add(boxM(.86,.014,.014,M.metal,0,0,-.07));fan.add(boxM(.014,.86,.014,M.metal,0,0,-.07));
+  const fh=hitPlane(.9,.9,V(0,0,-.075),Math.PI);fan.add(fh);scene.add(fan);mark(fan,'r:fan');
+  gasHose=new T.Group();const g0=rp(100,40,.18);gasHose.add(tube([g0,V(g0.x,g0.y+.05,g0.z-.35),V(g0.x-.2,1.2,ZR-1.3),V(-.6,.04,ZR-2.4),V(-1.6,.04,ZR-3.4)],.028,M.cable));scene.add(gasHose);
+
+  /* feed compartment (left side, -x) */
+  const cmp=new T.Group();scene.add(cmp);
+  spoolG=new T.Group();spoolG.position.set(-.5,1.42,-.85);cmp.add(spoolG);
+  const ax=(r,len,m,x,seg)=>{const o=mesh(new T.CylinderGeometry(r,r,len,seg||48),m);o.rotation.z=Math.PI/2;o.position.x=x||0;return o};
+  spoolG.add(ax(1.0,.03,M.spool,-.27));spoolG.add(ax(1.0,.03,M.spool,.27));spoolG.add(ax(.86,.5,M.wire,0));spoolG.add(ax(.36,.56,M.spool,0));spoolG.add(ax(.12,.62,M.grey,0,6));
+  for(let i=0;i<6;i++){const s=boxM(.02,.06,.8,M.spool,-.29,0,0);s.rotation.x=i*Math.PI/6;spoolG.add(s)}
+  const spHit=new T.Group();spHit.add(hitCyl(V(-.81,1.42,-.85),V(-.17,1.42,-.85),1.0));cmp.add(spHit);mark(spHit,'f:spool');
+  labels.spool=label('0.8');labels.spool.position.set(-.88,1.42,-.85);cmp.add(labels.spool);
+  cmp.add(boxM(.03,1.0,1.45,M.feed,-.115,1.4,1.12));
+  driveRoll=new T.Group();driveRoll.position.set(-.2,1.3,1.15);driveRoll.add(ax(.17,.1,M.roll,0));driveRoll.add(ax(.05,.14,M.grey,0,6));
+  const rollG=new T.Group();rollG.add(driveRoll);cmp.add(rollG);mark(rollG,'f:roll');
+  labels.roll=label('0.8');labels.roll.position.set(-.34,.98,1.15);cmp.add(labels.roll);
+  const armG=new T.Group();armPivot=new T.Group();armPivot.position.set(-.21,1.58,.62);armG.add(armPivot);
+  armPivot.add(boxM(.1,.09,.9,M.dark,0,.02,.43));const pr2=ax(.11,.08,M.roll,0);pr2.position.set(0,0,.53);armPivot.add(pr2);armPivot.add(ax(.04,.14,M.grey,0,12));
+  cmp.add(armG);mark(armG,'f:arm');
+  const tn=new T.Group();tn.add(cylBetween(V(-.21,1.5,1.5),V(-.21,1.86,1.5),.022,.022,M.metal));tn.add(cylBetween(V(-.21,1.84,1.5),V(-.21,2.02,1.5),.075,.075,M.dark,12));cmp.add(tn);mark(tn,'f:tension');
+  const gd=new T.Group();gd.add(cylBetween(V(-.2,1.3,.62),V(-.2,1.3,.86),.035,.035,M.brass));gd.add(cylBetween(V(-.2,1.3,1.42),V(-.2,1.3,1.92),.045,.045,M.brass));cmp.add(gd);mark(gd,'f:guide');
+  P.wire=tube([V(-.45,.57,-.85),V(-.35,.62,-.25),V(-.24,1.05,.35),V(-.2,1.3,.62),V(-.2,1.3,1.15),V(-.2,1.3,1.92)],.012,M.wire);cmp.add(P.wire);
+  /* door, hinged at the top */
+  doorPivot=new T.Group();doorPivot.position.set(-.92,2.8,0);const dg=new T.Group();doorPivot.add(dg);
+  dg.add(boxM(.02,2.68,3.86,M.body,-.01,-1.34,0));
+  const dt=mesh(new T.PlaneGeometry(3.86,2.68),new T.MeshStandardMaterial({map:sideTex(true),roughness:.6,metalness:.1}));dt.rotation.y=-Math.PI/2;dt.position.set(-.021,-1.34,0);dg.add(dt);
+  dg.add(boxM(.05,.22,.26,M.dark,-.04,-2.52,0));dg.add(boxM(.03,.08,.1,M.grey,-.07,-2.5,0));
+  scene.add(doorPivot);mark(dg,'f:door');
+
+  /* work bench: plate + mass clamp */
+  scene.add(boxM(1.5,.06,.9,M.plate,3.1,.03,3.2));
+  const cl=new T.Group();cl.position.set(2.47,.08,3.57);cl.rotation.y=.5;
+  cl.add(boxM(.42,.04,.12,M.nozzle,-.18,.05,0));cl.add(boxM(.42,.04,.12,M.nozzle,-.18,-.04,0));cl.add(boxM(.12,.03,.14,M.copper,.04,.02,0));
+  scene.add(cl);P.clampEnd=V(2.15,.12,3.75);
+
+  buildTools();
+  cablesG=new T.Group();scene.add(cablesG);
+  /* arc */
+  arcGlow=new T.Sprite(new T.SpriteMaterial({map:glowTex(),blending:T.AdditiveBlending,depthWrite:false,transparent:true}));arcGlow.scale.set(.7,.7,1);arcGlow.userData.noHit=true;scene.add(arcGlow);
+  arcLight=new T.PointLight(0xbfe0ff,0,5);scene.add(arcLight);
+  const sg=new T.BufferGeometry();sg.setAttribute('position',new T.Float32BufferAttribute(new Float32Array(60*3),3));
+  sparks=new T.Points(sg,new T.PointsMaterial({color:0xffcf70,size:.035,transparent:true}));sparks.userData.noHit=true;scene.add(sparks);
+}
+
+/* ---------- tools in hand ---------- */
+function place(grp,arcLocal){grp.rotation.set(0,Math.PI-.35,0);grp.updateMatrix();const q=new T.Quaternion().setFromEuler(grp.rotation);
+  grp.position.copy(V(...ARC)).sub(arcLocal.clone().applyQuaternion(q));grp.updateMatrixWorld(true)}
+function decal(s,w,h){const[c,x]=canvas(w*100,h*100,8);txt(x,s,w*50,h*50,'700 '+(h*62)+'px '+FD,'#d93a22');const o=mesh(new T.PlaneGeometry(w,h),new T.MeshBasicMaterial({map:new T.CanvasTexture(c),transparent:true}));o.userData.shared=true;o.userData.noHit=true;return o}
+function buildTools(){
+  /* MIG torch */
+  const mig=new T.Group();scene.add(mig);TL.mig=mig;
+  const body=new T.Group();mig.add(body);
+  body.add(cylBetween(V(.55,0,0),V(1.0,0,0),.12,.15,M.rubber));body.add(cylBetween(V(1.0,0,0),V(1.6,0,0),.15,.13,M.rubber));
+  for(let i=0;i<4;i++)body.add(cylBetween(V(1.25+i*.08,0,0),V(1.28+i*.08,0,0),.152,.152,M.dark));
+  for(let i=0;i<7;i++){const t=mesh(new T.TorusGeometry(.1,.028,8,20),M.rubber);t.rotation.y=Math.PI/2;t.position.x=1.62+i*.055;body.add(t)}
+  body.add(cylBetween(V(.42,0,0),V(.58,0,0),.07,.11,M.rubber));
+  const P0=V(.45,0,0),P1=V(.06,0,0),P2=V(0,-.42,0);const neck=new T.QuadraticBezierCurve3(P0,P1,P2);body.add(mesh(new T.TubeGeometry(neck,30,.045,10,false),M.rubber));
+  const dd=new T.Vector3().subVectors(P2,P1).normalize();const at=k=>P2.clone().addScaledVector(dd,k);
+  const dc=decal('DNIPRO-M',.42,.09);dc.position.set(1.0,.04,-.156);dc.rotation.y=Math.PI;body.add(dc);
+  const nz=new T.Group();nz.add(cylBetween(at(-.02),at(.3),.088,.072,M.nozzle,32));mig.add(nz);mark(nz,'t:nozzle');
+  const tp=new T.Group();tp.add(cylBetween(at(.29),at(.37),.026,.022,M.copper,16));tp.add(cylBetween(at(.37),at(.44),.009,.009,M.wire,8));tp.add(hitCyl(at(.28),at(.46),.06));mig.add(tp);mark(tp,'t:tip');
+  labels.tip=label('0.8');labels.tip.position.copy(at(.36)).add(V(-.2,.04,-.1));mig.add(labels.tip);
+  const tg=new T.Group();const trig=boxM(.17,.13,.09,M.red,.82,-.15,0);tg.add(trig);tg.add(Object.assign(boxM(.3,.28,.2,new T.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}),.85,-.17,0),{}));
+  tg.children[1].userData.ghost=true;mig.add(tg);mark(tg,'t:trig',{hold:'trig'});TL.trig=trig;
+  TL.migArc=at(.5);TL.migRear=V(1.98,0,0);place(mig,TL.migArc);
+  /* MMA: electrode holder + electrode */
+  const mma=new T.Group();scene.add(mma);TL.mma=mma;
+  const hg=new T.Group();mma.add(hg);
+  hg.add(cylBetween(V(.95,0,0),V(2.0,0,0),.15,.14,M.rubber));for(let i=0;i<7;i++)hg.add(cylBetween(V(1.15+i*.11,0,0),V(1.18+i*.11,0,0),.153,.153,M.dark));
+  hg.add(cylBetween(V(.86,0,0),V(.96,0,0),.158,.158,M.red));hg.add(cylBetween(V(.6,0,0),V(.87,0,0),.09,.13,M.rubber));
+  hg.add(boxM(.5,.06,.15,M.copper,.38,-.05,0));const jawU=boxM(.5,.06,.15,M.copper,.38,.05,0);hg.add(jawU);
+  const lever=new T.Group();lever.position.set(.95,.13,0);lever.add(boxM(.9,.06,.13,M.rubber,-.2,.03,0));hg.add(lever);TL.lever=lever;
+  hg.add(cylBetween(V(.62,.06,0),V(.62,.16,0),.03,.03,M.metal));
+  const hdc=decal('DNIPRO-M',.4,.08);hdc.position.set(1.55,.02,-.152);hdc.rotation.y=Math.PI;hg.add(hdc);
+  mark(hg,'h:holder',{hold:'strike'});
+  const rodG=new T.Group();const rd=V(-.22,-1,0).normalize(),j=V(.32,0,0),rodLen=1.45;
+  const rodBody=cylBetween(j.clone().addScaledVector(rd,.12),j.clone().addScaledVector(rd,rodLen),1,1,M.rod,16);const rodBare=cylBetween(j.clone().addScaledVector(rd,-.04),j.clone().addScaledVector(rd,.12),1,1,M.bare,16);
+  rodG.add(rodBody);rodG.add(rodBare);rodG.add(hitCyl(j,j.clone().addScaledVector(rd,rodLen),.07));mma.add(rodG);mark(rodG,'h:rod');TL.rodParts=[rodBody,rodBare];
+  labels.rod=label('2.5');labels.rod.position.copy(j.clone().addScaledVector(rd,.75)).add(V(-.25,0,-.1));mma.add(labels.rod);
+  TL.mmaArc=j.clone().addScaledVector(rd,rodLen+.05);TL.mmaRear=V(2.02,0,0);place(mma,TL.mmaArc);
+  /* TIG torch */
+  const tig=new T.Group();scene.add(tig);TL.tig=tig;
+  const tb=new T.Group();tig.add(tb);
+  tb.add(cylBetween(V(.55,0,0),V(1.72,0,0),.13,.12,M.rubber));for(let i=0;i<6;i++)tb.add(cylBetween(V(1.15+i*.09,0,0),V(1.18+i*.09,0,0),.133,.133,M.dark));
+  tb.add(cylBetween(V(.26,0,0),V(.58,0,0),.09,.12,M.rubber));
+  const H=V(.2,0,0),hd=V(-.25,-1,0).normalize(),ha=k=>H.clone().addScaledVector(hd,k);
+  tb.add(cylBetween(ha(-.22),ha(.18),.12,.12,M.rubber));tb.add(cylBetween(ha(-.62),ha(-.2),.065,.08,M.rubber));
+  const tdc=decal('DNIPRO-M',.4,.08);tdc.position.set(1.2,.02,-.132);tdc.rotation.y=Math.PI;tb.add(tdc);
+  const cu=new T.Group();cu.add(cylBetween(ha(.17),ha(.4),.1,.066,M.cup,28));tig.add(cu);mark(cu,'g:cup');
+  const tu=new T.Group();tu.add(cylBetween(ha(.39),ha(.47),.013,.006,M.tung,10));tu.add(hitCyl(ha(.38),ha(.5),.05));tig.add(tu);mark(tu,'g:tung');
+  const bt=new T.Group();const btn=boxM(.18,.05,.085,M.red,.95,.135,0);bt.add(btn);tig.add(bt);mark(bt,'g:torch',{hold:'tigbtn'});TL.tigBtn=btn;
+  const vg=new T.Group();vg.add(cylBetween(V(1.6,.1,0),V(1.6,.2,0),.045,.045,M.brass,16));TL.valve=boxM(.16,.035,.05,M.brass,1.6,.23,0);vg.add(TL.valve);tig.add(vg);mark(vg,'g:valve');
+  TL.tigArc=ha(.53);TL.tigRear=V(1.74,0,0);place(tig,TL.tigArc);
+}
+
+/* ---------- cables (rebuilt when the layout changes) ---------- */
+function plug(pos,m){const g=new T.Group();g.add(cylZ(.075,.22,M.cable,pos.clone().add(V(0,0,.13)),20));g.add(cylZ(.085,.05,M.dark,pos.clone().add(V(0,0,.05)),20));return g}
+function buildCables(){cablesG.children.slice().forEach(o=>{cablesG.remove(o);o.traverse(m=>{if(m.geometry)m.geometry.dispose()});const i=picks.indexOf(o);if(i>=0)picks.splice(i,1)});
+  const k=kind(),opp=x=>x==='+'?'-':'+',sx=s=>s==='+'?110:152,sk2=s=>s==='+'?'s:plus':'s:minus',sl=s=>s==='+'?'+':'−';
+  const add=(g,pick,name)=>{cablesG.add(g);mark(g,pick,{name})};
+  const tool=TL[k],rear=(k==='mig'?TL.migRear:k==='mma'?TL.mmaRear:TL.tigRear).clone().applyMatrix4(tool.matrixWorld);
+  const exit=fp(172,178,.04);
+  const toFloor=(p,end,r)=>tube([p,p.clone().add(V(0,-.05,.35)),V(p.x+.1,.3,ZF+.85),V((p.x+end.x)/2,.05,Math.max(ZF+1.25,end.z+.25)),end.clone().add(V(-.25,-.02,.18)),end],r,M.cable);
+  if(k==='mig'){const s=S.pol,ms=opp(s);
+    const pc=new T.Group();const sp=fp(sx(s),232,.24);pc.add(tube([exit,fp(180,176,.25),fp(186,205,.42),V(sp.x,sp.y+.05,ZF+.5),sp],.042,M.cable));pc.add(plug(fp(sx(s),232,0)));
+    add(pc,'c:pol',`Кабель полярності · у гнізді «${sl(s)}»`);
+    const mc=new T.Group();mc.add(plug(fp(sx(ms),232,0)));mc.add(toFloor(fp(sx(ms),232,.24),P.clampEnd,.045));add(mc,sk2(ms),`Кабель маси · у гнізді «${sl(ms)}»`);
+    const hc=new T.Group();const e0=fp(50,215,.1);hc.add(cylZ(.12,.32,M.cable,e0.clone().add(V(0,0,.12)),24));
+    hc.add(tube([e0.clone().add(V(0,0,.28)),e0.clone().add(V(.05,-.15,.6)),V(e0.x+.4,.06,ZF+1.4),V(1.0,.06,ZF+1.9),rear.clone().add(V(-.35,-.15,.35)),rear],.07,M.cable));
+    add(hc,'s:euro','Рукав пальника · у євророз\'ємі')}
+  else{const hp=k==='mma'?S.hpol:S.tpol,ms=opp(hp);
+    const pc=new T.Group();pc.add(tube([exit,fp(182,178,.22),V(1.0,.9,ZF+.35),V(1.02,.2,ZF+.45),V(.92,.08,ZF+.7)],.042,M.cable));
+    const pl=cylZ(.075,.22,M.cable,V(.92,.08,ZF+.82),20);pl.rotation.x=Math.PI/2;pc.add(pl);add(pc,'c:pol','Кабель полярності · вийнятий, у MMA і TIG не потрібен');
+    const tc=new T.Group();tc.add(plug(fp(sx(hp),232,0)));tc.add(toFloor(fp(sx(hp),232,.24),rear,.05));
+    add(tc,sk2(hp),`${k==='mma'?'Кабель електродотримача':'Кабель TIG-пальника'} · у гнізді «${sl(hp)}»`);
+    const mc=new T.Group();mc.add(plug(fp(sx(ms),232,0)));mc.add(toFloor(fp(sx(ms),232,.24),P.clampEnd,.045));add(mc,sk2(ms),`Кабель маси · у гнізді «${sl(ms)}»`)}
+}
+
+/* ---------- camera ---------- */
+function camUpdate(){const sp=Math.sin(orb.ph);cam.position.set(orb.tgt.x+orb.r*sp*Math.sin(orb.th),orb.tgt.y+orb.r*Math.cos(orb.ph),orb.tgt.z+orb.r*sp*Math.cos(orb.th));cam.lookAt(orb.tgt);needR=true}
+function goView(v){let P2=VIEWS[v];if(!P2||!ready)return;if(v==='torch'&&kind()==='mma')P2=Object.assign({},P2,{t:[2.6,1.0,3.0],rad:1.42});lastKind=kind();lastView=v;doorOpen=v==='feed';
+  let th=P2.th;while(th-orb.th>Math.PI)th-=2*Math.PI;while(th-orb.th<-Math.PI)th+=2*Math.PI;
+  const from={t:orb.tgt.clone(),th:orb.th,ph:orb.ph,r:orb.r},to={t:V(...P2.t),th,ph:P2.ph,r:fitV(P2)};
+  if(reduce){orb.tgt.copy(to.t);orb.th=to.th;orb.ph=to.ph;orb.r=to.r;camUpdate();return}
+  tween={from,to,t0:performance.now(),dur:750}}
+api.goView=goView;
+function fitV(P2){const a=cam?cam.aspect:1,vf=34*D2R,hf=2*Math.atan(Math.tan(vf/2)*a);return Math.min(16,P2.rad/Math.sin(Math.min(vf,hf)/2)*(fsOn?(a>1?1.32:1.08):1))}
+function stepTween(now){if(!tween)return;const k=Math.min(1,(now-tween.t0)/tween.dur),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2,f=tween.from,t=tween.to;
+  orb.tgt.lerpVectors(f.t,t.t,e);orb.th=f.th+(t.th-f.th)*e;orb.ph=f.ph+(t.ph-f.ph)*e;orb.r=f.r+(t.r-f.r)*e;camUpdate();if(k>=1)tween=null}
+
+/* ---------- state → scene ---------- */
+function vis(o){while(o){if(!o.visible)return false;o=o.parent}return true}
+function applySel(){picks.forEach(p=>{const k=p.userData.pick;
+  const on=(S.tab==='dev'&&(k===S.focus||(S.focus.startsWith('m:')&&k==='l:modes')))||(!!S.hl&&k===S.hl),hv=hover===p;
+  p.traverse(o=>{if(!o.isMesh||o.userData.shared)return;if(o.userData.ghost)return;
+    if(o.userData.hitPlane)o.material.opacity=on?.3:hv?.14:0;else if(o.material.emissive)o.material.emissive.setHex(on?0x7a2600:hv?0x2c1204:o.userData.base)})});needR=true}
+function arcOn(){const tk=kind();return S.power&&S.trig&&!S.heat&&(tk==='mig'?!S.arm:tk==='tig'?S.valve:true)}
+function feeding(){return S.power&&(S.inch||(S.trig&&kind()==='mig'&&!S.heat))&&!S.arm}
+api.sync=function(){if(!ready)return;
+  if(S.view!==lastView||(S.view==='torch'&&kind()!==lastKind))goView(S.view);
+  const skey=[S.power,S.heat,S.mode,S.cur,volts().toFixed(1)].join('|');if(skey!==lastScreen){lastScreen=skey;drawScreen()}
+  P['k:cur'].userData.target=-ang(KC,S.cur)*D2R;P['k:trim'].userData.target=-ang(KT,S.trim)*D2R;
+  setupBtn.userData.cap.position.z=S.inch?.025:.04;
+  rocker.rotation.x=S.power?.22:-.22;
+  const tk=kind();['mig','mma','tig'].forEach(t=>TL[t].visible=tk===t);
+  labels.spool.userData.set(S.wire+' мм');labels.roll.userData.set(String(S.roll));labels.tip.userData.set(String(S.tip));labels.rod.userData.set(String(S.rod).replace('.',',')+' мм');
+  const rr2=S.rod*.0085;TL.rodParts.forEach(o=>{o.scale.x=rr2;o.scale.z=rr2});
+  TL.valve.rotation.y=S.valve?0:Math.PI/2;
+  TL.trig.position.x=S.trig&&tk==='mig'?.78:.82;TL.lever.rotation.z=S.trig&&tk==='mma'?-.12:0;TL.tigBtn.position.y=S.trig&&tk==='tig'?.115:.135;
+  gasHose.visible=S.mode==='co2'||S.mode==='arco2';
+  const ck=[tk,S.pol,S.hpol,S.tpol].join('|');if(ck!==cableKey){cableKey=ck;buildCables()}
+  applySel();needR=true};
+
+/* ---------- loop ---------- */
+function loop(now){raf=requestAnimationFrame(loop);const dt=Math.min(.05,(now-(lastT||now))/1000);lastT=now;
+  stepTween(now);
+  ['k:cur','k:trim'].forEach(k=>{const g=P[k],i=g.userData.inner,t=g.userData.target;if(t!==undefined&&Math.abs(i.rotation.z-t)>1e-4){i.rotation.z+=(t-i.rotation.z)*Math.min(1,dt*18);needR=true}});
+  const dT=doorOpen?-1.78:0;if(Math.abs(doorA-dT)>1e-3){doorA+=(dT-doorA)*Math.min(1,dt*6);doorPivot.rotation.z=doorA;needR=true}
+  const aT=S.arm?-.42:0;if(Math.abs(armA-aT)>1e-3){armA+=(aT-armA)*Math.min(1,dt*8);armPivot.rotation.x=armA;needR=true}
+  if(S.power&&!reduce){fanG.rotation.z+=dt*14;needR=true}
+  if(feeding()){driveRoll.rotation.x-=dt*9;spoolG.rotation.x-=dt*1.6;needR=true}
+  const a=arcOn();arcGlow.visible=a;sparks.visible=a&&!reduce;arcLight.intensity=a?2.2+Math.random()*1.4:0;
+  if(a){const tk=kind(),p=(tk==='mig'?TL.migArc:tk==='mma'?TL.mmaArc:TL.tigArc).clone().applyMatrix4(TL[tk].matrixWorld);
+    arcGlow.position.copy(p);arcLight.position.copy(p).add(V(0,.15,0));const s=.55+Math.random()*.3;arcGlow.scale.set(s,s,1);
+    if(!reduce){const pos=sparks.geometry.attributes.position;for(let i=0;i<pos.count;i++){const r=Math.random()*.35,t=Math.random()*Math.PI*2;pos.setXYZ(i,p.x+Math.cos(t)*r,p.y+Math.random()*.25,p.z+Math.sin(t)*r)}pos.needsUpdate=true}
+    needR=true}
+  if(S.hl){const pulse=.5+.5*Math.sin(now/180);picks.forEach(p=>{if(p.userData.pick!==S.hl)return;p.traverse(o=>{if(!o.isMesh||o.userData.shared||o.userData.ghost)return;
+    if(o.userData.hitPlane)o.material.opacity=.15+.25*pulse;else if(o.material.emissive)o.material.emissive.setRGB(.5*pulse,.16*pulse,0)})});needR=true}
+  if(needR){ren.render(scene,cam);needR=false}}
+
+/* ---------- picking & pointer ---------- */
+const ndc={x:0,y:0};
+function pickAt(e){const r=cv.getBoundingClientRect();ndc.x=(e.clientX-r.left)/r.width*2-1;ndc.y=-(e.clientY-r.top)/r.height*2+1;ray.setFromCamera(ndc,cam);
+  const hits=ray.intersectObjects(scene.children,true);
+  for(const h of hits){const o=h.object;if(o.userData.noHit||o.isSprite||o.isPoints||!vis(o))continue;let p=o;while(p&&!p.userData.pick)p=p.parent;return p||null}return null}
+function toScreen(obj){const c=new T.Box3().setFromObject(obj).getCenter(new T.Vector3());if(obj.userData.inner)obj.getWorldPosition(c);c.project(cam);const r=cv.getBoundingClientRect();
+  return{x:r.left+(c.x+1)/2*r.width,y:r.top+(1-c.y)/2*r.height}}
+api.screenOf=k=>{const p=picks.find(o=>o.userData.pick===k&&vis(o));return p?toScreen(p):null};
+function descOf(o){const u=o.userData;return{pick:u.pick,name:u.name,knob:u.pick==='k:cur'||u.pick==='k:trim',setup:u.pick==='b:setup',hold:u.hold}}
+function tip3(o,x,y,brief){ttFor=null;tt.innerHTML=tipFor(descOf(o));placeTip(x,y,brief);clearTimeout(ttTimer);ttTimer=brief?setTimeout(hideTip,1800):null}
+let pd=null;const pts=new Map();
+const pdist=()=>{const a=[...pts.values()];return Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y)};
+const angOf=(e,c)=>Math.atan2(e.clientX-c.x,c.y-e.clientY)/D2R;
+function knobStart(o,e){const k=o.userData.pick;const c=toScreen(o);pd.kn={k,c,last:angOf(e,c),raw:k==='k:cur'?S.cur:S.trim};dragging=true;
+  if(S.focus!==k){S.focus=k;renderPicker();if(S.tab==='dev')renderInfo();drawDevice()}}
+function knobMove(e){const kn=pd.kn;let a=angOf(e,kn.c),d=a-kn.last;if(d>180)d-=360;if(d<-180)d+=360;kn.last=a;const K=kn.k==='k:cur'?KC:KT;
+  kn.raw=Math.min(K.max,Math.max(K.min,kn.raw+d/(A1-A0)*(K.max-K.min)));if(kn.k==='k:cur')S.cur=Math.round(kn.raw);else S.trim=Math.round(kn.raw*2)/2;S.focus=kn.k;renderLive()}
+function click3(o,e){const k=o.userData.pick;
+  if(k==='f:door'){if(!doorOpen){S.view='feed';if(S.tab==='dev')S.focus=k;render();if(S.view===lastView)goView('feed')}else{doorOpen=false;if(S.tab==='dev'){S.focus=k;render()}}return}
+  const v=C[k]&&C[k].v;if(v&&v!==S.view){S.view=v;lastView=v;doorOpen=v==='feed'}
+  pickClick(k,()=>tip3(o,e.clientX,e.clientY,true))}
+cv.addEventListener('pointerdown',e=>{if(!ready)return;e.preventDefault();cv.setPointerCapture(e.pointerId);pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(pts.size===2){if(pd&&pd.mode==='hold')holdEnd();if(pd&&pd.mode==='setup')setupCancel();if(pd&&pd.mode==='knob'){dragging=false;render()}const m=pmid();pd={mode:'pinch',d:pdist(),mx:m.x,my:m.y};return}
+  tween=null;
+  if(e.button===2||e.button===1||e.shiftKey){pd={x:e.clientX,y:e.clientY,lx:e.clientX,ly:e.clientY,o:null,mode:'pan'};cv.style.cursor='move';hideTip();return}
+  const o=pickAt(e);pd={x:e.clientX,y:e.clientY,lx:e.clientX,ly:e.clientY,o,mode:'orbit'};
+  if(o){const k=o.userData.pick;if(e.pointerType==='touch')tip3(o,e.clientX,e.clientY,true);
+    if(k==='k:cur'||k==='k:trim'){pd.mode='knob';knobStart(o,e)}else if(k==='b:setup'){pd.mode='setup';setupStart()}else if(o.userData.hold){pd.mode='hold';holdStart(k)}else pd.mode='click'}
+  cv.style.cursor=pd.mode==='orbit'?'grabbing':'pointer'});
+cv.addEventListener('pointermove',e=>{if(!ready)return;if(pts.has(e.pointerId))pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(!pd){if(e.pointerType==='touch')return;const o=pickAt(e);if(o!==hover){hover=o;applySel();cv.style.cursor=o?'pointer':'grab'}
+    if(o){clearTimeout(ttTimer);ttTimer=null;tt.innerHTML=tipFor(descOf(o));placeTip(e.clientX,e.clientY,false)}else if(!ttTimer)hideTip();return}
+  if(pd.mode==='pinch'){if(pts.size===2){const d=pdist(),m=pmid();orb.r=Math.min(18,Math.max(2.2,orb.r*pd.d/d));pd.d=d;panBy(m.x-pd.mx,m.y-pd.my);pd.mx=m.x;pd.my=m.y;camUpdate()}return}
+  if(pd.mode==='pan'){panBy(e.clientX-pd.lx,e.clientY-pd.ly);pd.lx=e.clientX;pd.ly=e.clientY;return}
+  if(pd.mode==='knob'){knobMove(e);tt.innerHTML=tipFor(descOf(pd.o));placeTip(e.clientX,e.clientY,false);return}
+  if(pd.mode==='click'&&Math.hypot(e.clientX-pd.x,e.clientY-pd.y)>6){pd.mode='orbit';hideTip()}
+  if(pd.mode==='orbit'){const dx=e.clientX-pd.lx,dy=e.clientY-pd.ly;orb.th-=dx*.008;orb.ph=Math.min(1.62,Math.max(.12,orb.ph-dy*.008));camUpdate()}
+  pd.lx=e.clientX;pd.ly=e.clientY});
+function endPtr(e,cancel){pts.delete(e.pointerId);if(!pd)return;const m=pd.mode;
+  if(m==='pinch'){if(pts.size===0)pd=null;return}
+  const still=Math.hypot(e.clientX-pd.x,e.clientY-pd.y)<6;let dbl=false;
+  if(!cancel&&still&&(m==='click'||m==='orbit')){const n=performance.now();dbl=n-lastTap.t<380&&Math.hypot(e.clientX-lastTap.x,e.clientY-lastTap.y)<12;lastTap=dbl?{t:0,x:0,y:0}:{t:n,x:e.clientX,y:e.clientY};if(dbl)centerAt(e)}
+  if(m==='knob'){dragging=false;render()}else if(m==='setup'){cancel?setupCancel():setupEnd()}else if(m==='hold')holdEnd();else if(m==='click'&&!cancel&&!dbl)click3(pd.o,e);
+  pd=null;cv.style.cursor=hover?'pointer':'grab'}
+cv.addEventListener('pointerup',e=>endPtr(e,false));cv.addEventListener('pointercancel',e=>endPtr(e,true));
+cv.addEventListener('pointerleave',e=>{if(!pd&&e.pointerType!=='touch'){hover=null;if(ready)applySel();hideTip()}});
+cv.addEventListener('contextmenu',e=>e.preventDefault());
+function pmid(){const a=[...pts.values()];return{x:(a[0].x+a[1].x)/2,y:(a[0].y+a[1].y)/2}}
+function clampTgt(){const t=orb.tgt;t.x=Math.min(8,Math.max(-6,t.x));t.y=Math.min(4.5,Math.max(-.5,t.y));t.z=Math.min(8,Math.max(-6,t.z))}
+function panBy(dx,dy){if(!dx&&!dy)return;tween=null;const h=cv.clientHeight||1,k=2*orb.r*Math.tan(17*D2R)/h;cam.updateMatrix();
+  const right=new T.Vector3().setFromMatrixColumn(cam.matrix,0),up=new T.Vector3().setFromMatrixColumn(cam.matrix,1);
+  orb.tgt.addScaledVector(right,-dx*k).addScaledVector(up,dy*k);clampTgt();camUpdate()}
+/* double-click: fly to the point under the cursor and make it the new centre */
+function centerAt(e){if(!ready)return;const r=cv.getBoundingClientRect();ndc.x=(e.clientX-r.left)/r.width*2-1;ndc.y=-(e.clientY-r.top)/r.height*2+1;ray.setFromCamera(ndc,cam);
+  const h=ray.intersectObjects(scene.children,true).find(x=>!x.object.userData.noHit&&!x.object.isSprite&&!x.object.isPoints&&vis(x.object)&&!(x.object.material&&x.object.material.opacity===0));
+  if(!h)return;const to={t:h.point.clone(),th:orb.th,ph:orb.ph,r:Math.max(2.6,orb.r*.7)};
+  if(reduce){orb.tgt.copy(to.t);orb.r=to.r;camUpdate();return}tween={from:{t:orb.tgt.clone(),th:orb.th,ph:orb.ph,r:orb.r},to,t0:performance.now(),dur:500}}
+let lastTap={t:0,x:0,y:0};
+/* keyboard: arrows / WASD move, Q E turn, + − zoom (while the pointer is over the model or in full screen) */
+let overCv=false;cv.addEventListener('pointerenter',()=>overCv=true);cv.addEventListener('pointerleave',()=>overCv=false);
+document.addEventListener('keydown',e=>{if(!ready||!api.on||!(overCv||fsOn))return;const tg=e.target;if(tg&&/INPUT|TEXTAREA|SELECT/.test(tg.tagName))return;
+  const step=e.shiftKey?40:16,k=e.key.toLowerCase();let used=true;
+  if(k==='arrowleft'||k==='a')panBy(step,0);else if(k==='arrowright'||k==='d')panBy(-step,0);
+  else if(k==='arrowup'||k==='w')panBy(0,step);else if(k==='arrowdown'||k==='s')panBy(0,-step);
+  else if(k==='q'){orb.th+=.06;camUpdate()}else if(k==='e'){orb.th-=.06;camUpdate()}
+  else if(k==='+'||k==='='){orb.r=Math.max(2.2,orb.r*.9);camUpdate()}else if(k==='-'||k==='_'){orb.r=Math.min(18,orb.r*1.1);camUpdate()}
+  else used=false;if(used){tween=null;e.preventDefault()}});
+cv.addEventListener('wheel',e=>{if(!ready)return;e.preventDefault();
+  if(hover&&(hover.userData.pick==='k:cur'||hover.userData.pick==='k:trim')){const k=hover.userData.pick,sgn=-Math.sign(e.deltaY);
+    if(k==='k:cur')S.cur=Math.min(160,Math.max(20,S.cur+sgn));else S.trim=Math.min(2.5,Math.max(-2.5,S.trim+sgn*.5));S.focus=k;render();tt.innerHTML=tipFor(descOf(hover));return}
+  tween=null;orb.r=Math.min(18,Math.max(2.2,orb.r*(1+Math.sign(e.deltaY)*.1)));camUpdate()},{passive:false});
+window.addEventListener('blur',()=>{if(pd&&pd.mode==='hold')holdEnd();if(pd&&pd.mode==='setup')setupCancel();pd=null;pts.clear()});
+
+/* ---------- lifecycle ---------- */
+function loadThree(){return new Promise((res,rej)=>{if(window.THREE)return res();const s=document.createElement('script');
+  s.src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';s.onload=()=>window.THREE?res():rej();s.onerror=rej;document.head.appendChild(s)})}
+function resize(){if(!ren)return;const w=box.clientWidth,h=box.clientHeight;if(!w||!h)return;ren.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();needR=true}
+function init(){if(initP)return initP;msg.hidden=false;msg.textContent='Завантажую 3D-модель…';
+  initP=(async()=>{await loadThree();T=window.THREE;V=(x,y,z)=>new T.Vector3(x,y,z);fp=(x,y,d)=>V((x-96)*MM,(290-y)*MM,ZF+(d||0));rp=(x,y,d)=>V(-(x-96)*MM,(290-y)*MM,ZR-(d||0));
+    try{await Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,1500))])}catch(e){}
+    ren=new T.WebGLRenderer({canvas:cv,antialias:true,alpha:true});ren.setPixelRatio(Math.min(devicePixelRatio||1,2));ren.setClearColor(0x000000,0);
+    scene=new T.Scene();cam=new T.PerspectiveCamera(34,1,.1,60);ray=new T.Raycaster();orb.tgt=V(...VIEWS.front.t);
+    mats();build();new ResizeObserver(resize).observe(box);resize();
+    const v0=VIEWS[S.view]||VIEWS.front;orb.tgt.set(...v0.t);orb.th=v0.th;orb.ph=v0.ph;orb.r=fitV(v0);camUpdate();lastView=S.view;doorOpen=S.view==='feed';
+    ready=true;msg.hidden=true})().catch(err=>{initP=null;msg.hidden=false;msg.textContent='Не вдалося завантажити 3D. Перевірте інтернет і натисніть 3D ще раз, або працюйте у 2D.';throw err});
+  return initP}
+let fsOn=false,fsReq=false;
+api.fs=function(on){if(on===fsOn)return;fsOn=on;box.classList.toggle('fs',on);$('fsbar').hidden=!on;$('fsstatus').hidden=!on;$('fsopen').hidden=on;
+  document.documentElement.classList.toggle('fslock',on);(on?box:document.body).appendChild(tt);hideTip();
+  if(on){fsReq=false;try{if(box.requestFullscreen){fsReq=true;const r=box.requestFullscreen();if(r&&r.catch)r.catch(()=>{fsReq=false})}}catch(e){fsReq=false}
+    S.view='all';render();setTimeout(()=>{const f=$('fsbar').querySelector('.fsx');if(f)f.focus({preventScroll:true})},50)}
+  else{if(document.fullscreenElement){try{const r=document.exitFullscreen();if(r&&r.catch)r.catch(()=>{})}catch(e){}}if(S.view==='all')S.view='front';render();$('fsopen').focus({preventScroll:true})}
+  setTimeout(()=>{resize();goView(S.view)},80)};
+document.addEventListener('fullscreenchange',()=>{if(document.fullscreenElement){resize();goView(S.view)}else if(fsOn&&fsReq)api.fs(false)});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&fsOn&&!document.fullscreenElement)api.fs(false)});
+api.isFs=()=>fsOn;
+api.tgt=()=>orb.tgt?orb.tgt.toArray().map(v=>+v.toFixed(2)):null;
+api.set=function(on){if(!on&&fsOn)api.fs(false);api.on=on;$('dev').toggleAttribute('hidden',on);box.hidden=!on;$('hint3d').hidden=!on;$('viewall').hidden=!on;
+  document.querySelector('.stage').classList.toggle('is3d',on);if(!on&&S.view==='all'){S.view='front';drawDevice()}
+  document.querySelectorAll('[data-dim]').forEach(b=>b.setAttribute('aria-pressed',(b.dataset.dim==='3d')===on));
+  try{localStorage.setItem('mg16dx-dim',on?'3d':'2d')}catch(e){}
+  if(!on){cancelAnimationFrame(raf);raf=0;hideTip();return}
+  init().then(()=>{if(!api.on)return;resize();api.sync();needR=true;if(!raf){lastT=0;raf=requestAnimationFrame(loop)}}).catch(()=>{})};
+api.ready=()=>ready;
+document.querySelectorAll('[data-dim]').forEach(b=>b.addEventListener('click',()=>api.set(b.dataset.dim==='3d')));
+document.addEventListener('visibilitychange',()=>{if(!api.on||!ready)return;if(document.hidden){cancelAnimationFrame(raf);raf=0}else if(!raf){lastT=0;raf=requestAnimationFrame(loop)}});
+try{if(localStorage.getItem('mg16dx-dim')==='3d')setTimeout(()=>api.set(true),0)}catch(e){}
+})();
+window.__V3=V3;
+
+})();
+</script>
+
+</body>
+</html>
