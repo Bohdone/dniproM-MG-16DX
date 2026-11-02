@@ -1260,7 +1260,7 @@ function wtHTML(){const ri=wtRow();
    <p class="wtnote">Верхній рядок — товщина металу, мм. У клітинках — струм, А. Натисніть клітинку — апарат стане в цей режим і струм.${ri>=0?` Зараз: <b>${MODENAME[S.mode]}, ${S.cur} А</b>${wtFor(ri).length?` — метал <b>${wtFor(ri).map(dc).join(', ')} мм</b>`:' — поза таблицею для цього рядка'}.`:' Таблиця — для напівавтоматичних режимів (CO₂, Ar-CO₂, FLUX).'}</p>`}
 function renderWTab(){const el=$('wtabbox');if(el)el.innerHTML=wtHTML()}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-wt]');if(!b)return;const [i,j]=b.dataset.wt.split(':').map(Number),r=WTAB[i],c=r.a[j];
-  S.power=true;S.heat=false;Object.assign(S,r.set);S.cur=Math.round((c[0]+c[1])/2/5)*5;if(S.tab==='dev'&&S.focus.startsWith('m:'))S.focus='m:'+S.mode;render()});
+  S.power=true;S.heat=false;Object.assign(S,r.set);S.cur=Math.round((c[0]+c[1])/2);if(S.tab==='dev'&&S.focus.startsWith('m:'))S.focus='m:'+S.mode;render()});
 /* ---------- render ---------- */
 const MODENAME=Object.fromEntries(MODES.map(m=>[m.id,m.chip]));
 function renderFs(){const b=$('fsbar');if(!b||b.hidden)return;const k=kind();const row=b.querySelector('.fschips'),sl=row?row.scrollLeft:0;
