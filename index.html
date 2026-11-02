@@ -232,7 +232,10 @@ dl.gl dd{margin:0;color:var(--muted)}
   #dev3d{height:min(56vh,540px);aspect-ratio:auto;max-height:none}
   .views button{font-size:12.5px;padding:7px 2px}
   .dim button{padding:7px 8px}
-  .views button{font-size:12px;padding:7px 1px}
+  .views{display:flex;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .views::-webkit-scrollbar{display:none}
+  .views button{flex:1 0 auto;font-size:12.5px;padding:7px 8px;overflow:visible;text-overflow:clip;min-height:36px}
+  .dim button{min-height:36px}
   .fschips{flex-wrap:nowrap;overflow-x:auto;-webkit-mask-image:linear-gradient(90deg,#000 88%,transparent);mask-image:linear-gradient(90deg,#000 88%,transparent);padding-right:24px}
   .fsviews button{padding:7px 9px}
   .fsbtn{top:8px;right:8px;padding:7px 11px;font-size:12.5px}
@@ -249,6 +252,11 @@ dl.gl dd{margin:0;color:var(--muted)}
   .ref{grid-template-columns:minmax(0,1fr)}
   .card{padding:18px}
 }
+@media (max-width:780px) and (max-height:520px) and (orientation:landscape){
+  .navbar{position:static}
+  #dev{height:min(84vh,520px)}
+  #dev3d{height:min(84vh,540px)}
+}
 @media (prefers-reduced-motion:reduce){ .wirep.run,.arcg.on .arcglow{animation:none} }
 </style>
 </head>
@@ -260,7 +268,7 @@ dl.gl dd{margin:0;color:var(--muted)}
     <div class="stripe" aria-hidden="true"></div>
     <div class="kicker">Dnipro-M · MG-16DX · MIG/MAG · FLUX · MMA · TIG LIFT · 20–160 А</div>
     <h1>Як користуватися напівавтоматом MG-16DX</h1>
-    <p class="lede">Крутіть ручки, натискайте SETUP, тримайте курок пальника чи електродотримач, перемикайте вид: перед, зад, відсік подачі дроту і те, що у вас у руці в обраному режимі. Наведіть на будь-яку деталь, щоб побачити її назву. Кнопка 3D відкриває об'ємну модель, яку можна обертати. Праворуч описано кожен орган керування, а у вкладці «Як зварювати» зібрані готові налаштування для профільної труби, електродів, газу й TIG.</p>
+    <p class="lede">Крутіть ручки, натискайте SETUP, тримайте курок пальника чи електродотримач, перемикайте вид: перед, зад, відсік подачі дроту і те, що у вас у руці в обраному режимі. Наведіть на будь-яку деталь, щоб побачити її назву. Кнопка 3D відкриває об'ємну модель, яку можна обертати. У панелі поруч зі схемою описано кожен орган керування, а у вкладці «Як зварювати» зібрані готові налаштування для профільної труби, електродів, газу й TIG.</p>
   </header>
 
   <section class="stage">
@@ -844,7 +852,7 @@ function renderFs(){const b=$('fsbar');if(!b||b.hidden)return;const k=kind();con
   <button class="chip" type="button" data-act="power" aria-pressed="${!S.power}">${S.power?'Вимкнути':'Увімкнути'}</button></div>`;
   const nr=b.querySelector('.fschips');if(nr)nr.scrollLeft=sl}
 function setModeOnly(id){S.mode=id;S.power=true;S.heat=false;const m=MODES[MI[id]];if(m.pol)S.pol=m.pol;if(id==='tig')S.tpol='-';if(id==='mma')S.hpol='+';S.focus='m:'+id;render()}
-function renderLive(){renderFs();drawDevice();renderStatus();if(S.tab==='dev'&&(S.focus==='k:cur'||S.focus==='k:trim'||S.focus.startsWith('m:')))renderInfo()}
+function renderLive(){keepFocus(()=>{renderFs();drawDevice();renderStatus();if(S.tab==='dev'&&(S.focus==='k:cur'||S.focus==='k:trim'||S.focus.startsWith('m:')))renderInfo()})}
 let V3=null;
 function drawDevice(){if(V3&&V3.on)V3.sync();
   const v2=S.view==='all'?'front':S.view;
@@ -917,7 +925,11 @@ function renderPicker(){
 }
 function renderTabs(){const d=S.tab==='dev';$('tab-dev').setAttribute('aria-selected',d);$('tab-how').setAttribute('aria-selected',!d);
   $('pane-dev').hidden=!d;$('pane-how').hidden=d;$('picker').hidden=!d;$('scenwrap').hidden=d}
-function render(){renderFs();drawDevice();renderTabs();renderPicker();renderStatus();if(S.tab==='dev')renderInfo();else renderScen()}
+const FOCUS_ATTRS=['data-focus','data-scen','data-act','data-fsmode','data-view','data-fsclose'];
+function keepFocus(fn){const a=document.activeElement;let sel=null;
+  if(a&&a.tagName==='BUTTON'&&a.closest('#picker,#scenchips,#info,#fsbar')){const k=FOCUS_ATTRS.find(x=>a.hasAttribute(x));if(k)sel=`#${a.closest('#picker,#scenchips,#info,#fsbar').id} button[${k}="${a.getAttribute(k)}"]`}
+  fn();if(sel&&!a.isConnected){const c=document.querySelector(sel);if(c)c.focus({preventScroll:true})}}
+function render(){keepFocus(()=>{renderFs();drawDevice();renderTabs();renderPicker();renderStatus();if(S.tab==='dev')renderInfo();else renderScen()})}
 
 /* ---------- actions ---------- */
 const mobile=()=>matchMedia('(max-width:780px)').matches;
@@ -943,7 +955,7 @@ function act(a){
   else if(a==='setup-short'){nextMode();return}
   else if(a==='setup-hold'){S.inch=true;S.view='feed';render();setTimeout(()=>{S.inch=false;render()},1800);return}
   render()}
-function nextMode(){if(!S.power)return;S.mode=MODES[(MI[S.mode]+1)%MODES.length].id;if(S.focus.startsWith('m:'))S.focus='m:'+S.mode;render()}
+function nextMode(){if(!S.power){render();return}S.mode=MODES[(MI[S.mode]+1)%MODES.length].id;if(S.focus.startsWith('m:'))S.focus='m:'+S.mode;render()}
 function applyScen(id){const sc=SCEN.find(s=>s.id===id);S.scen=id;S.inch=false;S.trig=false;S.heat=false;S.hl=null;Object.assign(S,sc.set);render();keepActive();revealDev()}
 
 /* clicks on the device */
@@ -997,7 +1009,7 @@ function tipFor(d){const k=d.pick;
   else if(d.setup)hint='натисніть: режим · тримайте: протяжка дроту';
   else if(d.hold)hint=HOLDHINT[d.hold];
   else if(CLICKACT[k])hint=ACTHINT[CLICKACT[k]];
-  else hint=S.tab==='dev'?'натисніть: опис праворуч':'';
+  else hint=S.tab==='dev'?(mobile()?'натисніть: опис нижче':'натисніть: опис праворуч'):'';
   return `${name}${hint?`<small>${hint}</small>`:''}`}
 let ttTimer=null,ttFor=null;
 function placeTip(x,y,above){tt.hidden=false;const r=tt.getBoundingClientRect();
