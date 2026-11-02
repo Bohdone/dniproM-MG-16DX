@@ -219,6 +219,11 @@ dl.gl dd{margin:0;color:var(--muted)}
 .valve{fill:var(--brass);stroke:var(--brass-dk);stroke-width:1.2}
 @media (prefers-reduced-motion:reduce){.hot.hl{animation:none}}
 .card>*,.sub>*{min-width:0}
+.checks{list-style:none;margin:0;padding:0;display:grid;gap:8px;max-width:65ch}
+.checks li{position:relative;padding-left:22px}
+.checks li::before{content:"•";position:absolute;left:6px;top:0;color:var(--accent);font-weight:700}
+.checks.ok li::before{content:"✓";left:3px;color:#2f9a52}
+a.chip{display:inline-flex;align-items:center}
 
 @media (max-width:780px){
   h1{font-size:26px} .lede{font-size:15px}
@@ -228,8 +233,8 @@ dl.gl dd{margin:0;color:var(--muted)}
     margin-left:calc(-1 * max(16px,env(safe-area-inset-left,0px)));margin-right:calc(-1 * max(16px,env(safe-area-inset-right,0px)));
     padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:8px 10px;
     border-bottom:1px solid var(--line)}
-  .navbar .tabs{justify-self:stretch;display:grid;grid-template-columns:1fr 1fr}
-  .navbar .tabs button{padding:9px 10px}
+  .navbar .tabs{justify-self:stretch;display:grid;grid-template-columns:repeat(3,auto);justify-content:stretch}
+  .navbar .tabs button{padding:9px 8px;font-size:13px;line-height:1.2}
   .dev-wrap{order:2;position:static}
   #pane-dev,#pane-how{order:3}
   #dev{height:min(52vh,520px);width:auto;max-width:100%;max-height:none}
@@ -244,13 +249,13 @@ dl.gl dd{margin:0;color:var(--muted)}
   .fsviews button{padding:7px 9px}
   .fsbtn{top:8px;right:8px;padding:7px 11px;font-size:12.5px}
   .fsstatus{font-size:12px;padding:8px 10px}
-  .picker,#scenchips{display:flex;flex-wrap:nowrap;overflow-x:auto;position:relative;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;
+  .picker,#scenchips,#svcchips{display:flex;flex-wrap:nowrap;overflow-x:auto;position:relative;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;
     -webkit-mask-image:linear-gradient(90deg,#000 88%,transparent);mask-image:linear-gradient(90deg,#000 88%,transparent);padding-right:28px}
-  .picker::-webkit-scrollbar,#scenchips::-webkit-scrollbar{display:none}
+  .picker::-webkit-scrollbar,#scenchips::-webkit-scrollbar,#svcchips::-webkit-scrollbar{display:none}
   .picker{gap:14px}
   .picker .group{display:flex;flex:none;gap:6px;align-items:center}
   .picker .group+.group{border-left:1px solid var(--line);padding-left:14px}
-  .picker .glabel,#scenwrap .glabel{display:none}
+  .picker .glabel,#scenwrap .glabel,#svcwrap .glabel{display:none}
   .picker .chips{flex-wrap:nowrap}
   .navbar .chip{white-space:nowrap;padding:8px 13px;flex:none}
   .ref{grid-template-columns:minmax(0,1fr)}
@@ -272,7 +277,7 @@ dl.gl dd{margin:0;color:var(--muted)}
     <div class="stripe" aria-hidden="true"></div>
     <div class="kicker">Dnipro-M · MG-16DX · MIG/MAG · FLUX · MMA · TIG LIFT · 20–160 А</div>
     <h1>Як користуватися напівавтоматом MG-16DX</h1>
-    <p class="lede">Крутіть ручки, натискайте SETUP, тримайте курок пальника чи електродотримач, перемикайте вид: перед, зад, відсік подачі дроту і те, що у вас у руці в обраному режимі. Наведіть на будь-яку деталь, щоб побачити її назву. Кнопка 3D відкриває об'ємну модель, яку можна обертати. У панелі поруч зі схемою описано кожен орган керування, а у вкладці «Як зварювати» зібрані готові налаштування для профільної труби, електродів, газу й TIG.</p>
+    <p class="lede">Крутіть ручки, натискайте SETUP, тримайте курок пальника чи електродотримач, перемикайте вид: перед, зад, відсік подачі дроту і те, що у вас у руці в обраному режимі. Наведіть на будь-яку деталь, щоб побачити її назву. Кнопка 3D відкриває об'ємну модель, яку можна обертати. У панелі поруч зі схемою описано кожен орган керування, у вкладці «Обслуговування» — як поставити й перевірити дріт, електроди, наконечник і магнітну масу, а у вкладці «Як зварювати» зібрані готові налаштування для профільної труби, електродів, газу й TIG.</p>
     <a class="shoplink" href="https://dnipro-m.ua/tovar/napivavtomat-invertornij-mg-16dx/" target="_blank" rel="noopener">Сторінка товару на dnipro-m.ua<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9 2h5v5M14 2 7.5 8.5M12 9.5V14H2V4h4.5"/></svg></a>
   </header>
 
@@ -313,15 +318,20 @@ dl.gl dd{margin:0;color:var(--muted)}
         <div class="tabs" role="tablist" aria-label="Розділи">
           <button role="tab" id="tab-dev" aria-selected="true" aria-controls="pane-dev">Органи керування</button>
           <button role="tab" id="tab-how" aria-selected="false" aria-controls="pane-how">Як зварювати</button>
+          <button role="tab" id="tab-svc" aria-selected="false" aria-controls="pane-svc">Обслуговування</button>
         </div>
         <div class="picker" id="picker"></div>
         <div class="group" id="scenwrap" hidden><div class="glabel">Що потрібно зробити</div><div class="chips" id="scenchips"></div></div>
+        <div class="group" id="svcwrap" hidden><div class="glabel">Розхідники</div><div class="chips" id="svcchips"></div></div>
       </div>
       <div id="pane-dev" role="tabpanel" aria-labelledby="tab-dev" class="panel">
         <article class="card" id="info" aria-live="polite"></article>
       </div>
       <div id="pane-how" role="tabpanel" aria-labelledby="tab-how" class="panel" hidden>
         <article class="card" id="scen" aria-live="polite"></article>
+      </div>
+      <div id="pane-svc" role="tabpanel" aria-labelledby="tab-svc" class="panel" hidden>
+        <article class="card" id="svc" aria-live="polite"></article>
       </div>
     </div>
   </section>
@@ -459,7 +469,7 @@ const C={
   'f:door':{v:'feed',eye:'Відсік · 15',title:'Відсік механізму подачі',
     what:'Бокові дверцята з засувкою. Відкриваються, якщо посунути замок угору. Усередині котушка дроту і механізм подачі.',
     note:['warn','Відкривайте лише з вимкненим апаратом.']},
-  'f:spool':{v:'feed',eye:'Відсік',title:'Котушка зварювального дроту',
+  'f:spool':{svc:'wire',v:'feed',eye:'Відсік',title:'Котушка зварювального дроту',
     what:'Ставиться на шпиндель так, щоб при подачі оберталася проти годинникової стрілки (дріт сходить знизу). Фіксується притискною шайбою і гайкою за годинниковою стрілкою. Натисніть на котушку на схемі, щоб змінити діаметр дроту.',
     spec:'Котушка <b>до Ø200 мм</b> (≈5 кг) · дріт <b>0,6–0,8 мм</b>',
     acts:[['wire','Змінити діаметр дроту']],
@@ -481,7 +491,7 @@ const C={
   'h:holder':{v:'torch',eye:'MMA',title:'Електродотримач',hold:true,
     what:'Затискач на кабелі 3 м з комплекту. Натисніть на важіль, вставте електрод голим кінцем у губки й відпустіть. Курка немає: напруга на електроді є весь час, поки апарат увімкнений. Тримайте тримач на схемі, щоб запалити дугу.',
     note:['warn','Не кладіть тримач з електродом на стіл чи деталь: дуга спалахне сама. На перерві виймайте електрод.']},
-  'h:rod':{v:'torch',eye:'MMA',title:'Електрод',
+  'h:rod':{svc:'rod',v:'torch',eye:'MMA',title:'Електрод',
     what:'Покритий електрод 1,6–4 мм. Від діаметра залежить струм. Натисніть на електрод на схемі, щоб змінити діаметр.',
     acts:[['rod','Інший діаметр']],
     note:['tip','Після зварювання на кінці лишається кільце обмазки 1–2 мм. Збийте його перед новим підпалом, інакше дуга не запалиться.']},
@@ -494,9 +504,9 @@ const C={
     what:'Спрямовує аргон на ванну. Вольфрам виступає з сопла на 3–5 мм.'},
   'g:tung':{v:'torch',eye:'TIG LIFT',title:'Вольфрамовий електрод',
     what:'Неплавкий електрод. Заточуйте конусом уздовж, довжина конуса 2–2,5 діаметра. Торкнулися вольфрамом ванни: кінчик забруднений, заточіть заново.'},
-  't:nozzle':{v:'torch',eye:'Пальник · 8',title:'Газове сопло',
+  't:nozzle':{svc:'tip',v:'torch',eye:'Пальник · 8',title:'Газове сопло',
     what:'Спрямовує газ на зварювальну ванну. Знімається обертанням. Бризки, що налипли всередину, порушують газовий захист: чистіть сопло, можна змастити антипригарною пастою.'},
-  't:tip':{v:'torch',eye:'Пальник · 9',title:'Контактний наконечник',
+  't:tip':{svc:'tip',v:'torch',eye:'Пальник · 9',title:'Контактний наконечник',
     what:'Мідна трубка, через яку на дріт іде струм. Діаметр отвору має збігатися з дротом, розмір вибито на наконечнику. Викручується спеціальним ключем з комплекту, запасних наконечників два. Натисніть на схемі, щоб змінити розмір.',
     acts:[['tip','Змінити наконечник']],
     note:['tip','Розбитий овалом отвір дає нестабільну дугу: такий наконечник міняйте.']}
@@ -540,11 +550,6 @@ const SCEN=[
     steps:['Поставте апарат на рівну поверхню, вентилятором не до стіни. Якщо апарат був на морозі, дайте йому прогрітися й висохнути від конденсату.','Перевірте, що розетка заземлена, а лінія захищена автоматом не менше 25 А.','Вставте вилку і переведіть червоний вимикач ззаду в положення I.','Має засвітитися індикатор мережі й заробити вентилятор. Дисплеї покажуть напругу і струм.'],
     result:'Від генератора: потрібен генератор від 6 кВт, щоб варити на максимумі. Апарат тримає потужність при просіданні мережі до 160–170 В.',
     warn:'Без заземлення працювати заборонено.'},
-  {id:'load',chip:'Заправити дріт',set:{power:true,mode:'flux',view:'feed',wire:0.8,roll:0.8,tip:0.8,arm:false},title:'Встановити котушку й заправити дріт 0,8',
-    rows:[['Котушка','0,8 мм, проти годинникової'],['Ролик','канавка 0,8'],['Притиск','середній'],['Наконечник','0,8 (поки знятий)']],
-    steps:['Вимкніть апарат з мережі. Відкрийте відсік, посунувши замок угору.','Відкрутіть гайку шпинделя, зніміть шайбу. Поставте котушку так, щоб дріт сходив знизу, а котушка оберталася проти годинникової стрілки. Поверніть шайбу і гайку.','Потягніть рукоятку натягу на себе й підніміть кронштейн притискного ролика.','Перевірте, що протяжний ролик стоїть канавкою 0,8 (розмір на торці). Якщо ні, викрутіть фіксатор і переверніть ролик.','Відкусіть кінець дроту рівно, заведіть у трубку, по канавці і на 5–10 см у рукав.','Опустіть кронштейн, заблокуйте рукояткою натягу, виставте середній тиск.','Зніміть з пальника сопло і викрутіть наконечник. Увімкніть апарат, затисніть SETUP і тримайте, поки дріт не вийде з пальника на 50–100 мм.','Накрутіть наконечник 0,8 і сопло.'],
-    result:'Дріт виходить рівно, без ривків. Котушка не розкручується після зупинки.',
-    warn:'Під час протяжки не направляйте пальник на обличчя: дріт виходить з силою і гострий.'},
   {id:'tube2',chip:'Профтруба 2 мм без газу',set:{power:true,mode:'flux',cur:80,trim:0,pol:'-',view:'front',wire:0.8,roll:0.8,tip:0.8,arm:false},title:'Профільна труба 2 мм порошковим дротом',
     rows:[['Режим','FLUX CORED'],['Струм','80 А'],['Проварювання','0'],['Кабель полярності','«−»'],['Маса','«+»'],['Дріт','0,8 порошковий']],
     steps:['Вимкніть апарат і перекиньте кабель полярності в «−», масу в «+».','Зачистіть метал болгаркою на 2 см від шва і місце під масу, до блиску.','SETUP: FLUX CORED, правою ручкою 80 А, проварювання на нуль.','Виставте деталі, зробіть 3–4 прихватки по кутах.','Пальник під кутом 60–70°, тягніть на себе. Виліт дроту 8–10 мм.','Варіть короткими ділянками 2–3 см, переходячи на протилежний бік рами, щоб її не повело.','Збийте шлак щіткою.'],
@@ -843,6 +848,180 @@ function hint(){const I=S.cur,k=kind();
 function duty(){const k=kind(),I=S.cur;if(k==='mma')return I<=125?'ПВ 100%':I>=160?'ПВ 33%':'ПВ ≈ '+Math.round(100-(I-125)/35*67)+'%';
   if(k==='mig')return I<=135?'ПВ 100%':I>=160?'ПВ 50%':'ПВ ≈ '+Math.round(100-(I-135)/25*50)+'%';return ''}
 
+/* ---------- обслуговування: розхідники ---------- */
+// Дані — з карток товарів Dnipro-M; поради, позначені «загальна практика», — не паспортні.
+const SVC=[
+ {id:'wire',chip:'Флюсовий дріт',eye:'Розхідник · арт. 48759000',title:'Флюсовий дріт E71T-GS 0,8 мм, котушка 1 кг',
+  url:'https://dnipro-m.ua/tovar/drit-zvaryuvalnij-flyusovij-e71t-gs-0-8mm-1kg-iso/',hl:'f:spool',
+  what:'Порошковий самозахисний дріт: флюс усередині дроту захищає шов від повітря, тому балон не потрібен. Для вуглецевих і низьколегованих сталей у всіх просторових положеннях. Рядна намотка — дріт подається плавно й менше зношує механізм подачі.',
+  spec:'Флюсовий (порошковий) · <b>0,8 мм</b> · котушка <b>1 кг</b> (апарат бере до Ø200 мм) · рядна намотка · ДСТУ EN ISO 17632 · межа текучості ≥ 390 МПа',
+  set:{power:true,mode:'flux',pol:'-',view:'feed',wire:0.8,roll:0.8,tip:0.8,arm:false,inch:false},
+  rows:[['Режим','FLUX CORED'],['Кабель полярності','«−» (за інструкцією апарата)'],['Маса','«+»'],['Ролик','канавка 0,8'],['Наконечник','0,8'],['Газ','не потрібен'],['Струм','55–90 А за товщиною']],
+  sec:[
+   ['Як поставити котушку й заправити дріт',[
+    'Вимкніть апарат і витягніть вилку. Відкрийте відсік, посунувши замок угору.',
+    'Відкрутіть гайку шпинделя, зніміть шайбу. Поставте котушку так, щоб дріт сходив знизу, а котушка оберталася проти годинникової стрілки. Поверніть шайбу й гайку.',
+    'Потягніть рукоятку натягу на себе й підніміть кронштейн притискного ролика.',
+    'Перевірте, що протяжний ролик стоїть канавкою 0,8 (розмір вибито на торці). Якщо ні, викрутіть фіксатор і переверніть ролик.',
+    'Звільніть кінець дроту з отвору на щоці котушки, не відпускаючи його. Відкусіть кінець рівно, без загнутого хвостика.',
+    'Заведіть дріт у направляючу трубку, по канавці ролика і на 5–10 см у рукав пальника.',
+    'Опустіть кронштейн, заблокуйте рукояткою натягу, виставте середній тиск.',
+    'Зніміть сопло й викрутіть наконечник. Увімкніть апарат, затисніть SETUP і тримайте, поки дріт не вийде з пальника на 50–100 мм.',
+    'Накрутіть наконечник 0,8 і сопло. Відкусіть дріт, щоб виліт був близько 10 мм.']],
+   ['Як працювати',[
+    'SETUP — FLUX CORED, струм за товщиною: тонкий метал 1–1,5 мм — 55 А, профтруба 2 мм — 80 А, прихватки — 90 А.',
+    'Метал зачистіть від іржі, фарби й бруду (з картки дроту) і місце під масу — до блиску.',
+    'Виліт дроту з наконечника — близько 10 мм (загальна практика).',
+    'Пальник ведіть «на себе», нахиливши назад на 10–15°: шлак лишається позаду ванни (загальна практика для флюсового дроту).',
+    'Після шва збийте шлак і дрібні бризки щіткою — це нормально для флюсового дроту.']],
+   ['Як перевірити, що поставили правильно',[
+    'Дріт сходить з котушки знизу, котушка крутиться проти годинникової стрілки.',
+    'Відпустили курок — котушка не прокручується далі за інерцією, витки не спадають.',
+    'Затисніть дріт пальцями в рукавиці на виході з пальника й натисніть курок: ролик має прослизати, а не м\'яти дріт.',
+    'Дріт виходить рівно, без ривків і без «зубчиків» від ролика.',
+    'Дуга рівно тріщить, шов без пор. Сильні бризки й пори — перевірте полярність.']],
+   ['На що дивитися',[
+    'Кінець дроту на котушці завжди затиснутий в отворі щоки: відпущений — витки розкручуються й плутаються.',
+    'Флюс усередині дроту боїться вологи. Котушку, з якою не працюєте, зберігайте в пакеті в сухому місці (загальна практика).',
+    'Притиск середній: сильний сплющує порошковий дріт, слабкий — дріт прослизає.',
+    'Порошковий дріт сильно димить — працюйте з провітрюванням.']],
+   ['Ознаки, що дріт пора міняти',[
+    'На котушці залишилися останні витки — дріт подається ривками.',
+    'На дроті іржа чи білий наліт: дуга нестабільна, шов пористий. Відмотайте й відріжте кілька верхніх витків; не допомогло — нова котушка.',
+    'Дріт зім\'явся в ролику («пташине гніздо»): відкусіть зім\'ятий шматок і заправте наново.']]
+  ],
+  notes:[['warn','Полярність: інструкція апарата MG-16DX для FLUX каже — кабель полярності в «−». На картці дроту E71T-GS написано «DC+, зворотна полярність». Почніть з «−» за інструкцією апарата. Якщо дуга тріщить і сильно бризкає — перевірте на пробній пластині з «+».']]},
+ {id:'solid',chip:'Дріт для газу',eye:'Розхідник',title:'Суцільний дріт 0,8 мм для CO₂ і Ar-CO₂',hl:'f:spool',
+  what:'Омеднений суцільний дріт для режимів 0.8 CO₂ і 0.8 Ar-CO₂. Котушка ставиться й заправляється так само, як флюсова, але працює лише з газом із балона.',
+  spec:'Дріт <b>0,6–0,8 мм</b> · програми апарата — під <b>0,8</b> · газ <b>8–15 л/хв</b>',
+  set:{power:true,mode:'co2',pol:'+',view:'feed',wire:0.8,roll:0.8,tip:0.8,arm:false,inch:false},
+  rows:[['Режим','0.8 CO₂ або 0.8 Ar-CO₂'],['Кабель полярності','«+»'],['Маса','«−»'],['Ролик','канавка 0,8'],['Наконечник','0,8'],['Газ','8–15 л/хв на GAS INPUT']],
+  sec:[
+   ['Як поставити',[
+    'Котушку й дріт заправте так само, як флюсовий дріт (див. «Флюсовий дріт»).',
+    'Вимкніть апарат і переставте кабель полярності в «+», масу в «−».',
+    'Шланг редуктора на штуцер GAS INPUT, затягніть хомут.',
+    'Редуктор — 8–15 л/хв за товщиною металу.']],
+   ['Як перевірити',[
+    'Мильний розчин на з\'єднаннях шланга — бульбашок немає.',
+    'Натисніть курок у повітря на 2–3 с — чути газ з сопла.',
+    'Шов блискучий, без пор. Пори — мало газу, протяг або порожній балон.']],
+   ['Ознаки зносу',[
+    'Іржа на дроті — відріжте верхні витки або міняйте котушку.',
+    'Дріт подається ривками — перевірте наконечник, ролик і натяг.']]
+  ]},
+ {id:'rod',chip:'Електроди 7014',eye:'Розхідник · арт. 78960001',title:'Електроди ULTRA 7014, Ø3 мм, 2,5 кг',
+  url:'https://dnipro-m.ua/tovar/zvaryuvalni-elektrodi-7014-3mm-2-5-kg/',hl:'h:rod',
+  what:'Рутилові електроди із залізним порошком для ручного дугового зварювання (MMA) вуглецевих і низьколегованих сталей. М\'який старт, стабільна дуга, мало бризок, шлак відходить легко. Підходять початківцям.',
+  spec:'AWS A5.1 <b>E7014</b> · ISO 2560-A-E 42 0 RR 12 · <b>Ø3 мм</b> × <b>350 мм</b> · струм <b>70–120 А</b> · AC / DC+ · усі положення, крім вертикалі на спуск · не потребують прокалювання',
+  set:{power:true,mode:'mma',hpol:'+',rod:3.2,cur:100,view:'torch'},
+  rows:[['Режим','MMA'],['Тримач','«+» (DC+ з картки електродів)'],['Маса','«−»'],['Кабель полярності','вийнятий'],['Струм','70–120 А, почніть зі 100 А']],
+  sec:[
+   ['Як поставити електрод',[
+    'Вимкніть апарат, вийміть кабель полярності. Тримач у «+», масу в «−»: поверніть байонети за годинниковою до упору.',
+    'SETUP — MMA, струм 100 А: тонший метал — 70–90 А, товщий — 110–120 А.',
+    'Натисніть важіль тримача й вставте електрод голим кінцем (без обмазки) у губки, відпустіть важіль.',
+    'Губки мають тиснути на голий метал, а не на обмазку.']],
+   ['Як працювати',[
+    'Підпаліть дугу чирканням, як сірником, або легким дотиком і відведенням.',
+    'Довжина дуги — приблизно діаметр електрода, 3 мм (загальна практика).',
+    'Нахил електрода 70–80° у бік руху (загальна практика).',
+    'Вертикальні шви ведіть знизу вгору — «на спуск» ці електроди не рекомендовані (з картки).',
+    'Шлак збивайте, коли шов трохи охолоне.']],
+   ['Як перевірити, що поставили правильно',[
+    'Тримач у «+», маса в «−», кабель полярності вийнятий.',
+    'Електрод затиснутий голим кінцем і не хитається.',
+    'Дуга запалюється легко й горить рівно, без «пострілів».',
+    'Електрод прилипає — додайте 5–10 А. Сильно бризкає й підрізає краї — зменште.']],
+   ['На що дивитися',[
+    'Обмазка ціла: без тріщин і відколів. Обкришена з одного боку — дуга йде «козирком» убік.',
+    'Зберігайте пачку в сухому місці. Відволожені електроди дають пори й бризки — просушіть їх (загальна практика), хоча прокалювання цим електродам не потрібне.',
+    'На кінці після зварювання лишається кільце обмазки 1–2 мм — збийте його перед новим підпалом.',
+    'Не кладіть тримач з електродом на стіл чи деталь: дуга спалахне сама.']],
+   ['Ознаки, що електрод пора міняти',[
+    'Залишився недогарок 40–50 мм: далі гріються губки тримача (загальна практика).',
+    'Обмазка обкришилася або тріснула.',
+    'Електрод намок або іржавий на голому кінці.']]
+  ]},
+ {id:'tip',chip:'Наконечник 0,8',eye:'Розхідник · арт. 54573000',title:'Наконечник мідний СТ-0.8N (3 шт.)',
+  url:'https://dnipro-m.ua/tovar/nakonechnik-midnij-ct-08n-3sht/',hl:'t:tip',
+  what:'Мідний контактний наконечник у пальнику MIG: через нього струм переходить на дріт. Отвір має збігатися з дротом — тут 0,8 мм. В упаковці три наконечники: тримайте запасний поруч з апаратом.',
+  spec:'Мідь · під дріт <b>0,8 мм</b> · довжина <b>25 мм</b> · <b>3 шт.</b> в упаковці',
+  set:{power:false,mode:'flux',pol:'-',tip:0.8,wire:0.8,view:'torch'},
+  rows:[['Апарат','вимкнений, вилка з розетки'],['Наконечник','0,8 = дріт 0,8'],['Сопло','на час заміни зняте']],
+  sec:[
+   ['Як замінити наконечник',[
+    'Вимкніть апарат і витягніть вилку.',
+    'Зніміть газове сопло: обертайте й тягніть від пальника.',
+    'Відкусіть дріт урівень з наконечником.',
+    'Викрутіть старий наконечник проти годинникової стрілки — ключем або плоскогубцями.',
+    'Огляньте газорозподільник під наконечником: різьба ціла, отвори для газу не забиті бризками.',
+    'Перевірте маркування нового наконечника — 0.8.',
+    'Накрутіть новий наконечник на дріт і в різьбу рукою до упору, потім підтягніть ключем на чверть оберту. Мідь м\'яка: різьбу легко зірвати.',
+    'Поставте сопло назад.']],
+   ['Як працювати',[
+    'Виліт дроту з наконечника — близько 10 мм (загальна практика).',
+    'Не торкайтеся наконечником ванни: він приварюється й перегрівається.',
+    'Після шва відкусіть кульку на кінці дроту — з нею дуга погано запалюється.',
+    'Бризки всередині сопла й на наконечнику чистіть після кожної котушки або частіше.']],
+   ['Як перевірити, що поставили правильно',[
+    'Натисніть курок без дуги — дріт виходить рівно й вільно, без заїдань.',
+    'Наконечник не хитається, сопло сидить щільно й не торкається наконечника.',
+    'Дуга стабільна, без «пострілів» і обривів.']],
+   ['На що дивитися',[
+    'Отвір круглий. Розбитий овалом — дуга «блукає», дріт гуляє.',
+    'Торець не оплавлений і без нарослих бризок.',
+    'Діаметр на наконечнику завжди дорівнює діаметру дроту.',
+    'Різьбу наконечника порівняйте зі старим наконечником апарата: на сторінці товару Dnipro-M підтвердили сумісність з MG-14DX.']],
+   ['Ознаки, що наконечник пора міняти',[
+    'Отвір розбитий овалом, дуга нестабільна.',
+    'Дріт приварився до наконечника й не прочищається.',
+    'Торець оплавлений або обліплений бризками, які не знімаються.']]
+  ]},
+ {id:'mag',chip:'Магнітна маса',eye:'Розхідник · арт. 49306000',title:'Магнітний контакт маси MC-2286',
+  url:'https://dnipro-m.ua/tovar/kontakt-magnitnyj-dlya-svarki-mk-2286/',hl:'mass',
+  what:'Магніт для швидкого підключення кабелю маси до деталі. Особливо зручний на трубах і листі, де нема куди зачепити затискач. Ставиться ближче до шва — струму менше шляху по металу.',
+  spec:'До <b>500 А</b> (апарат — до 160 А) · магніт <b>Ø70 мм</b> · тримає до <b>8 кг</b> · рукоятка-важіль для зняття · окремого обслуговування не потребує',
+  set:{power:true,view:'front'},
+  rows:[['Кабель маси','на латунну клему магніту'],['Магніт','на зачищений метал біля шва'],['Струм','до 160 А — запас більш ніж утричі']],
+  sec:[
+   ['Як підключити',[
+    'Вимкніть апарат.',
+    'Затисніть затискач кабелю маси на латунній клемі магніту або закріпіть наконечник кабелю під гайкою клеми й затягніть.',
+    'Зачистіть місце під магніт від фарби, іржі й окалини до блиску.',
+    'Поставте магніт плоско якомога ближче до шва.',
+    'Зняти: натисніть на рукоятку — вона підважує магніт від металу.']],
+   ['Як працювати',[
+    'Підходить для всіх режимів: MMA, FLUX, CO₂, Ar-CO₂, TIG.',
+    'На трубах малого діаметра магніт торкається лише смужкою — ставте його на пласке місце або ближче до шва (загальна практика).',
+    'Не ставте магніт там, де струм піде через підшипники, шарніри чи механізми — їх можна пошкодити (загальна практика).',
+    'Тримайте магніт подалі від зони бризок.']],
+   ['Як перевірити, що підключили правильно',[
+    'Магніт сидить щільно й не ковзає по металу.',
+    'Дуга запалюється одразу, без «чихання».',
+    'Через 1–2 хвилини роботи магніт і кабель лише теплі. Гарячі — поганий контакт: зачистіть метал і підтягніть гайку (загальна практика).']],
+   ['На що дивитися',[
+    'Робоча поверхня магніту чиста: прилиплі бризки й окалину знімайте.',
+    'Гайка клеми затягнута, клема не хитається.',
+    'Не кидайте магніт: він може тріснути. Тримайте його подалі від телефонів і банківських карток (загальна практика).']],
+   ['Ознаки зносу',[
+    'Магніт став слабше тримати: перевірте, чи чиста поверхня. Чиста, але тримає слабко — магніт перегрівався, міняйте.',
+    'Розхитана або обгоріла клема.',
+    'Пошкоджена ручка-важіль.']]
+  ]}
+];
+let SVCID='wire';
+function svcHl(x){return x.hl==='mass'?rowKey('Маса'):x.hl}
+function applySvc(id){const x=SVC.find(s=>s.id===id);SVCID=id;S.tab='svc';S.inch=false;S.trig=false;S.heat=false;Object.assign(S,x.set);S.hl=svcHl(x);render();keepActive();revealDev()}
+function renderSvc(){const x=SVC.find(s=>s.id===SVCID);
+  const sc=$('svcchips'),sl=sc.scrollLeft;sc.innerHTML=SVC.map(s=>`<button class="chip" data-svc="${s.id}" aria-pressed="${SVCID===s.id}">${s.chip}</button>`).join('');sc.scrollLeft=sl;
+  const list=(t,a,i)=>`<div class="sub"><div class="glabel">${t}</div>${i<1?`<ol class="steps">${a.map(s=>`<li><span>${s}</span></li>`).join('')}</ol>`:`<ul class="checks${/правильно|перевір/i.test(t)?' ok':''}">${a.map(s=>`<li>${s}</li>`).join('')}</ul>`}</div>`;
+  $('svc').innerHTML=`<div class="eyebrow">${x.eye}</div><h2>${x.title}</h2><p>${x.what}</p><div class="spec">${x.spec}</div>
+   <div class="sub"><div class="glabel">Що виставити на апараті</div><dl class="setrows">${x.rows.map(([a,b])=>`<dt>${a}</dt><dd>${b}</dd>`).join('')}</dl></div>
+   <div class="acts"><button class="chip" data-svcset="${x.id}">Показати на апараті</button>${x.url?`<a class="chip" href="${x.url}" target="_blank" rel="noopener" style="text-decoration:none">Товар на dnipro-m.ua ↗</a>`:''}</div>
+   ${x.sec.map(([t,a])=>list(t,a,/^Як поставити|^Як замінити|^Як підключити|^Як працювати/.test(t)?0:1)).join('')}
+   ${(x.notes||[]).map(noteHtml).join('')}`}
+
 /* ---------- render ---------- */
 const MODENAME=Object.fromEntries(MODES.map(m=>[m.id,m.chip]));
 function renderFs(){const b=$('fsbar');if(!b||b.hidden)return;const k=kind();const row=b.querySelector('.fschips'),sl=row?row.scrollLeft:0;
@@ -914,6 +1093,7 @@ function renderInfo(){
     if(f==='h:rod'){const r=MMATAB.find(x=>x[0]===S.rod);h+=`<div class="result">Електрод ${String(S.rod).replace('.',',')} мм · метал ${r[1]} мм · струм ${r[2]}–${r[3]} А</div>`}
     if(f==='k:trim')h+=`<div class="result">Зараз: ${S.trim>0?'+':''}${String(S.trim).replace('.',',')} · напруга на дисплеї ${volts().toFixed(1)} В${kind()!=='mig'?'<br>У режимі '+MODENAME[S.mode]+' ця ручка, найімовірніше, не діє':''}</div>`;
     if(c.acts)h+=`<div class="acts">${c.acts.map(([a,t])=>`<button class="chip" data-act="${a}">${t}</button>`).join('')}</div>`;
+    if(c.svc){const x=SVC.find(z=>z.id===c.svc);h+=`<div class="acts"><button class="chip" data-gosvc="${c.svc}">Обслуговування: ${x.chip} →</button></div>`}
     h+=noteHtml(c.note);
   }
   $('info').innerHTML=h;
@@ -928,17 +1108,17 @@ function renderPicker(){
   const sc=$('scenchips'),sl2=sc.scrollLeft;
   sc.innerHTML=SCEN.map(s=>`<button class="chip" data-scen="${s.id}" aria-pressed="${S.scen===s.id}">${s.chip}</button>`).join('');sc.scrollLeft=sl2;
 }
-function renderTabs(){const d=S.tab==='dev';$('tab-dev').setAttribute('aria-selected',d);$('tab-how').setAttribute('aria-selected',!d);
-  $('pane-dev').hidden=!d;$('pane-how').hidden=d;$('picker').hidden=!d;$('scenwrap').hidden=d}
-const FOCUS_ATTRS=['data-focus','data-scen','data-act','data-fsmode','data-view','data-fsclose'];
+function renderTabs(){const t=S.tab;['dev','how','svc'].forEach(x=>{$('tab-'+x).setAttribute('aria-selected',t===x);$('pane-'+x).hidden=t!==x});
+  $('picker').hidden=t!=='dev';$('scenwrap').hidden=t!=='how';$('svcwrap').hidden=t!=='svc'}
+const FOCUS_ATTRS=['data-focus','data-scen','data-svc','data-svcset','data-gosvc','data-act','data-fsmode','data-view','data-fsclose'];
 function keepFocus(fn){const a=document.activeElement;let sel=null;
-  if(a&&a.tagName==='BUTTON'&&a.closest('#picker,#scenchips,#info,#fsbar')){const k=FOCUS_ATTRS.find(x=>a.hasAttribute(x));if(k)sel=`#${a.closest('#picker,#scenchips,#info,#fsbar').id} button[${k}="${a.getAttribute(k)}"]`}
+  if(a&&a.tagName==='BUTTON'&&a.closest('#picker,#scenchips,#svcchips,#info,#svc,#fsbar')){const k=FOCUS_ATTRS.find(x=>a.hasAttribute(x));if(k)sel=`#${a.closest('#picker,#scenchips,#svcchips,#info,#svc,#fsbar').id} button[${k}="${a.getAttribute(k)}"]`}
   fn();if(sel&&!a.isConnected){const c=document.querySelector(sel);if(c)c.focus({preventScroll:true})}}
-function render(){keepFocus(()=>{renderFs();drawDevice();renderTabs();renderPicker();renderStatus();if(S.tab==='dev')renderInfo();else renderScen()})}
+function render(){keepFocus(()=>{renderFs();drawDevice();renderTabs();renderPicker();renderStatus();if(S.tab==='dev')renderInfo();else if(S.tab==='svc')renderSvc();else renderScen()})}
 
 /* ---------- actions ---------- */
 const mobile=()=>matchMedia('(max-width:780px)').matches;
-function keepActive(){if(!mobile())return;const a=document.querySelector('.navbar .chip[aria-pressed="true"]');if(!a)return;const row=a.closest('.picker,#scenchips');if(!row)return;
+function keepActive(){if(!mobile())return;const a=document.querySelector('.navbar .chip[aria-pressed="true"]');if(!a)return;const row=a.closest('.picker,#scenchips,#svcchips');if(!row)return;
   const r=a.getBoundingClientRect(),rr=row.getBoundingClientRect();if(r.left<rr.left||r.right>rr.right-28)row.scrollTo({left:row.scrollLeft+r.left-rr.left-16,behavior:reduce?'auto':'smooth'})}
 function revealDev(){if(!mobile())return;const nb=$('navbar').getBoundingClientRect().height;const t=$('devwrap').getBoundingClientRect().top;
   if(t<nb||t>innerHeight*0.5)scrollTo({top:scrollY+t-nb-8,behavior:reduce?'auto':'smooth'})}
@@ -966,7 +1146,7 @@ function applyScen(id){const sc=SCEN.find(s=>s.id===id);S.scen=id;S.inch=false;S
 /* clicks on the device */
 const CLICKACT={'h:rod':'rod','g:valve':'valve','r:sw':'power','f:roll':'roll','t:tip':'tip','f:arm':'arm','f:spool':'wire','c:pol':'swap'};
 function pickClick(k,tipFn){
-  if(S.tab==='how'){if(CLICKACT[k])act(CLICKACT[k]);if(tipFn)tipFn();return}
+  if(S.tab!=='dev'){if(CLICKACT[k])act(CLICKACT[k]);if(tipFn)tipFn();return}
   S.focus=k;
   if(CLICKACT[k]){act(CLICKACT[k]);return}
   if(k==='l:modes'){S.focus='m:'+S.mode}
@@ -1052,10 +1232,12 @@ document.addEventListener('click',e=>{
   const v=e.target.closest('[data-view]');if(v){S.view=v.dataset.view;drawDevice();if(V3&&V3.on)V3.goView(S.view);return}
   const fc=e.target.closest('[data-focus]');if(fc){focusOn(fc.dataset.focus,true);return}
   const sc=e.target.closest('[data-scen]');if(sc){applyScen(sc.dataset.scen);return}
+  const sv=e.target.closest('[data-svc],[data-svcset],[data-gosvc]');if(sv){applySvc(sv.dataset.svc||sv.dataset.svcset||sv.dataset.gosvc);return}
   const a=e.target.closest('[data-act]');if(a){act(a.dataset.act);return}
 });
 $('tab-dev').addEventListener('click',()=>{S.tab='dev';S.hl=null;render()});
 $('tab-how').addEventListener('click',()=>{S.tab='how';applyScen(S.scen)});
+$('tab-svc').addEventListener('click',()=>applySvc(SVCID));
 $('gloss').innerHTML=GLOSS.map(([a,b])=>`<dt>${a}</dt><dd>${b}</dd>`).join('');
 const st=document.createElement('style');st.textContent='@keyframes spin{to{transform:rotate(360deg)}}';document.head.appendChild(st);
 render();
@@ -1514,6 +1696,5 @@ window.__V3=V3;
 
 })();
 </script>
-
 </body>
 </html>
