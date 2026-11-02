@@ -511,6 +511,8 @@ const C={
     note:['warn','Не плутайте з масою: кабель маси йде в гніздо на передній панелі, а не сюди.']},
   'r:fan':{v:'rear',eye:'Ззаду · 14',title:'Вентилятор',
     what:'Примусове охолодження. Працює, поки апарат увімкнений, і продовжує охолоджувати після спрацювання захисту від перегріву. Не закривайте решітку й бокові жалюзі, раз на кілька місяців продувайте стисненим повітрям.'},
+  'x:mag':{svc:'mag',v:'torch',eye:'Розхідник · арт. 49306000',title:'Магнітний контакт маси MC-2286',
+    what:'Магніт замість звичайного затискача маси: кабель маси під гайку латунної клеми, магніт — плоско на зачищений метал біля шва. Знімається важелем: потягніть ручку вгору.'},
   'f:table':{v:'feed',eye:'Відсік · дверцята',title:'Таблиця режимів на дверцятах',
     what:'На внутрішньому боці дверцят відсіку подачі наклеєна таблиця MIG/MAG: який струм ставити залежно від дроту (0,6 / 0,8 мм), газу чи флюсового дроту E71T-GS і товщини металу 0,8–3 мм. Та сама таблиця — нижче на сторінці; клітинки можна натискати.'},
   'f:door':{v:'feed',eye:'Відсік · 15',title:'Відсік механізму подачі',
@@ -1132,7 +1134,7 @@ const SVC=[
     'Затисніть затискач кабелю маси на латунній клемі магніту або закріпіть наконечник кабелю під гайкою клеми й затягніть.',
     'Зачистіть місце під магніт від фарби, іржі й окалини до блиску.',
     'Поставте магніт плоско якомога ближче до шва.',
-    'Зняти: натисніть на рукоятку — вона підважує магніт від металу.']],
+    'Зняти: потягніть рукоятку вгору — магніт перекидається через протилежний край і відривається.']],
    ['Як працювати',[
     'Підходить для всіх режимів: MMA, FLUX, CO₂, Ar-CO₂, TIG.',
     'На трубах малого діаметра магніт торкається лише смужкою — ставте його на пласке місце або ближче до шва (загальна практика).',
@@ -1159,11 +1161,11 @@ function renderSvc(){const x=SVC.find(s=>s.id===SVCID);
   const sc=$('svcchips'),sl=sc.scrollLeft;sc.innerHTML=SVC.map(s=>`<button class="chip" data-svc="${s.id}" aria-pressed="${SVCID===s.id}">${s.chip}</button>`).join('');sc.scrollLeft=sl;
   const list=(t,a,i)=>`<div class="sub"><div class="glabel">${t}</div>${i<1?`<ol class="steps">${a.map(s=>`<li><span>${s}</span></li>`).join('')}</ol>`:`<ul class="checks${/правильно|перевір/i.test(t)?' ok':''}">${a.map(s=>`<li>${s}</li>`).join('')}</ul>`}</div>`;
   $('svc').innerHTML=`<div class="eyebrow">${x.eye}</div><h2>${x.title}</h2><p>${x.what}</p><div class="spec">${x.spec}</div>
-   ${x.id==='tip'?`<div class="sub"><div class="glabel">Пальник у розрізі</div>${tipFigHTML()}</div>`:''}
+   ${x.id==='tip'?`<div class="sub"><div class="glabel">Пальник у розрізі</div>${tipFigHTML()}</div>`:''}${x.id==='mag'?`<div class="sub"><div class="glabel">Магніт на деталі</div>${magFigHTML()}</div>`:''}
    <div class="sub"><div class="glabel">Що виставити на апараті</div><dl class="setrows">${x.rows.map(([a,b])=>`<dt>${a}</dt><dd>${b}</dd>`).join('')}</dl></div>
    <div class="acts"><button class="chip" data-svcset="${x.id}">Показати на апараті</button>${x.url?`<a class="chip" href="${x.url}" target="_blank" rel="noopener" style="text-decoration:none">Товар на dnipro-m.ua ↗</a>`:''}</div>
    ${x.sec.map(([t,a])=>list(t,a,/^Як поставити|^Як замінити|^Як підключити|^Як працювати/.test(t)?0:1)).join('')}
-   ${(x.notes||[]).map(noteHtml).join('')}`;if(x.id==='tip')drawTip()}
+   ${(x.notes||[]).map(noteHtml).join('')}`;if(x.id==='tip')drawTip();if(x.id==='mag')drawMag()}
 
 /* ---------- наконечник у розрізі: анімація заміни ---------- */
 const TIPSTEPS=[
@@ -1261,6 +1263,76 @@ function wtHTML(){const ri=wtRow();
 function renderWTab(){const el=$('wtabbox');if(el)el.innerHTML=wtHTML()}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-wt]');if(!b)return;const [i,j]=b.dataset.wt.split(':').map(Number),r=WTAB[i],c=r.a[j];
   S.power=true;S.heat=false;Object.assign(S,r.set);S.cur=Math.round((c[0]+c[1])/2);if(S.tab==='dev'&&S.focus.startsWith('m:'))S.focus='m:'+S.mode;render()});
+/* ---------- магнітна маса MC-2286: схема й анімація ---------- */
+const MAGSTEPS=[
+ {k:'parts',chip:'Будова',t:'Магнітний контакт MC-2286',d:'Магніт Ø70 мм у сірому корпусі, зверху наліпка. Латунна шпилька з гайкою — клема для кабелю маси, червона шайба ізолює її. Сталевий важіль з гумовою ручкою — щоб відірвати магніт від металу.',lug:1,rust:0,place:1,lift:0,nut:1},
+ {k:'cable',chip:'1. Кабель на клему',t:'Під\'єднайте кабель маси',d:'Відкрутіть гайку, надіньте наконечник кабелю маси на латунну шпильку й затягніть гайку. Або затисніть на шпильці затискач маси.',lug:1,rust:1,place:0,lift:0,nut:1,from:{lug:0,nut:0}},
+ {k:'clean',chip:'2. Зачистити місце',t:'Зачистіть місце під магніт',d:'Фарба, іржа й окалина — ізолятор. Зачистіть пляму розміром з магніт до блиску.',lug:1,rust:0,place:0,lift:0,nut:1},
+ {k:'place',chip:'3. Поставити біля шва',t:'Поставте плоско біля шва',d:'Магніт прилипає сам — тримає до 8 кг. Що ближче до шва, то коротший шлях струму по металу.',lug:1,rust:0,place:1,lift:0,nut:1},
+ {k:'lift',chip:'4. Зняти важелем',t:'Зніміть важелем',d:'Потягніть гумову ручку вгору: магніт перекидається через протилежний край і відривається від металу. Тягнути магніт за кабель не треба.',lug:1,rust:0,place:1,lift:1,nut:1}
+];
+const MAGFAULT={rust:{chip:'✗ На іржі й фарбі',d:'Магніт стоїть на іржі чи фарбі: контакт поганий, дуга «чихає», магніт і кабель гріються, іскрить під магнітом.'},
+ far:{chip:'✗ Далеко від шва',d:'Струм іде довгим шляхом через усю конструкцію — через шарніри, підшипники, гвинти. Дуга слабша, а механізми можна пошкодити.'},
+ loose:{chip:'✗ Гайка не затягнута',d:'Наконечник кабелю хитається на шпильці: місце контакту нагрівається й обгорає, дуга нестабільна. Затягніть гайку.'}};
+const MAG={step:0,fault:null,lug:1,rust:0,place:1,lift:0,nut:1,ph:0,raf:0,play:0};
+function magGo(i){MAG.step=i;MAG.fault=null;const s=MAGSTEPS[i];if(s.from)Object.assign(MAG,s.from);
+  const from={lug:MAG.lug,rust:MAG.rust,place:MAG.place,lift:MAG.lift,nut:MAG.nut},t0=performance.now(),dur=reduce?0:900;cancelAnimationFrame(MAG.raf);clearTimeout(MAG.tm);
+  (function fr(now){const t=dur?Math.min(1,(now-t0)/dur):1,e=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+    ['lug','rust','place','lift','nut'].forEach(k=>MAG[k]=from[k]+(s[k]-from[k])*e);if(s.k==='cable'&&t<1)MAG.ph=(MAG.ph+1)%40;
+    drawMag();if(t<1)MAG.raf=requestAnimationFrame(fr);else if(MAG.play&&i<MAGSTEPS.length-1)MAG.tm=setTimeout(()=>magGo(i+1),1300);else MAG.play=0})(t0)}
+function magFigHTML(){return `<div class="tipfig"><svg id="magsvg" viewBox="0 0 460 260" role="img" aria-label="Магнітний контакт маси MC-2286 на деталі"></svg>
+  <div class="acts tipctl">${MAGSTEPS.map((s,i)=>`<button class="chip" data-magstep="${i}">${s.chip}</button>`).join('')}<button class="chip" data-magplay="1">▶ Показати</button></div>
+  <div class="acts tipctl">${Object.entries(MAGFAULT).map(([k,f])=>`<button class="chip" data-magfault="${k}">${f.chip}</button>`).join('')}</div>
+  <div class="result" id="magcap"></div></div>`}
+function drawMag(){const el=$('magsvg');if(!el)return;const st=MAGSTEPS[MAG.step],fl=MAG.fault;
+  const PY=196; // верх деталі
+  const far=fl==='far',mx=far?96:262,seamX=330;
+  let h=`<defs><linearGradient id="mgb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c9ccd0"></stop><stop offset=".55" stop-color="#9da2a8"></stop><stop offset="1" stop-color="#7d8288"></stop></linearGradient>
+   <linearGradient id="mbr" x1="0" x2="1"><stop offset="0" stop-color="#8d6c25"></stop><stop offset=".5" stop-color="#e6c97a"></stop><stop offset="1" stop-color="#8d6c25"></stop></linearGradient>
+   <linearGradient id="mpl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b6bbc1"></stop><stop offset="1" stop-color="#868c93"></stop></linearGradient>
+   <filter id="mrust" x="0" y="0" width="1" height="1"><feTurbulence type="fractalNoise" baseFrequency=".06" numOctaves="3" seed="4"></feTurbulence><feColorMatrix values="0 0 0 0 .55  0 0 0 0 .28  0 0 0 0 .12  0 0 0 2.4 -.6"></feColorMatrix><feComposite in2="SourceGraphic" operator="in"></feComposite></filter></defs>
+   <rect width="460" height="260" rx="10" fill="var(--bg)"></rect>`;
+  // деталь і шов
+  h+=`<rect x="14" y="${PY}" width="432" height="26" fill="url(#mpl)" stroke="#6b7078"></rect><path d="M${seamX},${PY} q6,-7 12,0 q6,-7 12,0" fill="#7b7f84" stroke="#55595e"></path><text x="${seamX+12}" y="${PY+44}" text-anchor="middle" font-family="Onest,sans-serif" font-size="10" fill="var(--muted)">шов</text>`;
+  const rustOp=fl==='rust'?1:MAG.rust;if(rustOp>.02)h+=`<rect x="${mx-60}" y="${PY}" width="120" height="7" fill="#fff" filter="url(#mrust)" opacity="${f1(rustOp)}"></rect>`;
+  if(MAG.rust<.5&&!fl&&MAG.step>=2)h+=`<rect x="${mx-46}" y="${PY-1}" width="92" height="3" fill="#e9edf0" opacity=".9"></rect>`;
+  // магніт: опускається (place) і відривається важелем (lift — поворот навколо лівого краю)
+  const lift=MAG.lift,drop=(1-MAG.place)*-70,ang=-lift*22,pivX=mx-35,pivY=PY;
+  let m=`<g transform="translate(0,${f1(drop)}) rotate(${f1(ang)} ${pivX} ${pivY})">`;
+  m+=`<rect x="${mx-35}" y="${PY-20}" width="70" height="20" rx="3" fill="url(#mgb)" stroke="#5e6369"></rect><ellipse cx="${mx}" cy="${PY-20}" rx="35" ry="7" fill="#d4d7da" stroke="#5e6369"></ellipse>
+     <ellipse cx="${mx}" cy="${PY-20.5}" rx="31" ry="5.6" fill="#141516"></ellipse>
+     <text x="${mx-22}" y="${PY-19}" font-family="Unbounded,Arial Black,sans-serif" font-size="4.6" font-weight="700" fill="#e8401e">DNIPRO-M</text><text x="${mx+16}" y="${PY-18}" font-family="Onest,sans-serif" font-size="3.4" font-weight="700" fill="#e9e7e2">MAGNETIC</text><text x="${mx-6}" y="${PY-15.6}" font-family="Onest,sans-serif" font-size="3.4" font-weight="700" fill="#e9e7e2">500A</text>
+     <ellipse cx="${mx}" cy="${PY-22}" rx="9" ry="2.6" fill="#b3261e"></ellipse><rect x="${mx-6}" y="${PY-27}" width="12" height="5" fill="#d1d4d8" stroke="#6b7076"></rect>`;
+  // кабель маси з наконечником на шпильці
+  const lugY=PY-30-(1-MAG.lug)*46,lugX=mx-(1-MAG.lug)*40;
+  m+=`<rect x="${mx-4}" y="${PY-50}" width="8" height="24" fill="url(#mbr)" stroke="#7d6224"></rect>${[0,1,2,3,4].map(k=>`<path d="M${mx-4},${PY-48+k*4.6} l8,2" stroke="#7d6224" stroke-width=".8"></path>`).join('')}`;
+  m+=`<path d="M${f1(lugX-80)},${f1(lugY-40)} C${f1(lugX-50)},${f1(lugY-10)} ${f1(lugX-30)},${f1(lugY)} ${f1(lugX-9)},${f1(lugY)}" fill="none" stroke="#5c6168" stroke-width="9" stroke-linecap="round"></path><path d="M${f1(lugX-80)},${f1(lugY-40)} C${f1(lugX-50)},${f1(lugY-10)} ${f1(lugX-30)},${f1(lugY)} ${f1(lugX-9)},${f1(lugY)}" fill="none" stroke="#0e0e0f" stroke-width="7" stroke-linecap="round"></path><rect x="${f1(lugX-12)}" y="${f1(lugY-3)}" width="22" height="6" rx="3" fill="#b87333" stroke="#6e4a22"></rect>`;
+  const loose=fl==='loose'?6:0,nutY=PY-36-(1-MAG.nut)*20-loose;
+  m+=`<g transform="translate(0,0)"><rect x="${mx-8}" y="${f1(nutY)}" width="16" height="7" rx="1" fill="#c9ccd0" stroke="#6b7076"></rect><path d="M${mx-3},${f1(nutY)} V${f1(nutY+7)} M${mx+3},${f1(nutY)} V${f1(nutY+7)}" stroke="#7f858b" stroke-width=".8"></path></g>`;
+  if(fl==='loose')m+=`<rect x="${mx-9}" y="${PY-31}" width="18" height="3" fill="#ff6a1f"></rect>`;
+  // важіль з гумовою ручкою
+  m+=`<path d="M${mx-2},${PY-29} L${mx+92},${PY-52}" stroke="#a9adb2" stroke-width="7" stroke-linecap="round"></path><path d="M${mx+62},${PY-45} L${mx+98},${PY-54}" stroke="#141516" stroke-width="10" stroke-linecap="round"></path>`;
+  m+=`</g>`;h+=m;
+  // стрілки й позначки
+  if(MAG.step===4&&!fl)h+=`<path d="M${mx+112},${PY-62} v-22" stroke="var(--orange)" stroke-width="2.4" marker-end="url(#marr)"></path><defs><marker id="marr" viewBox="0 0 10 10" refX="5" refY="7" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="var(--orange)"></path></marker></defs><text x="${mx+112}" y="${PY-92}" text-anchor="middle" font-family="Onest,sans-serif" font-size="10" font-weight="700" fill="var(--accent)">потягніть угору</text>`;
+  if(MAG.step===3&&!fl)h+=`<path d="M${mx+40},${PY+12} H${seamX-4}" stroke="#2f9a52" stroke-width="1.6"></path><path d="M${mx+40},${PY+8} v8 M${seamX-4},${PY+8} v8" stroke="#2f9a52" stroke-width="1.6"></path><text x="${(mx+40+seamX)/2}" y="${PY+40}" text-anchor="middle" font-family="Onest,sans-serif" font-size="10" font-weight="700" fill="#2f9a52">ближче до шва</text>`;
+  if(far)h+=`<path d="M${mx+40},${PY+14} C200,${PY+40} 280,${PY+40} ${seamX},${PY+14}" fill="none" stroke="#c8321b" stroke-width="1.8" stroke-dasharray="5 4"></path><text x="215" y="${PY+48}" text-anchor="middle" font-family="Onest,sans-serif" font-size="10" font-weight="700" fill="#c8321b">довгий шлях струму</text>`;
+  if(fl==='rust')h+=[0,1,2,3].map(k=>`<path d="M${mx-30+k*20},${PY+1} l${-3+k*2},8" stroke="#ffb547" stroke-width="1.4"></path>`).join('');
+  // підписи будови
+  if(MAG.step===0&&!fl){const L=(x,y,x2,y2,t)=>`<path d="M${x},${y} L${x2},${y2}" stroke="var(--muted)" stroke-width="1"></path><text x="${x2}" y="${y2-4}" text-anchor="middle" font-family="Onest,sans-serif" font-size="10" font-weight="600" fill="var(--ink)">${t}</text>`;
+    h+=L(mx-30,PY-10,mx-70,PY-74,'магніт Ø70')+L(mx,PY-46,mx-14,PY-110,'латунна клема')+L(mx-6,PY-22,mx-110,PY-40,'червона шайба')+L(mx+80,PY-50,mx+120,PY-104,'важіль')+L(mx-60,PY-38,mx-150,PY-90,'кабель маси')}
+  h+=`<text x="12" y="20" font-family="Unbounded,Arial Black,sans-serif" font-size="12" font-weight="700" fill="${fl?'#c8321b':'var(--ink)'}">${fl?MAGFAULT[fl].chip:st.t}</text>`;
+  el.innerHTML=h;
+  const cap=$('magcap');if(cap)cap.textContent=fl?MAGFAULT[fl].d:st.d;
+  document.querySelectorAll('[data-magstep]').forEach(b=>b.setAttribute('aria-pressed',String(!fl&&+b.dataset.magstep===MAG.step)));
+  document.querySelectorAll('[data-magfault]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.magfault===fl)));
+}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-magstep],[data-magplay],[data-magfault]');if(!b)return;
+  if(b.dataset.magplay){MAG.play=1;magGo(1);return}
+  MAG.play=0;clearTimeout(MAG.tm);cancelAnimationFrame(MAG.raf);
+  if(b.dataset.magfault){MAG.fault=MAG.fault===b.dataset.magfault?null:b.dataset.magfault;MAG.step=0;Object.assign(MAG,{lug:1,place:1,lift:0,nut:1,rust:0});drawMag();return}
+  magGo(+b.dataset.magstep)});
+
 /* ---------- render ---------- */
 const MODENAME=Object.fromEntries(MODES.map(m=>[m.id,m.chip]));
 function renderFs(){const b=$('fsbar');if(!b||b.hidden)return;const k=kind();const row=b.querySelector('.fschips'),sl=row?row.scrollLeft:0;
@@ -1685,7 +1757,17 @@ function build(){
   [[2.75,3.2],[3.55,3.2]].forEach(([x,z])=>scene.add(boxM(.22,.08,.8,M.dark,x,.04,z)));
   const cl=new T.Group();cl.position.set(2.47,.11,3.57);cl.rotation.y=.5;
   cl.add(boxM(.42,.04,.12,M.nozzle,-.18,.05,0));cl.add(boxM(.42,.04,.12,M.nozzle,-.18,-.05,0));cl.add(boxM(.12,.025,.14,M.copper,.0,.0425,0));
-  scene.add(cl);P.clampEnd=V(2.15,.11,3.75);
+  scene.add(cl);P.clampEnd=V(2.15,.11,3.75);P.clamp3=cl;
+  // магнітна маса MC-2286: корпус Ø70, наліпка, червона шайба, латунна клема з гайкою, важіль з гумовою ручкою
+  const MX=2.62,MZ=3.4,mg=new T.Group();mg.position.set(MX,.14,MZ);
+  mg.add(cylBetween(V(0,0,0),V(0,.2,0),.35,.35,M.metal,40));
+  {const[c,x]=canvas(62,62,10);x.fillStyle='#141516';x.beginPath();x.arc(31,31,31,0,7);x.fill();x.fillStyle='#d4d7da';x.beginPath();x.arc(31,31,10,0,7);x.fill();
+   txt(x,'DNIPRO-M',31,15,'700 6px '+FD,'#e8401e');txt(x,'500A',14,38,'700 5px '+FB,'#e9e7e2');txt(x,'MAGNETIC',47,35,'700 3.6px '+FB,'#e9e7e2');txt(x,'CONTACT',47,40,'700 3.6px '+FB,'#e9e7e2');
+   const lt=new T.CanvasTexture(c);const lb=mesh(new T.CircleGeometry(.31,40),new T.MeshStandardMaterial({map:lt,roughness:.6}));lb.rotation.x=-Math.PI/2;lb.rotation.z=Math.PI;lb.position.y=.201;mg.add(lb)}
+  mg.add(cylBetween(V(0,.2,0),V(0,.22,0),.1,.1,M.red,24));mg.add(cylBetween(V(0,.22,0),V(0,.48,0),.045,.045,M.brass,16));
+  mg.add(cylBetween(V(0,.3,0),V(0,.36,0),.085,.085,M.metal,6));
+  const lv=new T.Group();lv.position.y=.24;lv.rotation.z=.2;lv.add(boxM(1.0,.035,.12,M.metal,.5,0,0));lv.add(boxM(.36,.08,.16,M.rubber,.86,0,0));mg.add(lv);
+  mg.rotation.y=2.3;scene.add(mg);mg.visible=false;P.mag3=mg;P.magEnd=V(MX,.42,MZ).add(V(-.0,0,0));mark(mg,'x:mag');
 
   buildTools();
   cablesG=new T.Group();scene.add(cablesG);
@@ -1753,18 +1835,18 @@ function buildTools(){
 /* ---------- cables (rebuilt when the layout changes) ---------- */
 function plug(pos,m){const g=new T.Group();g.add(cylZ(.075,.22,M.cable,pos.clone().add(V(0,0,.13)),20));g.add(cylZ(.085,.05,M.dark,pos.clone().add(V(0,0,.05)),20));return g}
 function buildCables(){cablesG.children.slice().forEach(o=>{cablesG.remove(o);o.traverse(m=>{if(m.geometry)m.geometry.dispose()});const i=picks.indexOf(o);if(i>=0)picks.splice(i,1)});
-  const k=kind(),opp=x=>x==='+'?'-':'+',sx=s=>s==='+'?110:152,sk2=s=>s==='+'?'s:plus':'s:minus',sl=s=>s==='+'?'+':'−';
+  const k=kind(),magOn=!!(P.mag3&&P.mag3.visible),massEnd=magOn?P.magEnd:P.clampEnd,opp=x=>x==='+'?'-':'+',sx=s=>s==='+'?110:152,sk2=s=>s==='+'?'s:plus':'s:minus',sl=s=>s==='+'?'+':'−';
   const add=(g,pick,name)=>{cablesG.add(g);mark(g,pick,{name})};
   const tool=TL[k],rear=(k==='mig'?TL.migRear:k==='mma'?TL.mmaRear:TL.tigRear).clone().applyMatrix4(tool.matrixWorld);
   const exit=fp(172,178,.04);
   // Маса: одразу круто вниз біля гнізда й далі по підлозі до затискача.
-  const toFloor=(p,end,r)=>tube([p,p.clone().add(V(0,-.06,.12)),V(p.x+.02,.2,p.z+.3),V(p.x+.1,.07,p.z+.56),V((p.x+end.x)/2+.2,.07,(p.z+.56+end.z)/2+.15),end.clone().add(V(-.22,-.04,.12)),end],r,M.cable);
+  const toFloor=(p,end,r)=>magOn&&end===P.magEnd?tube([p,p.clone().add(V(0,-.06,.12)),V(p.x+.02,.2,p.z+.3),V(p.x+.1,.07,p.z+.56),V((p.x+end.x)/2,.07,end.z+.45),V(end.x-.55,.12,end.z+.35),V(end.x-.3,.52,end.z+.15),end],r,M.cable):tube([p,p.clone().add(V(0,-.06,.12)),V(p.x+.02,.2,p.z+.3),V(p.x+.1,.07,p.z+.56),V((p.x+end.x)/2+.2,.07,(p.z+.56+end.z)/2+.15),end.clone().add(V(-.22,-.04,.12)),end],r,M.cable);
   // Кабель тримача / TIG-пальника: провисає дугою над кабелем маси й підходить до інструмента зверху.
   const toTool=(p,end,r)=>tube([p,p.clone().add(V(0,-.04,.25)),V(p.x+.1,.44,p.z+.5),V((p.x+end.x)/2,.36,p.z+.58),end.clone().add(V(-.3,-.35,.3)),end.clone().add(V(-.12,-.1,.1)),end],r,M.cable);
   if(k==='mig'){const s=S.pol,ms=opp(s);
     const pc=new T.Group();const sp=fp(sx(s),232,.24);pc.add(tube([exit,fp(180,176,.25),fp(186,205,.42),V(sp.x,sp.y+.05,ZF+.5),sp],.042,M.cable));pc.add(plug(fp(sx(s),232,0)));
     add(pc,'c:pol',`Кабель полярності · у гнізді «${sl(s)}»`);
-    const mc=new T.Group();mc.add(plug(fp(sx(ms),232,0)));mc.add(toFloor(fp(sx(ms),232,.24),P.clampEnd,.045));add(mc,sk2(ms),`Кабель маси · у гнізді «${sl(ms)}»`);
+    const mc=new T.Group();mc.add(plug(fp(sx(ms),232,0)));mc.add(toFloor(fp(sx(ms),232,.24),massEnd,.045));add(mc,sk2(ms),`Кабель маси · у гнізді «${sl(ms)}»`);
     const hc=new T.Group();const e0=fp(50,215,.1);hc.add(cylZ(.12,.32,M.cable,e0.clone().add(V(0,0,.12)),24));
     hc.add(tube([e0.clone().add(V(0,0,.28)),e0.clone().add(V(.05,-.15,.6)),V(e0.x+.3,.4,ZF+.95),V(.45,.34,ZF+1.05),V(1.0,.44,ZF+.95),rear.clone().add(V(-.35,-.15,.35)),rear],.07,M.cable));
     add(hc,'s:euro','Рукав пальника · у євророз\'ємі')}
@@ -1773,7 +1855,7 @@ function buildCables(){cablesG.children.slice().forEach(o=>{cablesG.remove(o);o.
     const pl=cylZ(.075,.22,M.cable,V(.92,.08,ZF+.82),20);pl.rotation.x=Math.PI/2;pc.add(pl);add(pc,'c:pol','Кабель полярності · вийнятий, у MMA і TIG не потрібен');
     const tc=new T.Group();tc.add(plug(fp(sx(hp),232,0)));tc.add(toTool(fp(sx(hp),232,.24),rear,.05));
     add(tc,sk2(hp),`${k==='mma'?'Кабель електродотримача':'Кабель TIG-пальника'} · у гнізді «${sl(hp)}»`);
-    const mc=new T.Group();mc.add(plug(fp(sx(ms),232,0)));mc.add(toFloor(fp(sx(ms),232,.24),P.clampEnd,.045));add(mc,sk2(ms),`Кабель маси · у гнізді «${sl(ms)}»`)}
+    const mc=new T.Group();mc.add(plug(fp(sx(ms),232,0)));mc.add(toFloor(fp(sx(ms),232,.24),massEnd,.045));add(mc,sk2(ms),`Кабель маси · у гнізді «${sl(ms)}»`)}
 }
 
 /* ---------- camera ---------- */
@@ -1812,7 +1894,8 @@ api.sync=function(){if(!ready)return;
   TL.valve.rotation.y=S.valve?0:Math.PI/2;
   TL.trig.position.x=S.trig&&tk==='mig'?.78:.82;TL.lever.rotation.z=S.trig&&tk==='mma'?-.12:0;TL.tigBtn.position.y=S.trig&&tk==='tig'?.115:.135;
   gasHose.visible=S.mode==='co2'||S.mode==='arco2';
-  const ck=[tk,S.pol,S.hpol,S.tpol].join('|');if(ck!==cableKey){cableKey=ck;buildCables()}
+  const magOn=S.tab==='svc'&&SVCID==='mag';if(P.mag3&&P.mag3.visible!==magOn){P.mag3.visible=magOn;P.clamp3.visible=!magOn;needR=true}
+  const ck=[tk,S.pol,S.hpol,S.tpol,magOn].join('|');if(ck!==cableKey){cableKey=ck;buildCables()}
   applySel();needR=true};
 
 /* ---------- loop ---------- */
