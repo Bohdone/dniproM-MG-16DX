@@ -910,7 +910,7 @@ const R='rotate(-38 200 230)';
     <path class="holdg" d="M140,210 C175,200 265,200 302,210 L302,250 C265,260 175,260 140,250 Z"></path>`;
   for(let i=0;i<7;i++)hh+=`<line stroke="var(--dev-line)" stroke-width="1.5" x1="${180+i*14}" y1="206" x2="${180+i*14}" y2="254"></line>`;
   hh+=`<rect class="holdr" x="132" y="208" width="10" height="44" rx="3"></rect>
-    <path class="jaw" d="M96,220 L134,212 L134,226 L100,229 Z"></path><path class="jaw" d="M96,240 L134,248 L134,234 L100,231 Z"></path>
+    <path id="jawu" class="jaw" d="M96,220 L134,212 L134,226 L96,227 Z"></path><path id="jawl" class="jaw" d="M96,240 L134,248 L134,234 L96,233 Z"></path>
     <path class="holdg" d="M118,212 C135,188 175,182 228,192 L226,202 C182,194 146,198 130,214 Z"></path>
     <text x="236" y="234" style="fill:var(--dev-red);font:700 8px var(--f-display)">DNIPRO-M</text>`;
   hb.innerHTML=hh;mma.appendChild(hb);
@@ -1297,7 +1297,9 @@ function drawDevice(){if(V3&&V3.on)V3.sync();
   $('armg').setAttribute('transform',S.arm?'rotate(-22 270 266)':'');
   const tk=kind();['mig','mma','tig'].forEach(t=>$('tool-'+t).toggleAttribute('hidden',tk!==t));
   $('tooltitle').textContent=TOOLTITLE[tk];document.querySelector('#views [data-view="torch"]').textContent=TOOLNAME[tk];
-  const rh=4+S.rod*1.6;$('rodbody').setAttribute('y',(230-rh/2).toFixed(1));$('rodbody').setAttribute('height',rh.toFixed(1));$('rodlbl').textContent=String(S.rod);
+  const rh=4+S.rod*1.6,gb=rh*.35;$('rodbody').setAttribute('y',(230-rh/2).toFixed(1));$('rodbody').setAttribute('height',rh.toFixed(1));
+  $('rodbare').setAttribute('y',(230-gb).toFixed(1));$('rodbare').setAttribute('height',(gb*2).toFixed(1));$('rodbare').setAttribute('width','26');
+  $('jawu').setAttribute('d',`M96,${f1(230-gb-8)} L134,212 L134,${f1(230-gb-1)} L96,${f1(230-gb)} Z`);$('jawl').setAttribute('d',`M96,${f1(230+gb+8)} L134,248 L134,${f1(230+gb+1)} L96,${f1(230+gb)} Z`);$('rodlbl').textContent=String(S.rod);
   $('valveknob').setAttribute('transform',S.valve?'':'rotate(90 319 214)');
   const feeding=on&&(S.inch||(S.trig&&kind()==='mig'&&!S.heat))&&!S.arm;
   $('wirepath').classList.toggle('run',feeding);
@@ -1497,7 +1499,7 @@ const orb={tgt:null,th:.45,ph:1.25,r:6.8};let tween=null;
 const VIEWS={front:{t:[0.25,1.4,0.9],th:.42,ph:1.27,rad:2.2},rear:{t:[0,1.5,-0.6],th:Math.PI+.4,ph:1.22,rad:2.1},
   feed:{t:[-0.4,1.4,-0.1],th:-Math.PI/2+.32,ph:1.32,rad:2.26},torch:{t:[2.5,0.8,3.0],th:.12,ph:1.2,rad:1.26},
   all:{t:[1.0,0.95,1.3],th:.6,ph:1.18,rad:3.0}};
-const ARC=[3.3,0.07,3.2];
+const ARC=[3.3,0.15,3.2];
 
 function rr(x,a,b,w,h,r){x.beginPath();x.moveTo(a+r,b);x.arcTo(a+w,b,a+w,b+h,r);x.arcTo(a+w,b+h,a,b+h,r);x.arcTo(a,b+h,a,b,r);x.arcTo(a,b,a+w,b,r);x.closePath()}
 function canvas(wmm,hmm,k){const c=document.createElement('canvas');c.width=Math.round(wmm*k);c.height=Math.round(hmm*k);const x=c.getContext('2d');x.scale(k,k);return[c,x]}
@@ -1510,7 +1512,7 @@ function boxM(w,h,d,m,x,y,z){const o=mesh(new T.BoxGeometry(w,h,d),m);o.position
 function cylBetween(a,b,r1,r2,m,seg){const d=new T.Vector3().subVectors(b,a),L=d.length();const o=mesh(new T.CylinderGeometry(r2,r1,L,seg||24),m);
   o.position.copy(a).addScaledVector(d,.5);o.quaternion.setFromUnitVectors(V(0,1,0),d.normalize());return o}
 function cylZ(r,len,m,pos,seg){const o=mesh(new T.CylinderGeometry(r,r,len,seg||32),m);o.rotation.x=Math.PI/2;o.position.copy(pos);return o}
-function tube(pts,r,m){const c=new T.CatmullRomCurve3(pts,false,'catmullrom',.5);return mesh(new T.TubeGeometry(c,80,r,10,false),m)}
+function tube(pts,r,m){const c=new T.CatmullRomCurve3(pts,false,'catmullrom',.5);const o=mesh(new T.TubeGeometry(c,80,r,10,false),m);o.userData.curve=c;o.userData.r=r;return o}
 function hitPlane(w,h,pos,rotY){const o=mesh(new T.PlaneGeometry(w,h),new T.MeshBasicMaterial({color:0xff6a1f,transparent:true,opacity:0,depthWrite:false}));
   o.userData.hitPlane=true;o.position.copy(pos);if(rotY)o.rotation.y=rotY;return o}
 function hitCyl(a,b,r){const o=cylBetween(a,b,r,r,new T.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}),10);o.userData.ghost=true;return o}
@@ -1678,10 +1680,12 @@ function build(){
   scene.add(doorPivot);mark(dg,'f:door');
 
   /* work bench: plate + mass clamp */
-  scene.add(boxM(1.5,.06,.9,M.plate,3.1,.03,3.2));
-  const cl=new T.Group();cl.position.set(2.47,.08,3.57);cl.rotation.y=.5;
-  cl.add(boxM(.42,.04,.12,M.nozzle,-.18,.05,0));cl.add(boxM(.42,.04,.12,M.nozzle,-.18,-.04,0));cl.add(boxM(.12,.03,.14,M.copper,.04,.02,0));
-  scene.add(cl);P.clampEnd=V(2.15,.12,3.75);
+  // Пластина лежить на двох підкладках: нижня губка затискача заходить під край, верхня — зверху.
+  scene.add(boxM(1.5,.06,.9,M.plate,3.1,.11,3.2));
+  [[2.75,3.2],[3.55,3.2]].forEach(([x,z])=>scene.add(boxM(.22,.08,.8,M.dark,x,.04,z)));
+  const cl=new T.Group();cl.position.set(2.47,.11,3.57);cl.rotation.y=.5;
+  cl.add(boxM(.42,.04,.12,M.nozzle,-.18,.05,0));cl.add(boxM(.42,.04,.12,M.nozzle,-.18,-.05,0));cl.add(boxM(.12,.025,.14,M.copper,.0,.0425,0));
+  scene.add(cl);P.clampEnd=V(2.15,.11,3.75);
 
   buildTools();
   cablesG=new T.Group();scene.add(cablesG);
@@ -1718,10 +1722,13 @@ function buildTools(){
   const hg=new T.Group();mma.add(hg);
   hg.add(cylBetween(V(.95,0,0),V(2.0,0,0),.15,.14,M.rubber));for(let i=0;i<7;i++)hg.add(cylBetween(V(1.15+i*.11,0,0),V(1.18+i*.11,0,0),.153,.153,M.dark));
   hg.add(cylBetween(V(.86,0,0),V(.96,0,0),.158,.158,M.red));hg.add(cylBetween(V(.6,0,0),V(.87,0,0),.09,.13,M.rubber));
-  hg.add(boxM(.5,.06,.15,M.copper,.38,-.05,0));const jawU=boxM(.5,.06,.15,M.copper,.38,.05,0);hg.add(jawU);
+  const jawL=boxM(.5,.06,.15,M.copper,.38,-.05,0);hg.add(jawL);const jawU=boxM(.5,.06,.15,M.copper,.38,.05,0);hg.add(jawU);TL.jaws=[jawL,jawU];
   const lever=new T.Group();lever.position.set(.95,.13,0);lever.add(boxM(.9,.06,.13,M.rubber,-.2,.03,0));hg.add(lever);TL.lever=lever;
   hg.add(cylBetween(V(.62,.06,0),V(.62,.16,0),.03,.03,M.metal));
   const hdc=decal('DNIPRO-M',.4,.08);hdc.position.set(1.55,.02,-.152);hdc.rotation.y=Math.PI;hg.add(hdc);
+  // Губки розкриваються вгору-вниз відносно важеля, а електрод затискається між ними впоперек.
+  // Щоб електрод дивився вниз на деталь, тримач повернутий на 90° навколо своєї осі: щілина між губками вертикальна.
+  hg.rotation.x=-Math.PI/2;
   mark(hg,'h:holder',{hold:'strike'});
   const rodG=new T.Group();const rd=V(-.22,-1,0).normalize(),j=V(.32,0,0),rodLen=1.45;
   const rodBody=cylBetween(j.clone().addScaledVector(rd,.12),j.clone().addScaledVector(rd,rodLen),1,1,M.rod,16);const rodBare=cylBetween(j.clone().addScaledVector(rd,-.04),j.clone().addScaledVector(rd,.12),1,1,M.bare,16);
@@ -1750,18 +1757,21 @@ function buildCables(){cablesG.children.slice().forEach(o=>{cablesG.remove(o);o.
   const add=(g,pick,name)=>{cablesG.add(g);mark(g,pick,{name})};
   const tool=TL[k],rear=(k==='mig'?TL.migRear:k==='mma'?TL.mmaRear:TL.tigRear).clone().applyMatrix4(tool.matrixWorld);
   const exit=fp(172,178,.04);
-  const toFloor=(p,end,r)=>tube([p,p.clone().add(V(0,-.05,.35)),V(p.x+.1,.3,ZF+.85),V((p.x+end.x)/2,.05,Math.max(ZF+1.25,end.z+.25)),end.clone().add(V(-.25,-.02,.18)),end],r,M.cable);
+  // Маса: одразу круто вниз біля гнізда й далі по підлозі до затискача.
+  const toFloor=(p,end,r)=>tube([p,p.clone().add(V(0,-.06,.12)),V(p.x+.02,.2,p.z+.3),V(p.x+.1,.07,p.z+.56),V((p.x+end.x)/2+.2,.07,(p.z+.56+end.z)/2+.15),end.clone().add(V(-.22,-.04,.12)),end],r,M.cable);
+  // Кабель тримача / TIG-пальника: провисає дугою над кабелем маси й підходить до інструмента зверху.
+  const toTool=(p,end,r)=>tube([p,p.clone().add(V(0,-.04,.25)),V(p.x+.1,.44,p.z+.5),V((p.x+end.x)/2,.36,p.z+.58),end.clone().add(V(-.3,-.35,.3)),end.clone().add(V(-.12,-.1,.1)),end],r,M.cable);
   if(k==='mig'){const s=S.pol,ms=opp(s);
     const pc=new T.Group();const sp=fp(sx(s),232,.24);pc.add(tube([exit,fp(180,176,.25),fp(186,205,.42),V(sp.x,sp.y+.05,ZF+.5),sp],.042,M.cable));pc.add(plug(fp(sx(s),232,0)));
     add(pc,'c:pol',`Кабель полярності · у гнізді «${sl(s)}»`);
     const mc=new T.Group();mc.add(plug(fp(sx(ms),232,0)));mc.add(toFloor(fp(sx(ms),232,.24),P.clampEnd,.045));add(mc,sk2(ms),`Кабель маси · у гнізді «${sl(ms)}»`);
     const hc=new T.Group();const e0=fp(50,215,.1);hc.add(cylZ(.12,.32,M.cable,e0.clone().add(V(0,0,.12)),24));
-    hc.add(tube([e0.clone().add(V(0,0,.28)),e0.clone().add(V(.05,-.15,.6)),V(e0.x+.4,.06,ZF+1.4),V(1.0,.06,ZF+1.9),rear.clone().add(V(-.35,-.15,.35)),rear],.07,M.cable));
+    hc.add(tube([e0.clone().add(V(0,0,.28)),e0.clone().add(V(.05,-.15,.6)),V(e0.x+.3,.4,ZF+.95),V(.45,.34,ZF+1.05),V(1.0,.44,ZF+.95),rear.clone().add(V(-.35,-.15,.35)),rear],.07,M.cable));
     add(hc,'s:euro','Рукав пальника · у євророз\'ємі')}
   else{const hp=k==='mma'?S.hpol:S.tpol,ms=opp(hp);
     const pc=new T.Group();pc.add(tube([exit,fp(182,178,.22),V(1.0,.9,ZF+.35),V(1.02,.2,ZF+.45),V(.92,.08,ZF+.7)],.042,M.cable));
     const pl=cylZ(.075,.22,M.cable,V(.92,.08,ZF+.82),20);pl.rotation.x=Math.PI/2;pc.add(pl);add(pc,'c:pol','Кабель полярності · вийнятий, у MMA і TIG не потрібен');
-    const tc=new T.Group();tc.add(plug(fp(sx(hp),232,0)));tc.add(toFloor(fp(sx(hp),232,.24),rear,.05));
+    const tc=new T.Group();tc.add(plug(fp(sx(hp),232,0)));tc.add(toTool(fp(sx(hp),232,.24),rear,.05));
     add(tc,sk2(hp),`${k==='mma'?'Кабель електродотримача':'Кабель TIG-пальника'} · у гнізді «${sl(hp)}»`);
     const mc=new T.Group();mc.add(plug(fp(sx(ms),232,0)));mc.add(toFloor(fp(sx(ms),232,.24),P.clampEnd,.045));add(mc,sk2(ms),`Кабель маси · у гнізді «${sl(ms)}»`)}
 }
@@ -1797,7 +1807,8 @@ api.sync=function(){if(!ready)return;
     else if(!tipOn)goView(S.view)}}
   const tk=kind();['mig','mma','tig'].forEach(t=>TL[t].visible=tk===t);
   labels.spool.userData.set(S.wire+' мм');labels.roll.userData.set(String(S.roll));labels.tip.userData.set(String(S.tip));labels.rod.userData.set(String(S.rod).replace('.',',')+' мм');
-  const rr2=S.rod*.0085;TL.rodParts.forEach(o=>{o.scale.x=rr2;o.scale.z=rr2});
+  const rr2=S.rod*.0085;TL.rodParts[0].scale.x=TL.rodParts[0].scale.z=rr2;TL.rodParts[1].scale.x=TL.rodParts[1].scale.z=rr2*.7;
+  TL.jaws[0].position.y=-(rr2*.7+.03);TL.jaws[1].position.y=rr2*.7+.03;
   TL.valve.rotation.y=S.valve?0:Math.PI/2;
   TL.trig.position.x=S.trig&&tk==='mig'?.78:.82;TL.lever.rotation.z=S.trig&&tk==='mma'?-.12:0;TL.tigBtn.position.y=S.trig&&tk==='tig'?.115:.135;
   gasHose.visible=S.mode==='co2'||S.mode==='arco2';
@@ -1925,11 +1936,13 @@ api.set=function(on){if(!on&&fsOn)api.fs(false);api.on=on;$('dev').toggleAttribu
   if(!on){cancelAnimationFrame(raf);raf=0;hideTip();return}
   init().then(()=>{if(!api.on)return;resize();api.sync();needR=true;if(!raf){lastT=0;raf=requestAnimationFrame(loop)}}).catch(()=>{})};
 api.ready=()=>ready;
+// для тестів: осьові лінії кабелів (перевірка, що кабелі не проходять один крізь одного)
+api.cables=()=>{const out=[];cablesG.children.forEach(g=>g.traverse(o=>{if(o.userData.curve)out.push({name:g.userData.name||g.userData.pick,r:o.userData.r,pts:o.userData.curve.getSpacedPoints(160).map(p=>[+p.x.toFixed(3),+p.y.toFixed(3),+p.z.toFixed(3)])})}));return out};
 document.querySelectorAll('[data-dim]').forEach(b=>b.addEventListener('click',()=>api.set(b.dataset.dim==='3d')));
 document.addEventListener('visibilitychange',()=>{if(!api.on||!ready)return;if(document.hidden){cancelAnimationFrame(raf);raf=0}else if(!raf){lastT=0;raf=requestAnimationFrame(loop)}});
 try{if(localStorage.getItem('mg16dx-dim')==='3d')setTimeout(()=>api.set(true),0)}catch(e){}
 })();
-window.__V3=V3;
+window.__V3=V3;window.__MG={S,act};
 
 })();
 </script>
