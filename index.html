@@ -167,6 +167,8 @@ dl.gl dd{margin:0;color:var(--muted)}
 .selring{fill:none;stroke:transparent;stroke-width:3}
 .hot:focus-visible .hit,.hot:focus-visible .selring{stroke:var(--orange);stroke-width:2.5;stroke-dasharray:4 3}
 .knobg{touch-action:none}
+#v-rear .hit,#v-rear .selring{vector-effect:non-scaling-stroke}
+#v-rear .sel .selring{fill:var(--dz-on)!important}
 .navbar{display:grid;gap:18px;min-width:0}
 .dimrow{display:flex;gap:8px;align-items:stretch;min-width:0}
 .dimrow .views{flex:1;min-width:0}
@@ -219,6 +221,28 @@ dl.gl dd{margin:0;color:var(--muted)}
 .valve{fill:var(--brass);stroke:var(--brass-dk);stroke-width:1.2}
 @media (prefers-reduced-motion:reduce){.hot.hl{animation:none}}
 .card>*,.sub>*{min-width:0}
+.tipfig{display:grid;gap:8px}
+table.wtab{border-collapse:separate;border-spacing:2px;font:500 13px var(--f-body);min-width:620px;width:100%}
+table.wtab th{background:#1b1c1e;color:#ebe9e4;font:700 13px var(--f-mono);padding:8px 6px;text-align:center}
+table.wtab th:nth-child(n+5){background:#8a8d91;color:#111}
+table.wtab td{background:var(--tip);color:var(--ink);text-align:center;padding:0;height:38px}
+table.wtab td:nth-child(-n+3){padding:6px 8px;font-weight:600}
+table.wtab td.g{background:var(--line)}
+table.wtab td.wa,table.wtab th.wa{width:30px}
+table.wtab td.wam{font:700 13px var(--f-mono);background:var(--tip);box-shadow:none!important}
+table.wtab td.e{background:transparent}
+table.wtab tr.on td:not(.e){box-shadow:inset 0 0 0 1.5px var(--accent)}
+.wc{width:100%;height:100%;min-height:38px;border:0;background:transparent;color:inherit;font:600 13px var(--f-mono);cursor:pointer;padding:6px 4px}
+.wc:hover{background:var(--dz-on)}
+.wc.hit{background:var(--accent);color:var(--accent-ink)}
+.wc:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.wtnote{margin:10px 0 0;font-size:14px;color:var(--muted)}
+.wtsec{margin-top:32px}
+table.wtab td:nth-child(-n+3),table.wtab th{white-space:nowrap}
+.wthint{display:none;margin:0 0 8px;font:500 12px var(--f-mono);color:var(--muted)}
+@media (max-width:780px){table.wtab{font-size:12px;min-width:600px}table.wtab td:nth-child(-n+3){padding:6px 5px}.wthint{display:block}}
+#tipsvg{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+.tipctl .chip{font-size:13px;padding:6px 10px}
 .checks{list-style:none;margin:0;padding:0;display:grid;gap:8px;max-width:65ch}
 .checks li{position:relative;padding-left:22px}
 .checks li::before{content:"•";position:absolute;left:6px;top:0;color:var(--accent);font-weight:700}
@@ -333,6 +357,14 @@ a.chip{display:inline-flex;align-items:center}
       <div id="pane-svc" role="tabpanel" aria-labelledby="tab-svc" class="panel" hidden>
         <article class="card" id="svc" aria-live="polite"></article>
       </div>
+    </div>
+  </section>
+
+  <section class="ref wtsec">
+    <div class="card" style="grid-column:1/-1">
+      <div class="eyebrow">Наліпка на дверцятах відсіку подачі</div>
+      <h2>Таблиця режимів MIG/MAG</h2>
+      <div id="wtabbox"></div>
     </div>
   </section>
 
@@ -464,8 +496,23 @@ const C={
   'r:cord':{v:'rear',eye:'Ззаду · 13',title:'Шнур живлення',
     what:'Підключайте лише в заземлену розетку з автоматом не менше 25 А. Подовжувач, якщо потрібен, перерізом не менше 3,5 мм². Тонкий подовжувач просаджує напругу: дуга слабшає й рветься.',
     spec:'<b>230 В ±10%, 50 Гц</b> · I₁max 28 А · I₁eff 22,4 А · 5,9 кВА · працює без втрати ККД від 170 В'},
+  'r:plate':{v:'rear',eye:'Ззаду · табличка',title:'Табличка з характеристиками',
+    what:'Паспорт апарата прямо на корпусі. Ланцюжок символів зліва вгорі — будова: однофазна мережа 1~ → інвертор → трансформатор → випрямляч → постійний струм. EN 60974-6 — стандарт для зварювальних джерел обмеженого режиму роботи (побутових і для майстерні).',
+    spec:'MIG <b>20 А / 12 В – 160 А / 22 В</b> · MMA <b>20 А / 21 В – 160 А / 26,4 В</b> · ПВ (X): MIG <b>50%</b> на 160 А / 22 В, MMA <b>33%</b> на 160 А / 26,4 В, <b>100%</b> — MIG 135 А / 19,2 В, MMA 125 А / 25 В · U₀ <b>55 В</b> · U₁ <b>230 В</b>, 1~ 50 Гц · I₁max <b>28 А</b> · I₁eff <b>22,4 А</b> · <b>IP21S</b>',
+    note:['tip','ПВ (X) — скільки хвилин з 10 можна варити без перерви: 50% на 160 А в MIG — 5 хвилин дуги, 5 хвилин паузи. I₁max 28 А — тому автомат на лінії не менше 25 А, а подовжувач товстий.']},
+  'r:warn':{v:'rear',eye:'Ззаду · наліпка',title:'Попереджувальна наліпка',
+    what:'Червона смуга: загальна небезпека, прочитайте інструкцію, ураження струмом, гаряча поверхня; обов\'язково — зварювальний щиток, рукавиці й захист органів дихання. Під нею п\'ять рядів піктограм з номерами.',
+    steps:['1 — ураження струмом: не торкайтеся електрода й деталі голими чи мокрими руками, не стійте на мокрому, ізолюйтеся від землі й деталі.','2 — дим і гази: не вдихайте, працюйте з витяжкою або на протязі.','3 — іскри й бризки: пожежа й вибух. Приберіть горюче, не варіть ємності з-під пального, тримайте поруч вогнегасник.','4 — випромінювання дуги: маска зі світлофільтром, окуляри, щільний одяг і рукавиці, захистіть людей поруч.','5 — електромагнітне поле: людям з кардіостимулятором не можна; не обмотуйте кабелі навколо себе й не ставайте між кабелем пальника й маси.']},
+  'r:icons':{v:'rear',eye:'Ззаду · піктограми',title:'Піктограми характеристик',
+    what:'Шість квадратів унизу праворуч — коротко про апарат.',
+    steps:['100% / 135A — тривалість увімкнення 100% на струмі 135 А: можна варити без пауз.','Крива — падаюча вольт-амперна характеристика (джерело постійного струму для MMA).','IGBT — силові транзистори інвертора.','Вентилятор — примусове охолодження.','Вилка 1PH — однофазна мережа 230 В.','DC — зварювання на постійному струмі.']},
+  'r:ground':{v:'rear',eye:'Ззаду',title:'Клема заземлення корпусу',
+    what:'Гвинт із символом заземлення внизу ліворуч. До нього можна приєднати додатковий провід заземлення корпусу, якщо так вимагають умови роботи. Основне заземлення — через вилку з заземлювальним контактом.',
+    note:['warn','Не плутайте з масою: кабель маси йде в гніздо на передній панелі, а не сюди.']},
   'r:fan':{v:'rear',eye:'Ззаду · 14',title:'Вентилятор',
     what:'Примусове охолодження. Працює, поки апарат увімкнений, і продовжує охолоджувати після спрацювання захисту від перегріву. Не закривайте решітку й бокові жалюзі, раз на кілька місяців продувайте стисненим повітрям.'},
+  'f:table':{v:'feed',eye:'Відсік · дверцята',title:'Таблиця режимів на дверцятах',
+    what:'На внутрішньому боці дверцят відсіку подачі наклеєна таблиця MIG/MAG: який струм ставити залежно від дроту (0,6 / 0,8 мм), газу чи флюсового дроту E71T-GS і товщини металу 0,8–3 мм. Та сама таблиця — нижче на сторінці; клітинки можна натискати.'},
   'f:door':{v:'feed',eye:'Відсік · 15',title:'Відсік механізму подачі',
     what:'Бокові дверцята з засувкою. Відкриваються, якщо посунути замок угору. Усередині котушка дроту і механізм подачі.',
     note:['warn','Відкривайте лише з вимкненим апаратом.']},
@@ -516,8 +563,8 @@ const GROUPS=[
   ['Режими · 5',MODES.map(m=>['m:'+m.id,m.chip])],
   ['Передня панель',[['k:cur','Струм'],['k:trim','Проварювання'],['b:setup','SETUP'],['d:v','Дисплей V'],['d:a','Дисплей A'],['l:modes','Індикатори режимів'],['l:power','Мережа'],['l:heat','Перегрів']]],
   ['Роз\'єми',[['s:euro','Євророз\'єм'],['c:pol','Кабель полярності'],['s:plus','Гніздо +'],['s:minus','Гніздо −']]],
-  ['Ззаду',[['r:sw','Вимикач'],['r:gas','Газ'],['r:cord','Живлення'],['r:fan','Вентилятор']]],
-  ['Подача дроту',[['f:door','Відсік'],['f:spool','Котушка'],['f:tension','Натяг'],['f:arm','Притискний ролик'],['f:roll','Протяжний ролик'],['f:guide','Трубка']]],
+  ['Ззаду',[['r:sw','Вимикач'],['r:gas','Газ'],['r:cord','Живлення'],['r:fan','Вентилятор'],['r:plate','Табличка'],['r:warn','Наліпка безпеки'],['r:icons','Піктограми'],['r:ground','Заземлення']]],
+  ['Подача дроту',[['f:door','Відсік'],['f:spool','Котушка'],['f:tension','Натяг'],['f:arm','Притискний ролик'],['f:roll','Протяжний ролик'],['f:guide','Трубка'],['f:table','Таблиця на дверцятах']]],
 ];
 function toolGroup(){const k=kind();
   if(k==='mma')return['Електродотримач',[['h:holder','Тримач'],['h:rod','Електрод']]];
@@ -550,15 +597,15 @@ const SCEN=[
     steps:['Поставте апарат на рівну поверхню, вентилятором не до стіни. Якщо апарат був на морозі, дайте йому прогрітися й висохнути від конденсату.','Перевірте, що розетка заземлена, а лінія захищена автоматом не менше 25 А.','Вставте вилку і переведіть червоний вимикач ззаду в положення I.','Має засвітитися індикатор мережі й заробити вентилятор. Дисплеї покажуть напругу і струм.'],
     result:'Від генератора: потрібен генератор від 6 кВт, щоб варити на максимумі. Апарат тримає потужність при просіданні мережі до 160–170 В.',
     warn:'Без заземлення працювати заборонено.'},
-  {id:'tube2',chip:'Профтруба 2 мм без газу',set:{power:true,mode:'flux',cur:80,trim:0,pol:'-',view:'front',wire:0.8,roll:0.8,tip:0.8,arm:false},title:'Профільна труба 2 мм порошковим дротом',
-    rows:[['Режим','FLUX CORED'],['Струм','80 А'],['Проварювання','0'],['Кабель полярності','«−»'],['Маса','«+»'],['Дріт','0,8 порошковий']],
-    steps:['Вимкніть апарат і перекиньте кабель полярності в «−», масу в «+».','Зачистіть метал болгаркою на 2 см від шва і місце під масу, до блиску.','SETUP: FLUX CORED, правою ручкою 80 А, проварювання на нуль.','Виставте деталі, зробіть 3–4 прихватки по кутах.','Пальник під кутом 60–70°, тягніть на себе. Виліт дроту 8–10 мм.','Варіть короткими ділянками 2–3 см, переходячи на протилежний бік рами, щоб її не повело.','Збийте шлак щіткою.'],
-    result:'Рівний валик без пор, метал прогрітий наскрізь, але без пропалів. Пропалює: зменште до 70 А або «−1» на проварюванні. Валик опуклий і не розтікається: додайте до 90 А.',
+  {id:'tube2',chip:'Профтруба 2 мм без газу',set:{power:true,mode:'flux',cur:110,trim:0,pol:'-',view:'front',wire:0.8,roll:0.8,tip:0.8,arm:false},title:'Профільна труба 2 мм порошковим дротом',
+    rows:[['Режим','FLUX CORED'],['Струм','110 А (таблиця на дверцятах)'],['Проварювання','0'],['Кабель полярності','«−»'],['Маса','«+»'],['Дріт','0,8 порошковий']],
+    steps:['Вимкніть апарат і перекиньте кабель полярності в «−», масу в «+».','Зачистіть метал болгаркою на 2 см від шва і місце під масу, до блиску.','SETUP: FLUX CORED, правою ручкою 110 А (таблиця на дверцятах: E71T-GS, метал 2 мм), проварювання на нуль.','Виставте деталі, зробіть 3–4 прихватки по кутах.','Пальник під кутом 60–70°, тягніть на себе. Виліт дроту 8–10 мм.','Варіть короткими ділянками 2–3 см, переходячи на протилежний бік рами, щоб її не повело.','Збийте шлак щіткою.'],
+    result:'Рівний валик без пор, метал прогрітий наскрізь, але без пропалів. Пропалює: зменште до 100 А або «−1» на проварюванні. Валик опуклий і не розтікається: додайте до 120 А.',
     warn:'Порошковий дріт сильно димить: працюйте з провітрюванням.'},
-  {id:'thin',chip:'Тонка труба 1–1,5 мм',set:{power:true,mode:'flux',cur:55,trim:-1,pol:'-',view:'front',wire:0.8,roll:0.8,tip:0.8},title:'Тонкий метал 1–1,5 мм без пропалів',
-    rows:[['Режим','FLUX CORED'],['Струм','55 А'],['Проварювання','−1'],['Кабель полярності','«−»']],
-    steps:['Полярність пряма: кабель у «−», маса в «+».','SETUP: FLUX CORED, 55 А, проварювання трохи в «−».','Стик без зазору, деталі щільно стиснуті струбцинами.','Не ведіть довгий шов: ставте точки по 1–2 секунди, кожну наступну з перекриттям на половину попередньої.','Давайте металу охолонути, перескакуйте між ділянками.'],
-    result:'Шов з дрібних лусочок, без дірок. Якщо пропалює навіть точками, зменште струм до 45 А.'},
+  {id:'thin',chip:'Тонка труба 1,5 мм',set:{power:true,mode:'flux',cur:90,trim:-1,pol:'-',view:'front',wire:0.8,roll:0.8,tip:0.8},title:'Тонкий метал 1,5 мм без пропалів',
+    rows:[['Режим','FLUX CORED'],['Струм','90 А (таблиця на дверцятах)'],['Проварювання','−1'],['Кабель полярності','«−»']],
+    steps:['Полярність пряма: кабель у «−», маса в «+».','SETUP: FLUX CORED, 90 А (таблиця: E71T-GS, 1,5 мм), проварювання трохи в «−». Для металу тонше 1,5 мм таблиця FLUX значень не дає — краще газ: 1 мм у CO₂ дротом 0,8 — 60–95 А.','Стик без зазору, деталі щільно стиснуті струбцинами.','Не ведіть довгий шов: ставте точки по 1–2 секунди, кожну наступну з перекриттям на половину попередньої.','Давайте металу охолонути, перескакуйте між ділянками.'],
+    result:'Шов з дрібних лусочок, без дірок. Якщо пропалює навіть точками, зменште струм до 80 А або проварювання до «−2».'},
   {id:'tack',chip:'Прихватки рами',set:{power:true,mode:'flux',cur:90,trim:0,pol:'-',view:'torch'},title:'Прихватки перед зварюванням рами',
     rows:[['Режим','FLUX CORED'],['Струм','90 А'],['Проварювання','0']],
     steps:['Зберіть раму на рівному столі, перевірте діагоналі рулеткою.','Прихватка: короткий імпульс 0,5–1 с курком у кут стику.','Спочатку по дві прихватки на кожному вузлі з протилежних боків, потім перевірте кути і діагоналі ще раз.','Лише після цього варіть повні шви.'],
@@ -572,14 +619,14 @@ const SCEN=[
     rows:[['Режим','MMA'],['Струм','120 А'],['Тримач','«+»'],['Електрод','3,2 мм']],
     steps:['Тримач у «+», маса в «−». SETUP: MMA, 120 А.','Від 3 мм і товще зробіть на кромках фаску болгаркою (V-подібна обробка).','Корінь шва першим проходом, зачистіть шлак, потім закриваючий прохід.','Таврове з\'єднання: електрод під 45° до обох деталей.'],
     result:'На 120 А апарат працює без зупинок (100% ПВ до 125 А). На 140 А і вище чекайте пауз від захисту від перегріву.'},
-  {id:'co2',chip:'Газ CO₂, 1,2 мм',set:{power:true,mode:'co2',cur:70,trim:0,pol:'+',view:'front',wire:0.8,roll:0.8,tip:0.8},title:'Лист 1,2 мм у вуглекислому газі',
-    rows:[['Режим','0.8 CO₂'],['Струм','70 А'],['Кабель полярності','«+»'],['Газ','10–12 л/хв'],['Дріт','0,8 суцільний']],
-    steps:['Кабель полярності в «+», маса в «−».','Шланг редуктора на GAS INPUT, хомут затягніть. Редуктор на 10–12 л/хв.','SETUP: 0.8 CO₂, 70 А.','Відкрийте балон, натисніть курок 2–3 с у повітря для продування.','Пальник на 6–8 мм від металу, кут 60–70°.'],
+  {id:'co2',chip:'Газ CO₂, 1,2 мм',set:{power:true,mode:'co2',cur:95,trim:0,pol:'+',view:'front',wire:0.8,roll:0.8,tip:0.8},title:'Лист 1,2 мм у вуглекислому газі',
+    rows:[['Режим','0.8 CO₂'],['Струм','95 А (таблиця: 95–100)'],['Кабель полярності','«+»'],['Газ','10–12 л/хв'],['Дріт','0,8 суцільний']],
+    steps:['Кабель полярності в «+», маса в «−».','Шланг редуктора на GAS INPUT, хомут затягніть. Редуктор на 10–12 л/хв.','SETUP: 0.8 CO₂, 95 А (таблиця на дверцятах: дріт 0,8, метал 1,2 мм — 95–100 А).','Відкрийте балон, натисніть курок 2–3 с у повітря для продування.','Пальник на 6–8 мм від металу, кут 60–70°.'],
     result:'За таблицею інструкції для 1,2 мм: напруга 17–18 В, дріт 2,5–4,5 м/хв, газ 10–12 л/хв.',
     warn:'Після роботи закрийте балон. На вулиці газ здуває: для вітру краще FLUX.'},
-  {id:'arco2',chip:'Суміш Ar-CO₂, 2 мм',set:{power:true,mode:'arco2',cur:100,trim:0,pol:'+',view:'front',wire:0.8,roll:0.8,tip:0.8},title:'Метал 2 мм у суміші Ar-CO₂',
-    rows:[['Режим','0.8 Ar-CO₂'],['Струм','100 А'],['Кабель полярності','«+»'],['Газ','10–15 л/хв'],['Зазор','0–0,5 мм']],
-    steps:['Кабель полярності в «+», маса в «−», газ на GAS INPUT.','SETUP: 0.8 Ar-CO₂, 100 А.','Зазор у стику до 0,5 мм.','Варіть рівномірно, швидкість така, щоб ванна трималася ширини 4–6 мм.'],
+  {id:'arco2',chip:'Суміш Ar-CO₂, 2 мм',set:{power:true,mode:'arco2',cur:120,trim:0,pol:'+',view:'front',wire:0.8,roll:0.8,tip:0.8},title:'Метал 2 мм у суміші Ar-CO₂',
+    rows:[['Режим','0.8 Ar-CO₂'],['Струм','120 А (таблиця: 110–130)'],['Кабель полярності','«+»'],['Газ','10–15 л/хв'],['Зазор','0–0,5 мм']],
+    steps:['Кабель полярності в «+», маса в «−», газ на GAS INPUT.','SETUP: 0.8 Ar-CO₂, 120 А (таблиця на дверцятах: дріт 0,8, метал 2 мм — 110–130 А).','Зазор у стику до 0,5 мм.','Варіть рівномірно, швидкість така, щоб ванна трималася ширини 4–6 мм.'],
     result:'За таблицею інструкції для 2 мм: 19–20 В, дріт 5,5–7,5 м/хв, газ 10–15 л/хв. Бризок мінімум.'},
   {id:'tig',chip:'TIG нержавійка',set:{power:true,mode:'tig',cur:55,tpol:'-',valve:true,view:'front'},title:'Нержавійка 1,5 мм у режимі TIG LIFT',
     rows:[['Режим','TIG LIFT'],['Струм','55 А'],['TIG-пальник','«−»'],['Маса','«+»'],['Газ','аргон, вентиль на пальнику відкритий']],
@@ -591,7 +638,7 @@ const SCEN=[
     result:'На 160 А ПВ 50% в MIG і 33% в MMA: на кожні 10 хвилин 5 або 3,3 хвилини дуги.'}
 ];
 
-const S={power:true,mode:'flux',cur:80,trim:0,pol:'-',hpol:'+',tpol:'-',wire:0.8,roll:0.8,tip:0.8,arm:false,rod:2.5,valve:true,hl:null,inch:false,trig:false,heat:false,
+const S={power:true,mode:'flux',cur:90,trim:0,pol:'-',hpol:'+',tpol:'-',wire:0.8,roll:0.8,tip:0.8,arm:false,rod:2.5,valve:true,hl:null,inch:false,trig:false,heat:false,
   view:'front',focus:'m:flux',tab:'dev',scen:'tube2'};
 
 /* ---------- helpers ---------- */
@@ -681,28 +728,123 @@ function drawCables(){
   $('cables').innerHTML=h;$('europlug').innerHTML=ep;
 }
 
+/* ---------- задня панель: малюнок у міліметрах за фото (192 × 290 мм) ----------
+   Один і той самий малюнок іде і в 2D-схему, і в текстуру 3D-моделі.
+   Серійний номер і наліпку зі штрихкодом серійного номера не малюємо. */
+const RW='#e9e7e2';
+function rearDecalSVG(forTex){
+  const W=(x,y,s,t,o={})=>`<text x="${x}" y="${y}" font-family="${o.f||'Arial,Helvetica,sans-serif'}" font-size="${s}" font-weight="${o.w||600}" fill="${o.c||RW}" text-anchor="${o.a||'middle'}"${o.ls?` letter-spacing="${o.ls}"`:''}>${t}</text>`;
+  const box=(x,y,w,h,sw=.35)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="none" stroke="${RW}" stroke-width="${sw}"></rect>`;
+  const ln=d=>`<path d="${d}" fill="none" stroke="${RW}" stroke-width=".35" stroke-linecap="round" stroke-linejoin="round"></path>`;
+  const screw=(x,y,r,c)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${c||'#0e0f10'}" stroke="#3a3c40" stroke-width=".3"></circle><path d="M${x-r*.5},${y} H${x+r*.5} M${x},${y-r*.5} V${y+r*.5}" stroke="${c?'#7f858b':'#2b2d30'}" stroke-width="${r*.28}" stroke-linecap="round"></path>`;
+  let h='';
+  if(forTex)h+=`<rect width="192" height="290" fill="#141517"></rect>`;
+  // заглиблена лицьова панель
+  h+=`<rect x="12" y="12" width="168" height="266" rx="7" fill="#1f2124"></rect><rect x="12.5" y="12.5" width="167" height="265" rx="6.6" fill="none" stroke="#2c2f33" stroke-width=".8"></rect>`;
+  // ON / OFF
+  h+=box(55,23,12,6)+W(61,27.4,3.6,'ON')+box(55,52.5,12,6)+W(61,56.9,3.6,'OFF')+ln('M47.7,21 V19.4 H58 V23')+ln('M47.7,60.5 V62 H58 V58.5');
+  // GAS INPUT і значок балона
+  h+=box(98,33.6,23.5,7)+W(109.7,38.6,3.5,'GAS INPUT',{ls:.1})+ln('M92,37.1 H98');
+  h+=`<g transform="translate(84,55.5)"><circle r="3.4" fill="none" stroke="${RW}" stroke-width=".35"></circle>${ln('M-5.6,0 H-1.2 M-2.4,-1.1 L-1.2,0 L-2.4,1.1')}<rect x="0.2" y="-2.2" width="1.8" height="4.4" rx=".9" fill="none" stroke="${RW}" stroke-width=".35"></rect></g>`;
+  // 230V
+  h+=box(55,85,26,12)+W(68,90,3.3,'230V (±10%)')+W(68,94.6,3.3,'50Hz')+ln('M51,91 H55');
+  // гвинти корпусу
+  h+=screw(112,48,3.1)+screw(111,213,3.1);
+  // ---- табличка з характеристиками (білі лінії на чорному)
+  const NX=px=>+(101+(px-205)/1023*69).toFixed(2),NY=py=>+(56+(py-635)/610*51).toFixed(2);
+  const r=(x0,y0,x1,y1)=>box(NX(x0),NY(y0),NX(x1)-NX(x0),NY(y1)-NY(y0),.3);
+  const T2=(px,py,s,t,o)=>W(NX(px),NY(py),s,t,o);
+  h+=r(205,635,1228,1245);
+  [[205,735,1228,735],[205,808,1228,808],[205,985,1228,985],[205,1162,1228,1162],[593,866,1228,866],[593,925,1228,925],[593,1045,1228,1045],[593,1102,1228,1102]].forEach(([a,b,c,d])=>h+=ln(`M${NX(a)},${NY(b)} H${NX(c)}`));
+  [[593,635,1245],[305,808,1162],[410,808,1245],[693,808,1162],[826,925,1162],[958,925,1162],[1093,985,1162],[910,1162,1245]].forEach(([x,a,b])=>h+=ln(`M${NX(x)},${NY(a)} V${NY(b)}`));
+  h+=`<rect x="${NX(705)}" y="${NY(648)}" width="${NX(1160)-NX(705)}" height="${NY(722)-NY(648)}" fill="none" stroke="${RW}" stroke-width=".25" stroke-dasharray=".8 .6"></rect>`;
+  h+=T2(400,700,2.3,'MODEL: MG-16DX')+T2(650,700,2.3,'S/N:',{a:'start'});
+  h+=T2(910,785,2.2,'EN 60974-6');
+  // ланцюжок символів: 1~ → інвертор → трансформатор → випрямляч → DC
+  h+=`<g transform="translate(${NX(215)},${NY(745)}) scale(.92)">${W(2,3.2,2.4,'1~',{a:'start'})}${ln('M5.6,2.6 H7')}${box(7,0,5,5,.3)}${ln('M7,5 L12,0')}${ln('M12,2.6 H13.4')}<circle cx="14.9" cy="2.6" r="1.5" fill="none" stroke="${RW}" stroke-width=".3"></circle><circle cx="17.1" cy="2.6" r="1.5" fill="none" stroke="${RW}" stroke-width=".3"></circle>${ln('M18.6,2.6 H20')}${box(20,.6,4.4,4,.3)}${ln('M21,1.4 L23.4,2.6 L21,3.8 Z M23.4,1.4 V3.8')}${ln('M24.4,1.8 H28.6 M24.4,3.4 H25.2 M26,3.4 H26.8 M27.6,3.4 H28.6')}</g>`;
+  // ліві символи (вихід, пальник/тримач, DC / U0)
+  [[808,985],[985,1162]].forEach(([a,b],k)=>{const cy=NY((a+b)/2);h+=ln(`M${NX(232)},${cy-1.6} H${NX(282)} M${NX(240)},${cy-1.6} V${cy+1.8} M${NX(232)},${cy+1.8} H${NX(282)}`)+ln(`M${NX(330)},${cy-2.4} q2.6,-1.4 4.4,-.2 M${NX(332)},${cy-2.2} l-1.2,3 M${NX(330)},${cy+1} l3.6,0 M${NX(333)},${cy+1} l-1.4,2.6`);
+    h+=k?T2(500,1085,2.2,'U₀ = 55V'):ln(`M${NX(445)},${cy-.8} H${NX(558)} M${NX(445)},${cy+.9} H${NX(470)} M${NX(483)},${cy+.9} H${NX(508)} M${NX(521)},${cy+.9} H${NX(558)}`)});
+  // дані
+  h+=T2(643,850,2.1,'MIG')+T2(960,850,2.1,'20A / 12V - 160A / 22V')+T2(643,908,2.1,'MMA')+T2(960,908,2.1,'20A / 21V - 160A / 26.4V');
+  h+=T2(643,968,2.1,'X')+T2(760,968,2.1,'50%')+T2(892,968,2.1,'33%')+T2(1092,968,2.1,'100%');
+  h+=T2(643,1027,1.9,'MODE')+T2(760,1027,2.1,'MIG')+T2(892,1027,2.1,'MMA')+T2(1025,1027,2.1,'MIG')+T2(1160,1027,2.1,'MMA');
+  h+=T2(643,1085,2.1,'I₂')+T2(760,1085,2.1,'160A')+T2(892,1085,2.1,'160A')+T2(1025,1085,2.1,'135A')+T2(1160,1085,2.1,'125A');
+  h+=T2(643,1144,2.1,'U₂')+T2(760,1144,2.1,'22V')+T2(892,1144,2.1,'26.4V')+T2(1025,1144,2.1,'19.2V')+T2(1160,1144,2.1,'25V');
+  h+=T2(305,1232,1.9,'1 ~ 50Hz')+ln(`M${NX(275)},${NY(1180)} h1.4 v2.2 h-1.4 M${NX(275)+1.4},${NY(1180)+1.1} q1.6,-1.1 1.6,0 q0,1.1 -1.6,0`)+T2(500,1215,2.1,'U₁ = 230V')+T2(752,1215,2.1,'I₁max = 28A')+T2(1070,1215,2.1,'I₁eff = 22.4A');
+  // знаки відповідності, IP21S, штрихкод EAN
+  h+=`<g transform="translate(${NX(245)},${NY(1325)})"><circle r="2.6" fill="none" stroke="${RW}" stroke-width=".4"></circle>${ln('M-1.2,-1 Q0,1.8 1.2,-1 M0,-1.8 V1.4')}</g>`+W(NX(375),NY(1352),5.2,'CE',{w:500})+W(NX(512),NY(1350),4.6,'EAC',{w:700,ls:-.2});
+  h+=`<g transform="translate(${NX(630)},${NY(1310)})">${ln('M-2,-3 H2 L1.4,3 H-1.4 Z M-2.6,-3 H2.6 M-2.8,-4 L2.8,4 M2.8,-4 L-2.8,4')}<rect x="-2.6" y="4.8" width="5.2" height="1.2" fill="${RW}"></rect></g>`+W(NX(752),NY(1328),2.4,'IP21S');
+  h+=`<rect x="${NX(835)}" y="${NY(1278)}" width="${NX(1232)-NX(835)}" height="${NY(1350)-NY(1278)}" fill="${RW}"></rect>`;
+  for(let i=0,x=NX(840);x<NX(1226);i++){const w=[.35,.18,.5,.18,.28,.6,.18,.35][i%8];h+=`<rect x="${x.toFixed(2)}" y="${NY(1280)}" width="${w}" height="${NY(1346)-NY(1280)}" fill="#1f2124"></rect>`;x+=w+[.25,.3,.18,.35][i%4]}
+  h+=W(NX(1030),NY(1378),1.8,'4  823102  339313',{w:500,ls:.3});
+  // попередження, книга, парасолька й адреса
+  h+=`<g transform="translate(${NX(255)},${NY(1440)})">${ln('M0,-3.2 L3.6,3 H-3.6 Z M0,-1.2 V1.2 M0,2 V2.2')}</g><g transform="translate(${NX(400)},${NY(1440)})">${ln('M-4.2,-2.6 Q-2,-3.4 0,-2.4 Q2,-3.4 4.2,-2.6 V3 Q2,2.2 0,3 Q-2,2.2 -4.2,3 Z M0,-2.4 V3')}</g><g transform="translate(${NX(535)},${NY(1440)})">${ln('M-3,0 Q0,-4 3,0 Z M0,0 V3 q0,1 -1,1')}</g>`;
+  h+=W(NX(605),NY(1425),1.65,'DNIPRO M LLC, I. Mazepy Str., 10, Kyiv, 01010, Ukraine.',{a:'start',w:500})+W(NX(605),NY(1452),1.65,'Made in P.R.C.',{a:'start',w:500});
+  // ---- попереджувальна наліпка
+  const wx=105.4,wy=129,ww=51.8;
+  h+=`<rect x="${wx}" y="${wy}" width="${ww}" height="8" rx=".8" fill="#e8401e"></rect><rect x="${wx}" y="${wy+8}" width="${ww}" height="67.6" fill="#0e0f10"></rect>`;
+  const tri=(x,inner)=>`<g transform="translate(${x},${wy+4.2})"><path d="M0,-3 L3.3,2.7 H-3.3 Z" fill="none" stroke="#fff" stroke-width=".35"></path>${inner}</g>`;
+  const cir=(x,inner)=>`<g transform="translate(${x},${wy+4})"><circle r="3" fill="none" stroke="#fff" stroke-width=".35"></circle>${inner}</g>`;
+  h+=tri(wx+4,'<path d="M0,-1.2 V.9 M0,1.6 V1.8" stroke="#fff" stroke-width=".45"></path>')
+    +`<g transform="translate(${wx+11},${wy+4.2})"><path d="M-3.4,-2.2 Q-1.6,-2.9 0,-2 Q1.6,-2.9 3.4,-2.2 V2.4 Q1.6,1.8 0,2.4 Q-1.6,1.8 -3.4,2.4 Z M0,-2 V2.4" fill="none" stroke="#fff" stroke-width=".35"></path></g>`
+    +tri(wx+18.4,'<path d="M.5,-1.6 L-.7,.4 H.6 L-.4,2" fill="none" stroke="#fff" stroke-width=".35"></path>')
+    +tri(wx+25.6,'<path d="M-1.2,1.6 q.5,-.8 0,-1.6 M0,1.6 q.5,-.8 0,-1.6 M1.2,1.6 q.5,-.8 0,-1.6" fill="none" stroke="#fff" stroke-width=".3"></path>')
+    +cir(wx+32.6,'<rect x="-1.6" y="-2" width="3.2" height="3.6" rx=".6" fill="none" stroke="#fff" stroke-width=".35"></rect><rect x="-1" y="-1.2" width="2" height="1" fill="#fff"></rect>')
+    +cir(wx+40,'<path d="M-1.4,1.8 V-.6 M-1.4,-.6 V-2 M-.5,-.6 V-2.3 M.4,-.6 V-2.1 M1.3,0 V-1.4 M-1.4,1.8 H.9 Q1.8,.8 1.6,-.6" fill="none" stroke="#fff" stroke-width=".3"></path>')
+    +cir(wx+47.4,'<circle cy="-.6" r="1.7" fill="none" stroke="#fff" stroke-width=".35"></circle><path d="M-1.6,.4 Q0,2.4 1.6,.4" fill="#fff"></path>');
+  // сітка 5 × 4 з номерами
+  const gx=wx+2,gy=wy+10,gw=ww-4,rh=12.6,cw=[13.4,11.6,10.6,12.2];
+  h+=`<rect x="${gx}" y="${gy}" width="${gw}" height="${rh*5}" fill="none" stroke="#cfcfcf" stroke-width=".25"></rect>`;
+  const glyph=[
+   ['<path d="M-3,-2 h3 M0,-2 l2,3 l-1.4,2.6 M2,1 l2,-.6 M1,-.4 l-2,1.4 M-.4,2.4 l-1.6,1.2" stroke="#fff" stroke-width=".35" fill="none"></path><path d="M3,-3 l-1,1.6 h1 l-1,1.6" stroke="#fff" stroke-width=".3" fill="none"></path>','x','x','x3'],
+   ['<circle cx="-1" cy="-1.4" r="1.6" fill="#bbb"></circle><circle cx=".8" cy="-2" r="1.4" fill="#bbb"></circle><path d="M1.6,1 v-1 a1,1 0 0 1 2,0 v3" stroke="#fff" stroke-width=".35" fill="#fff"></path><path d="M-3,2.6 h2.4" stroke="#fff" stroke-width=".35"></path>','x','s','w'],
+   ['<path d="M-2.6,2.6 L-1.8,-.4 L-1,1 L0,-2.4 L1,1 L1.8,-.6 L2.6,2.6 Z" fill="#fff"></path>','b','p','b'],
+   ['<path d="M1,-3 h1.8 v6 h-1.8 Z M-3,-1 h3 M-3,0 h3 M-3,1 h3" stroke="#fff" stroke-width=".35" fill="none"></path>','4',null,null],
+   ['<circle cx=".6" cy="-1.8" r="1.2" fill="#fff"></circle><path d="M-.6,3 v-3 q1.2,-1 2.4,0 v3" fill="#fff"></path><path d="M-3.2,.4 q1,-1 2,0 M-3.4,1.6 q1.2,-1.2 2.4,0" stroke="#fff" stroke-width=".3" fill="none"></path>','h','x','x']];
+  for(let ri=0;ri<5;ri++){let x=gx;const y=gy+ri*rh;
+    if(ri)h+=`<path d="M${gx},${y} H${gx+gw}" stroke="#cfcfcf" stroke-width=".25"></path>`;
+    const cols=ri===3?[cw[0],gw-cw[0]]:cw;
+    cols.forEach((w,ci)=>{if(ci)h+=`<path d="M${x.toFixed(2)},${y} V${y+rh}" stroke="#cfcfcf" stroke-width=".25"></path>`;
+      const lab=ci?`${ri+1}.${ci}`:`${ri+1}`;h+=`<rect x="${(x+.2).toFixed(2)}" y="${y+.2}" width="${lab.length*1.1+.6}" height="1.9" fill="#cfcfcf"></rect>`+W(+(x+.5).toFixed(2),y+1.7,1.5,lab,{a:'start',c:'#111',w:700});
+      const g=glyph[ri][ci],cx=x+w/2,cy=y+rh/2+.8;
+      if(ci===0)h+=`<g transform="translate(${cx.toFixed(2)},${cy}) scale(1.05)">${g}</g>`;
+      else if(g==='h')h+=`<g transform="translate(${cx.toFixed(2)},${cy})"><circle r="3.2" fill="#fff"></circle><circle r="2.6" fill="none" stroke="#d62a1c" stroke-width=".6"></circle><path d="M-1.4,.2 q0,-1.6 1.4,-.6 q1.4,-1 1.4,.6 l-1.4,1.6 Z" fill="#d62a1c"></path><path d="M-1.8,-1.8 L1.8,1.8" stroke="#d62a1c" stroke-width=".6"></path></g>`;
+      else if(g==='4')h+=`<g transform="translate(${(cx).toFixed(2)},${cy})">${[-14,-4.5,4.5,14].map((dx,i)=>`<g transform="translate(${dx},0)"><circle cy="-.6" r="2" fill="none" stroke="#fff" stroke-width=".35"></circle>${i===2?'<rect x="-1.5" y="-2.6" width="3" height="4.6" rx="1" fill="none" stroke="#fff" stroke-width=".35"></rect>':'<path d="M-1.4,-1 h2.8" stroke="#fff" stroke-width=".35"></path>'}</g>`).join('')}${[-9.2,0,9.2].map(dx=>W(dx,1.2,2.6,'+',{w:700})).join('')}</g>`;
+      else if(g)h+=`<g transform="translate(${cx.toFixed(2)},${cy})" stroke="#fff" stroke-width=".32" fill="none"><circle cx="-.8" cy="-2.2" r=".9"></circle><path d="M-.8,-1.3 V1 M-.8,1 l-1,2 M-.8,1 l1,2 M-.8,-.6 l1.6,1 M-.8,-.6 l-1.4,.8"></path>${g==='x'||g==='x3'?'<path d="M-3,-3 L3,3 M3,-3 L-3,3" stroke-width=".38"></path>':''}${g==='s'?'<path d="M1.4,-3 q.6,1 0,2 q-.6,1 0,2" stroke-width=".3"></path>':''}${g==='w'?'<rect x="1" y="-3" width="2.2" height="3.4"></rect>':''}${g==='b'?'<rect x="1.2" y="-.4" width="1.8" height="2.6" rx=".4"></rect>':''}${g==='p'?'<path d="M1.2,2.6 l1.6,-1 l-.6,-1.6" stroke-width=".3"></path>':''}</g>`;
+      x+=w});}
+  // ---- піктограми характеристик 3 × 2
+  const ib=(x,y,inner)=>box(x,y,14.8,17.2,.4)+`<g transform="translate(${x+7.4},${y+8.6})">${inner}</g>`;
+  h+=ib(123,211.7,W(0,-1.2,3.4,'100%',{w:700})+'<path d="M-5.2,0 H5.2" stroke="'+RW+'" stroke-width=".4"></path>'+W(0,4.4,3.4,'135A',{w:700}))
+   +ib(139.3,211.7,`<path d="M-5,-4.5 V4.2 H5 M-5,-4.5 Q3.5,-4 5,4.2" fill="none" stroke="${RW}" stroke-width=".45"></path>`)
+   +ib(155.2,211.7,W(0,1.4,4,'IGBT',{w:700}))
+   +ib(123,231.3,`<circle r="1.6" fill="none" stroke="${RW}" stroke-width=".5"></circle>${[0,72,144,216,288].map(a=>`<path d="M0,-2.2 Q2.6,-3.4 3.6,-5 Q.6,-5.6 -.8,-2.6 Z" fill="${RW}" transform="rotate(${a})"></path>`).join('')}`)
+   +ib(139.3,231.3,`<path d="M-5,-3.6 h1.6 q2.4,0 2.4,2.4 q0,2.4 -2.4,2.4 h-1.6 Z M-1,-1.2 h1.2 M0.6,-3 v3.6 M0.6,-2.6 h2 q1.6,0 1.6,1.4 q0,1.4 -1.6,1.4 h-2 M4.2,-1.2 h1" fill="none" stroke="${RW}" stroke-width=".4"></path>`+W(0,5.4,2.8,'1PH',{w:500}))
+   +ib(155.2,231.3,W(0,1.6,5.4,'DC',{w:800})+`<path d="M-4.6,3.2 H4.6" stroke="${RW}" stroke-width=".55"></path><path d="M-4.6,4.6 H4.6" stroke="${RW}" stroke-width=".45" stroke-dasharray="1 .6"></path>`);
+  // символ заземлення
+  h+=`<g transform="translate(40.6,265)">${ln('M0,-3 V0 M-2.6,0 H2.6 M-1.7,1.2 H1.7 M-.8,2.4 H.8')}<circle r="4" fill="none" stroke="${RW}" stroke-width=".3"></circle></g>`;
+  return h}
+function rearDecalURL(){return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 290" width="768" height="1160">${rearDecalSVG(true)}</svg>`)}
+
 /* ---------- REAR ---------- */
 (function(){
   const g=$('v-rear');
-  g.innerHTML=`<rect class="sv-bump" x="6" y="6" width="388" height="458" rx="26"></rect><rect class="sv-body" x="16" y="14" width="368" height="444" rx="18"></rect><rect class="sv-face" x="34" y="30" width="332" height="410" rx="10"></rect>`;
-  const sw=hot('r:sw','Мережевий вимикач');
-  sw.innerHTML=`<rect class="hit selring" x="58" y="48" width="84" height="104" rx="8"></rect><text class="lbl" x="100" y="62">ON</text><rect fill="#111" x="74" y="70" width="52" height="64" rx="4"></rect><g id="rocker"></g><text class="lbl" x="100" y="146">OFF</text>`;
-  g.appendChild(sw);
-  const gs=hot('r:gas','Штуцер подачі газу');
-  gs.innerHTML=`<rect class="hit selring" x="190" y="50" width="110" height="78" rx="8"></rect><circle class="brassr" cx="226" cy="88" r="15"></circle><rect class="brassr" x="241" y="82" width="26" height="12" rx="3"></rect><circle class="brassd" cx="226" cy="88" r="6"></circle><text class="lbl" x="245" y="66">GAS INPUT</text><g id="gashose"></g>`;
-  g.appendChild(gs);
-  const cd=hot('r:cord','Шнур живлення');
-  cd.innerHTML=`<rect class="hit selring" x="58" y="168" width="100" height="74" rx="8"></rect><circle class="sock" cx="100" cy="206" r="18"></circle><path class="cabe" d="M100,206 C60,240 40,300 30,330"></path><path class="cab" d="M100,206 C60,240 40,300 30,330"></path><text class="lbl" x="110" y="252">230V ±10% 50Hz</text>`;
-  g.appendChild(cd);
-  let np=`<rect class="nplate" x="196" y="150" width="152" height="146" rx="3"></rect>`;
-  ['MODEL: MG-16DX','EN 60974-6','MIG 20A/12V–160A/22V','MMA 20A/21V–160A/26.4V','X   50%  33%  100%','I2 160A 160A 135A 125A','U0 = 55V   U1 = 230V','I1max 28A  I1eff 22.4A','IP21S'].forEach((t,i)=>np+=`<text class="npt" x="204" y="${166+i*14}">${t}</text>`);
-  np+=`<rect class="warnplate" x="196" y="300" width="152" height="14" rx="2"></rect><text class="npt" x="204" y="310" style="fill:#fff">УВАГА!</text>`;
-  g.insertAdjacentHTML('beforeend',np);
-  const fn=hot('r:fan','Вентилятор');
-  let fh=`<circle class="hit" cx="112" cy="350" r="66"></circle><circle class="fan" cx="112" cy="350" r="60"></circle>`;
-  for(let r=12;r<=52;r+=10)fh+=`<circle class="fan" cx="112" cy="350" r="${r}"></circle>`;
-  fh+=`<line class="fan" x1="52" y1="350" x2="172" y2="350"></line><line class="fan" x1="112" y1="290" x2="112" y2="410"></line><g id="fanblades"><path d="M112,350 L112,310 A40,40 0 0 1 140,322 Z M112,350 L152,350 A40,40 0 0 1 140,378 Z M112,350 L112,390 A40,40 0 0 1 84,378 Z M112,350 L72,350 A40,40 0 0 1 84,322 Z" fill="var(--dev-dim)" opacity=".25"></path></g>`;
-  fn.innerHTML=fh;g.appendChild(fn);
+  const hz=(pick,label,inner)=>`<g class="hot" data-pick="${pick}" tabindex="0" role="button" aria-label="${label}">${inner}</g>`;
+  const silver=(x,y,r)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="#c9ccd0" stroke="#6b7076" stroke-width=".4"></circle><path d="M${x-r*.5},${y} H${x+r*.5} M${x},${y-r*.5} V${y+r*.5}" stroke="#7f858b" stroke-width="${r*.3}" stroke-linecap="round"></path>`;
+  let h=`<g transform="translate(51,10) scale(1.55)"><rect x="0" y="0" width="192" height="290" rx="14" class="sv-bump"></rect><rect x="4" y="4" width="184" height="282" rx="11" class="sv-body"></rect>${rearDecalSVG(false)}`;
+  h+=hz('r:sw','Мережевий вимикач',`<rect class="hit selring" style="fill:rgba(0,0,0,0)" x="20" y="16" width="50" height="48" rx="3"></rect><rect x="23.6" y="21" width="24.1" height="39" rx="1.6" fill="#0d0e10" stroke="#2b2d30" stroke-width=".5"></rect><g id="rocker"></g>`);
+  h+=hz('r:gas','Штуцер подачі газу',`<rect class="hit selring" style="fill:rgba(0,0,0,0)" x="76" y="24" width="48" height="20" rx="3"></rect><polygon points="${[0,1,2,3,4,5].map(k=>{const a=k*Math.PI/3;return (85.6+5.8*Math.cos(a)).toFixed(2)+','+(36+5.8*Math.sin(a)).toFixed(2)}).join(' ')}" class="brassr" style="stroke-width:.5"></polygon><circle cx="85.6" cy="36" r="3.4" fill="#d9b860" stroke="#7d6224" stroke-width=".4"></circle><circle cx="85.6" cy="36" r="2" fill="#6b5420"></circle><path d="M84.4,36 h2.4 M85.6,34.8 v2.4 M84.7,35.1 l1.8,1.8 M86.5,35.1 l-1.8,1.8" stroke="#b39446" stroke-width=".3"></path><g id="gashose"></g>`);
+  let gl='';for(let k=0;k<12;k++){const a=k*Math.PI/6;gl+=`${(38.8+9.4*Math.cos(a)).toFixed(2)},${(86+9.4*Math.sin(a)).toFixed(2)} ${(38.8+8.2*Math.cos(a+.26)).toFixed(2)},${(86+8.2*Math.sin(a+.26)).toFixed(2)} `}
+  h+=hz('r:cord','Шнур живлення',`<circle class="hit" cx="38.8" cy="86" r="15"></circle><path d="M38.8,86 C22,100 6,130 -4,176" fill="none" stroke="#2c2f34" stroke-width="7.4" stroke-linecap="round"></path><path d="M38.8,86 C22,100 6,130 -4,176" fill="none" stroke="#0e0e0f" stroke-width="6" stroke-linecap="round"></path><circle cx="38.8" cy="86" r="11.6" fill="#141516" stroke="#33363b" stroke-width=".6"></circle><polygon points="${gl}" fill="#1c1d20" stroke="#3a3d42" stroke-width=".4"></polygon><circle cx="38.8" cy="86" r="5.4" fill="#0b0b0c"></circle>`);
+  let fan=`<circle class="hit" cx="55" cy="184" r="47"></circle><circle cx="55" cy="184" r="43" fill="#08090a"></circle><g id="fanblades">${[0,72,144,216,288].map(a=>`<path d="M55,184 m0,-6 q14,-6 24,-26 q-14,-10 -30,4 z" fill="#2a2c30" transform="rotate(${a} 55 184)"></path>`).join('')}<circle cx="55" cy="184" r="8" fill="#1d1f22"></circle></g>`;
+  [8,16,24,32,40].forEach(r=>fan+=`<circle cx="55" cy="184" r="${r}" fill="none" stroke="#c4c8cc" stroke-width=".9"></circle>`);
+  fan+=`<path d="M14,133 L96,235 M96,133 L14,235" stroke="#c4c8cc" stroke-width=".9"></path>`+silver(14,133,3.6)+silver(96,133,3.6)+silver(14,235,3.6)+silver(96,235,3.6);
+  h+=hz('r:fan','Вентилятор',fan);
+  h+=hz('r:plate','Табличка з характеристиками',`<rect class="hit selring" style="fill:rgba(0,0,0,0)" x="99.5" y="54.5" width="72" height="73" rx="2"></rect>`);
+  h+=hz('r:warn','Попереджувальна наліпка',`<rect class="hit selring" style="fill:rgba(0,0,0,0)" x="104" y="127.6" width="54.6" height="78.6" rx="2"></rect>`);
+  h+=hz('r:icons','Піктограми характеристик',`<rect class="hit selring" style="fill:rgba(0,0,0,0)" x="121.6" y="210.4" width="50" height="40" rx="2"></rect>`);
+  h+=hz('r:ground','Клема заземлення корпусу',`<circle class="hit" cx="30" cy="265" r="15"></circle>${silver(26.3,265,4.4)}`);
+  g.innerHTML=h+'</g>';
 })();
 
 /* ---------- FEED ---------- */
@@ -843,7 +985,7 @@ function issues(){const out=[];const k=kind();
 function hint(){const I=S.cur,k=kind();
   if(k==='mma'){const ok=MMATAB.filter(r=>I>=r[2]&&I<=r[3]).map(r=>`${String(r[0]).replace('.',',')} мм (метал ${r[1]} мм)`);
     return ok.length?'Електрод '+ok.join(' або '):(I<50?'Замало навіть для електрода 1,6 мм':'Вище діапазонів таблиці');}
-  if(k==='mig'){let t=I<40?'тонкий лист до 0,8–1 мм':I<60?'метал 1–1,5 мм':I<85?'метал 1,5–2 мм, профтруба 2 мм':I<110?'метал 2–3 мм':I<135?'метал 3–4 мм':'метал 4 мм і товще, з фаскою';return 'Орієнтовно: '+t}
+  if(k==='mig'){const ri=wtRow(),th=ri>=0?wtFor(ri):[];if(th.length)return 'За таблицею на дверцятах: метал '+th.map(dc).join(', ')+' мм';let t=I<40?'тонкий лист до 0,8–1 мм':I<60?'метал 1–1,5 мм':I<85?'метал 1,5–2 мм, профтруба 2 мм':I<110?'метал 2–3 мм':I<135?'метал 3–4 мм':'метал 4 мм і товще, з фаскою';return 'Орієнтовно: '+t}
   return 'Орієнтовно: '+(I<45?'нержавійка 0,8–1 мм':I<70?'нержавійка 1–2 мм':I<110?'метал 2–3 мм':'метал 3 мм і товще')}
 function duty(){const k=kind(),I=S.cur;if(k==='mma')return I<=125?'ПВ 100%':I>=160?'ПВ 33%':'ПВ ≈ '+Math.round(100-(I-125)/35*67)+'%';
   if(k==='mig')return I<=135?'ПВ 100%':I>=160?'ПВ 50%':'ПВ ≈ '+Math.round(100-(I-135)/25*50)+'%';return ''}
@@ -856,7 +998,7 @@ const SVC=[
   what:'Порошковий самозахисний дріт: флюс усередині дроту захищає шов від повітря, тому балон не потрібен. Для вуглецевих і низьколегованих сталей у всіх просторових положеннях. Рядна намотка — дріт подається плавно й менше зношує механізм подачі.',
   spec:'Флюсовий (порошковий) · <b>0,8 мм</b> · котушка <b>1 кг</b> (апарат бере до Ø200 мм) · рядна намотка · ДСТУ EN ISO 17632 · межа текучості ≥ 390 МПа',
   set:{power:true,mode:'flux',pol:'-',view:'feed',wire:0.8,roll:0.8,tip:0.8,arm:false,inch:false},
-  rows:[['Режим','FLUX CORED'],['Кабель полярності','«−» (за інструкцією апарата)'],['Маса','«+»'],['Ролик','канавка 0,8'],['Наконечник','0,8'],['Газ','не потрібен'],['Струм','55–90 А за товщиною']],
+  rows:[['Режим','FLUX CORED'],['Кабель полярності','«−» (за інструкцією апарата)'],['Маса','«+»'],['Ролик','канавка 0,8'],['Наконечник','0,8'],['Газ','не потрібен'],['Струм','90–160 А за таблицею на дверцятах']],
   sec:[
    ['Як поставити котушку й заправити дріт',[
     'Вимкніть апарат і витягніть вилку. Відкрийте відсік, посунувши замок угору.',
@@ -869,7 +1011,7 @@ const SVC=[
     'Зніміть сопло й викрутіть наконечник. Увімкніть апарат, затисніть SETUP і тримайте, поки дріт не вийде з пальника на 50–100 мм.',
     'Накрутіть наконечник 0,8 і сопло. Відкусіть дріт, щоб виліт був близько 10 мм.']],
    ['Як працювати',[
-    'SETUP — FLUX CORED, струм за товщиною: тонкий метал 1–1,5 мм — 55 А, профтруба 2 мм — 80 А, прихватки — 90 А.',
+    'SETUP — FLUX CORED, струм за таблицею на дверцятах: 1,5 мм — 90 А, 2 мм — 110 А, 2,5 мм — 130 А, 3 мм — 150–160 А.',
     'Метал зачистіть від іржі, фарби й бруду (з картки дроту) і місце під масу — до блиску.',
     'Виліт дроту з наконечника — близько 10 мм (загальна практика).',
     'Пальник ведіть «на себе», нахиливши назад на 10–15°: шлак лишається позаду ванни (загальна практика для флюсового дроту).',
@@ -1017,11 +1159,108 @@ function renderSvc(){const x=SVC.find(s=>s.id===SVCID);
   const sc=$('svcchips'),sl=sc.scrollLeft;sc.innerHTML=SVC.map(s=>`<button class="chip" data-svc="${s.id}" aria-pressed="${SVCID===s.id}">${s.chip}</button>`).join('');sc.scrollLeft=sl;
   const list=(t,a,i)=>`<div class="sub"><div class="glabel">${t}</div>${i<1?`<ol class="steps">${a.map(s=>`<li><span>${s}</span></li>`).join('')}</ol>`:`<ul class="checks${/правильно|перевір/i.test(t)?' ok':''}">${a.map(s=>`<li>${s}</li>`).join('')}</ul>`}</div>`;
   $('svc').innerHTML=`<div class="eyebrow">${x.eye}</div><h2>${x.title}</h2><p>${x.what}</p><div class="spec">${x.spec}</div>
+   ${x.id==='tip'?`<div class="sub"><div class="glabel">Пальник у розрізі</div>${tipFigHTML()}</div>`:''}
    <div class="sub"><div class="glabel">Що виставити на апараті</div><dl class="setrows">${x.rows.map(([a,b])=>`<dt>${a}</dt><dd>${b}</dd>`).join('')}</dl></div>
    <div class="acts"><button class="chip" data-svcset="${x.id}">Показати на апараті</button>${x.url?`<a class="chip" href="${x.url}" target="_blank" rel="noopener" style="text-decoration:none">Товар на dnipro-m.ua ↗</a>`:''}</div>
    ${x.sec.map(([t,a])=>list(t,a,/^Як поставити|^Як замінити|^Як підключити|^Як працювати/.test(t)?0:1)).join('')}
-   ${(x.notes||[]).map(noteHtml).join('')}`}
+   ${(x.notes||[]).map(noteHtml).join('')}`;if(x.id==='tip')drawTip()}
 
+/* ---------- наконечник у розрізі: анімація заміни ---------- */
+const TIPSTEPS=[
+ {k:'ok',chip:'Зібрано',t:'Так має бути',d:'Наконечник закручений у газорозподільник до упору, без щілини. Торець урівень із соплом або трохи всередині, на 1–2 мм. Дріт виходить приблизно на 10 мм (загальна практика).',noz:0,tip:0,wire:1},
+ {k:'noz',chip:'1. Зняти сопло',t:'Зніміть сопло',d:'Обертайте сопло й тягніть уперед. Тепер видно газорозподільник з отворами для газу і наконечник.',noz:1,tip:0,wire:1},
+ {k:'cut',chip:'2. Відкусити дріт',t:'Відкусіть дріт',d:'Урівень з торцем наконечника — інакше він не зійде з дроту.',noz:1,tip:0,wire:0},
+ {k:'out',chip:'3. Викрутити',t:'Викрутіть старий наконечник',d:'Проти годинникової стрілки, якщо дивитися з торця, — ключем або плоскогубцями. Огляньте різьбу й отвори газорозподільника.',noz:1,tip:1,wire:0},
+ {k:'in',chip:'4. Накрутити новий',t:'Накрутіть новий 0,8',d:'Наденьте на дріт, закрутіть рукою до упору за годинниковою стрілкою, потім ключем на ¼ оберту. Між наконечником і газорозподільником — без щілини. Мідь м\'яка: не перетягуйте.',noz:1,tip:0,wire:0,fresh:1},
+ {k:'back',chip:'5. Сопло назад',t:'Поставте сопло',d:'Сопло сідає щільно й не торкається наконечника. Натисніть курок — дріт виходить рівно; відкусіть, щоб виліт був близько 10 мм.',noz:0,tip:0,wire:1,fresh:1}
+];
+const TIPFAULT={loose:{chip:'✗ Не докручений',d:'Щілина в різьбі: струм іде через малу площу — наконечник гріється, дуга нестабільна, різьба обгорає. Докрутіть до упору.'},
+ oval:{chip:'✗ Отвір овалом',d:'Отвір розбитий дротом в овал: дріт «гуляє», дуга блукає й рветься. Такий наконечник міняйте.'},
+ spatter:{chip:'✗ Бризки в соплі',d:'Бризки налипли між соплом і наконечником: газ іде нерівно, шов пористий, сопло може замкнути на наконечник. Почистіть сопло.'}};
+const TIP={step:0,fault:null,noz:0,tip:0,wire:1,ph:0,raf:0,play:0};
+function tipGo(i){TIP.step=i;TIP.fault=null;if(i===4&&TIP.tip<0.5)TIP.tip=1.4;const s=TIPSTEPS[i],from={noz:TIP.noz,tip:TIP.tip,wire:TIP.wire},dir=s.tip>TIP.tip?-1:s.tip<TIP.tip?1:0,t0=performance.now(),dur=reduce?0:900;
+  cancelAnimationFrame(TIP.raf);
+  (function fr(now){const t=dur?Math.min(1,(now-t0)/dur):1,e=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+    TIP.noz=from.noz+(s.noz-from.noz)*e;TIP.tip=from.tip+(s.tip-from.tip)*e;TIP.wire=from.wire+(s.wire-from.wire)*e;
+    if(dir&&t<1)TIP.ph=(TIP.ph+dir*0.9+40)%40;
+    drawTip();if(t<1)TIP.raf=requestAnimationFrame(fr);else if(TIP.play&&i<TIPSTEPS.length-1)TIP.raf=setTimeout(()=>tipGo(i+1),1300);else TIP.play=0})(t0);
+}
+function tipFigHTML(){return `<div class="tipfig"><svg id="tipsvg" viewBox="0 0 460 250" role="img" aria-label="Пальник у розрізі: сопло, газорозподільник, наконечник і дріт"></svg>
+  <div class="acts tipctl">${TIPSTEPS.map((s,i)=>`<button class="chip" data-tipstep="${i}">${s.chip}</button>`).join('')}<button class="chip" data-tipplay="1">▶ Показати заміну</button></div>
+  <div class="acts tipctl">${Object.entries(TIPFAULT).map(([k,f])=>`<button class="chip" data-tipfault="${k}">${f.chip}</button>`).join('')}</div>
+  <div class="result" id="tipcap"></div></div>`}
+function drawTip(){const el=$('tipsvg');if(!el)return;
+  const st=TIPSTEPS[TIP.step],fl=TIP.fault,Y=125,s=3.4; // 3,4 одиниці = 1 мм
+  const nozDx=TIP.noz*230,tipDx=TIP.tip*90,wireEnd=262+ (TIP.wire)*34;
+  const loose=fl==='loose'?7:0;
+  let h=`<defs><pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#c3c7cc"></rect><path d="M0,0 V6" stroke="#7d838a" stroke-width="1.6"></path></pattern>
+    <linearGradient id="cu" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f0b27a"></stop><stop offset=".5" stop-color="#c8783e"></stop><stop offset="1" stop-color="#8d4f22"></stop></linearGradient>
+    <linearGradient id="br" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e6cf8a"></stop><stop offset=".5" stop-color="#b8953e"></stop><stop offset="1" stop-color="#7d6224"></stop></linearGradient></defs>`;
+  h+=`<rect x="0" y="0" width="460" height="250" rx="10" fill="var(--bg)"></rect>`;
+  // рукав і корпус пальника
+  h+=`<path d="M0,${Y-34} H96 Q112,${Y-34} 112,${Y-24} V${Y+24} Q112,${Y+34} 96,${Y+34} H0 Z" fill="#1d1f22"></path><path d="M0,${Y-26} H100 M0,${Y+26} H100" stroke="#33363b" stroke-width="2"></path>`;
+  // газорозподільник (латунь) з отворами
+  h+=`<rect x="108" y="${Y-22}" width="58" height="44" rx="4" fill="url(#br)" stroke="#7d6224"></rect>${[124,140].map(x=>`<circle cx="${x}" cy="${Y-15}" r="3.2" fill="#3a2a10"></circle><circle cx="${x}" cy="${Y+15}" r="3.2" fill="#3a2a10"></circle>`).join('')}
+   <rect x="150" y="${Y-11}" width="16" height="22" fill="#5a4618"></rect>`;
+  // газ
+  if(TIP.noz<.5&&!fl)h+=[-1,1].map(sg=>`<path d="M132,${Y+sg*18} C170,${Y+sg*30} 220,${Y+sg*30} 280,${Y+sg*16}" fill="none" stroke="#5aa9ff" stroke-width="1.6" stroke-dasharray="5 5" opacity=".75"><animate attributeName="stroke-dashoffset" from="20" to="0" dur="1s" repeatCount="indefinite"></animate></path>`).join('');
+  // дріт
+  h+=`<path d="M0,${Y} H${f1(Math.max(150,wireEnd))}" stroke="#d29a62" stroke-width="2.4"></path>`;
+  // наконечник
+  const tx=152+tipDx+loose,ph=TIP.ph;
+  let thr='';for(let x=0;x<24;x+=4){const xx=tx+((x+ph/10*4)%24);thr+=`<path d="M${f1(xx)},${Y-9} l3,18" stroke="#8d4f22" stroke-width="1.2"></path>`}
+  h+=`<g><rect x="${f1(tx)}" y="${Y-9}" width="24" height="18" fill="url(#cu)"></rect>${thr}
+    <path d="M${f1(tx+24)},${Y-12} H${f1(tx+100)} Q${f1(tx+106)},${Y-12} ${f1(tx+106)},${Y-6} V${Y+6} Q${f1(tx+106)},${Y+12} ${f1(tx+100)},${Y+12} H${f1(tx+24)} Z" fill="url(#cu)" stroke="#8d4f22"></path>
+    <rect x="${f1(tx+24)}" y="${Y-1.6}" width="82" height="3.2" fill="#5a2e12" opacity=".55"></rect>
+    <text x="${f1(tx+64)}" y="${Y+4}" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" font-weight="700" fill="#4a2410">0.8</text></g>`;
+  if(loose)h+=`<rect x="${f1(tx-loose)}" y="${Y-11}" width="${loose}" height="22" fill="#ff6a1f" opacity=".85"></rect>${[0,1,2].map(i=>`<path d="M${f1(tx-3)},${Y-12} l${-4+i*4},-12" stroke="#ffb547" stroke-width="1.4"></path>`).join('')}`;
+  // сопло (половинний розріз) — їде вправо при знятті
+  const nx=104+nozDx,op=Math.max(0,1-TIP.noz*1.2);
+  if(op>0.02)h+=`<g opacity="${f1(op)}"><path d="M${nx},${Y-42} H${nx+150} L${nx+160},${Y-30} H${nx+152} L${nx+144},${Y-36} H${nx} Z" fill="url(#hatch)" stroke="#5c6168"></path>
+    <path d="M${nx},${Y+42} H${nx+150} L${nx+160},${Y+30} H${nx+152} L${nx+144},${Y+36} H${nx} Z" fill="url(#hatch)" stroke="#5c6168"></path>
+    ${fl==='spatter'?`<g fill="#3a3d42">${[[nx+128,Y-30],[nx+138,Y-27],[nx+132,Y+29],[nx+146,Y+27],[nx+120,Y+31]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="${4+((x+y)%3)}"></circle>`).join('')}<path d="M${nx+146},${Y-28} L${nx+150},${Y-12}" stroke="#3a3d42" stroke-width="6" stroke-linecap="round"></path></g>`:''}</g>`;
+  // торець — вигляд спереду з обертанням
+  const cx=400,cy=52;h+=`<circle cx="${cx}" cy="${cy}" r="30" fill="var(--surface)" stroke="var(--line)"></circle><circle cx="${cx}" cy="${cy}" r="18" fill="url(#cu)" stroke="#8d4f22"></circle>
+    ${fl==='oval'?`<ellipse cx="${cx+2}" cy="${cy}" rx="6" ry="3" fill="#2a1408"></ellipse>`:`<circle cx="${cx}" cy="${cy}" r="3" fill="#2a1408"></circle>`}
+    <g transform="rotate(${f1(-ph*9)} ${cx} ${cy})"><rect x="${cx-1.5}" y="${cy-18}" width="3" height="7" fill="#7a1d10"></rect></g>
+    <text x="${cx}" y="${cy+44}" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="8.5" fill="var(--muted)">торець наконечника</text>`;
+  if(TIP.step===3||TIP.step===4)h+=`<path d="M${cx+22},${cy-26} A34,34 0 0 ${TIP.step===3?0:1} ${cx-22},${cy-26}" fill="none" stroke="var(--orange)" stroke-width="2.4" marker-end="url(#tarr)"></path><defs><marker id="tarr" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="var(--orange)"></path></marker></defs>
+    <text x="${cx}" y="${cy-38}" text-anchor="middle" font-family="Onest,sans-serif" font-size="9" font-weight="700" fill="var(--accent)">${TIP.step===3?'проти год. стрілки':'за год. стрілкою'}</text>`;
+  // підписи
+  const L=(x,y,x2,y2,t)=>`<path d="M${x},${y} L${x2},${y2}" stroke="var(--muted)" stroke-width="1"></path><text x="${x2}" y="${y2+(y2<Y?-4:12)}" text-anchor="middle" font-family="Onest,sans-serif" font-size="10" font-weight="600" fill="var(--ink)">${t}</text>`;
+  h+=L(50,Y+34,50,Y+70,'пальник')+L(137,Y+22,137,Y+70,'газорозподільник')+L(f1(tx+64),Y+12,f1(tx+64),Y+70,'наконечник')+(op>.3?L(nx+70,Y-42,nx+70,Y-62,'сопло (у розрізі)'):'')+L(f1(Math.max(150,wireEnd)-6),Y,f1(Math.max(150,wireEnd)+8),Y-44,'дріт');
+  if(!fl&&(TIP.step===0||TIP.step===5)){const e=tx+106;h+=`<path d="M${f1(e)},${Y+18} V${Y+26} M${f1(wireEnd)},${Y+18} V${Y+26} M${f1(e)},${Y+22} H${f1(wireEnd)}" stroke="#2f9a52" stroke-width="1.4"></path><text x="${f1((e+wireEnd)/2)}" y="${Y+38}" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" font-weight="700" fill="#2f9a52">≈10 мм</text>`}
+  h+=`<text x="12" y="20" font-family="Unbounded,Arial Black,sans-serif" font-size="12" font-weight="700" fill="${fl?'#c8321b':'var(--ink)'}">${fl?TIPFAULT[fl].chip:st.t}</text>`;
+  el.innerHTML=h;
+  const cap=$('tipcap');if(cap)cap.textContent=fl?TIPFAULT[fl].d:st.d;
+  document.querySelectorAll('[data-tipstep]').forEach(b=>b.setAttribute('aria-pressed',String(!fl&&+b.dataset.tipstep===TIP.step)));
+  document.querySelectorAll('[data-tipfault]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.tipfault===fl)));
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-tipstep],[data-tipplay],[data-tipfault]');if(!b)return;
+  if(b.dataset.tipplay){TIP.play=1;TIP.noz=0;TIP.tip=0;TIP.wire=1;tipGo(1);return}
+  TIP.play=0;clearTimeout(TIP.raf);
+  if(b.dataset.tipfault){TIP.fault=TIP.fault===b.dataset.tipfault?null:b.dataset.tipfault;TIP.step=0;TIP.noz=b.dataset.tipfault==='spatter'?0:TIP.noz;if(TIP.fault==='loose'){TIP.noz=0.9;TIP.tip=0;TIP.wire=0}if(TIP.fault==='oval'){TIP.noz=0;TIP.tip=0;TIP.wire=1}drawTip();return}
+  tipGo(+b.dataset.tipstep)});
+
+/* ---------- таблиця режимів MIG/MAG з наліпки на дверцятах відсіку подачі ---------- */
+const WT_COLS=[0.8,1,1.2,1.5,2,2.5,3];
+const WTAB=[
+ {mat:'Fe',wire:0.6,gas:'CO₂ / Ar 82%',set:{mode:'co2',wire:0.6,roll:0.6,tip:0.6,pol:'+'},a:[[40,70],[70,90],[100,120],[120,140],[140,160],null,null]},
+ {mat:'Fe',wire:0.8,gas:'CO₂ / Ar 82%',set:{mode:'co2',wire:0.8,roll:0.8,tip:0.8,pol:'+'},a:[[40,60],[60,95],[95,100],[100,110],[110,130],[130,150],[160,160]]},
+ {mat:'AISI 304',wire:0.8,gas:'Ar + 2% CO₂',set:{mode:'arco2',wire:0.8,roll:0.8,tip:0.8,pol:'+'},a:[[40,60],[60,90],[90,100],[100,110],[110,130],[130,150],[160,160]]},
+ {mat:'Fe',wire:0.8,gas:'E71T-GS',set:{mode:'flux',wire:0.8,roll:0.8,tip:0.8,pol:'-'},a:[null,null,null,[90,90],[110,110],[130,130],[150,160]]}
+];
+const dc=n=>String(n).replace('.',',');
+const rng=r=>r?(r[0]===r[1]?String(r[0]):r[0]+'–'+r[1]):'';
+function wtRow(){const m=S.mode;if(m==='flux')return 3;if(m==='arco2')return 2;if(m==='co2')return S.wire===0.6?0:1;return -1}
+function wtFor(i){const r=WTAB[i];return WT_COLS.map((t,j)=>r.a[j]&&S.cur>=r.a[j][0]&&S.cur<=r.a[j][1]?t:null).filter(x=>x!==null)}
+function wtHTML(){const ri=wtRow();
+  return `<p class="wthint">← гортайте таблицю вбік →</p><div class="tbwrap"><table class="wtab"><thead><tr><th></th><th>Ø дроту</th><th>Газ / дріт</th><th class="wa">A</th>${WT_COLS.map(t=>`<th>${dc(t)}</th>`).join('')}</tr></thead><tbody>${WTAB.map((r,i)=>`<tr class="${i===ri?'on':''}"><td>${r.mat}</td><td class="g">${dc(r.wire)} mm</td><td>${r.gas}</td>${i===0?'<td class="wa wam" rowspan="4">A</td>':''}${r.a.map((c,j)=>c?`<td><button type="button" class="wc${i===ri&&S.cur>=c[0]&&S.cur<=c[1]?' hit':''}" data-wt="${i}:${j}" aria-label="${r.mat}, дріт ${dc(r.wire)} мм, ${r.gas}, метал ${dc(WT_COLS[j])} мм: ${rng(c)} А">${rng(c)}</button></td>`:'<td class="e"></td>').join('')}</tr>`).join('')}</tbody></table></div>
+   <p class="wtnote">Верхній рядок — товщина металу, мм. У клітинках — струм, А. Натисніть клітинку — апарат стане в цей режим і струм.${ri>=0?` Зараз: <b>${MODENAME[S.mode]}, ${S.cur} А</b>${wtFor(ri).length?` — метал <b>${wtFor(ri).map(dc).join(', ')} мм</b>`:' — поза таблицею для цього рядка'}.`:' Таблиця — для напівавтоматичних режимів (CO₂, Ar-CO₂, FLUX).'}</p>`}
+function renderWTab(){const el=$('wtabbox');if(el)el.innerHTML=wtHTML()}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-wt]');if(!b)return;const [i,j]=b.dataset.wt.split(':').map(Number),r=WTAB[i],c=r.a[j];
+  S.power=true;S.heat=false;Object.assign(S,r.set);S.cur=Math.round((c[0]+c[1])/2/5)*5;if(S.tab==='dev'&&S.focus.startsWith('m:'))S.focus='m:'+S.mode;render()});
 /* ---------- render ---------- */
 const MODENAME=Object.fromEntries(MODES.map(m=>[m.id,m.chip]));
 function renderFs(){const b=$('fsbar');if(!b||b.hidden)return;const k=kind();const row=b.querySelector('.fschips'),sl=row?row.scrollLeft:0;
@@ -1036,7 +1275,7 @@ function renderFs(){const b=$('fsbar');if(!b||b.hidden)return;const k=kind();con
   <button class="chip" type="button" data-act="power" aria-pressed="${!S.power}">${S.power?'Вимкнути':'Увімкнути'}</button></div>`;
   const nr=b.querySelector('.fschips');if(nr)nr.scrollLeft=sl}
 function setModeOnly(id){S.mode=id;S.power=true;S.heat=false;const m=MODES[MI[id]];if(m.pol)S.pol=m.pol;if(id==='tig')S.tpol='-';if(id==='mma')S.hpol='+';S.focus='m:'+id;render()}
-function renderLive(){keepFocus(()=>{renderFs();drawDevice();renderStatus();if(S.tab==='dev'&&(S.focus==='k:cur'||S.focus==='k:trim'||S.focus.startsWith('m:')))renderInfo()})}
+function renderLive(){keepFocus(()=>{renderFs();drawDevice();renderStatus();renderWTab();if(S.tab==='dev'&&(S.focus==='k:cur'||S.focus==='k:trim'||S.focus.startsWith('m:')))renderInfo()})}
 let V3=null;
 function drawDevice(){if(V3&&V3.on)V3.sync();
   const v2=S.view==='all'?'front':S.view;
@@ -1049,11 +1288,10 @@ function drawDevice(){if(V3&&V3.on)V3.sync();
   const ac=ang(KC,S.cur),at=ang(KT,S.trim);
   if(dragging){setNow('kp-cur',ac,KC.cx,KC.cy);setNow('kp-trim',at,KT.cx,KT.cy)}else{turnTo('kp-cur',ac,KC.cx,KC.cy);turnTo('kp-trim',at,KT.cx,KT.cy)}
   drawCables();
-  $('rocker').innerHTML=on?`<path class="rocker" d="M78,74 h44 v24 h-44 z"></path><path class="rocker" d="M78,98 h44 l-6,32 h-32 z" style="filter:brightness(.7)"></path><text x="100" y="91" fill="#fff" font-size="12" text-anchor="middle" font-weight="700">I</text>`
-    :`<path class="rocker" d="M84,74 h32 l6,32 h-44 z" style="filter:brightness(.7)"></path><path class="rocker" d="M78,106 h44 v24 h-44 z"></path><text x="100" y="123" fill="#fff" font-size="12" text-anchor="middle" font-weight="700">O</text>`;
+  $('rocker').innerHTML=`<rect x="25" y="25" width="21" height="30" rx="1.2" fill="#d8291b"></rect>${on?'<rect x="25" y="25" width="21" height="15" rx="1.2" fill="#a51d12"></rect><rect x="25.6" y="40.4" width="19.8" height="1.4" fill="#ff6a55" opacity=".7"></rect>':'<rect x="25" y="40" width="21" height="15" rx="1.2" fill="#a51d12"></rect><rect x="25.6" y="25.6" width="19.8" height="1.4" fill="#ff6a55" opacity=".7"></rect>'}<path d="M35.5,29 V36" stroke="#fff" stroke-width="1.3" stroke-linecap="round"></path><circle cx="35.5" cy="47.6" r="3.2" fill="none" stroke="#fff" stroke-width="1.1"></circle>`;
   const gas=on&&(S.mode==='co2'||S.mode==='arco2');
-  $('gashose').innerHTML=(S.mode==='co2'||S.mode==='arco2')?`<path class="cabe" d="M266,88 C300,88 320,60 350,40" style="stroke-width:9"></path><path class="cab" d="M266,88 C300,88 320,60 350,40" style="stroke-width:6"></path><rect fill="#bbb" x="258" y="80" width="8" height="16" rx="2"></rect>`:'';
-  $('fanblades').style.transformOrigin='112px 350px';$('fanblades').style.transformBox='view-box';
+  $('gashose').innerHTML=(S.mode==='co2'||S.mode==='arco2')?`<path d="M85.6,36 C92,22 112,10 150,-4" fill="none" stroke="#2c2f34" stroke-width="6" stroke-linecap="round"></path><path d="M85.6,36 C92,22 112,10 150,-4" fill="none" stroke="#0e0e0f" stroke-width="4.4" stroke-linecap="round"></path><circle cx="85.6" cy="36" r="4" fill="#bbb"></circle>`:'';
+  $('fanblades').style.transformOrigin='center';$('fanblades').style.transformBox='fill-box';
   $('fanblades').style.animation=on&&!reduce?'spin .6s linear infinite':'none';
   $('spoollbl').textContent=String(S.wire);$('rolllbl').textContent=String(S.roll);$('tiplbl').textContent=String(S.tip);
   $('armg').setAttribute('transform',S.arm?'rotate(-22 270 266)':'');
@@ -1084,6 +1322,7 @@ function renderInfo(){
     h=`<div class="eyebrow">Режим · SETUP</div><h2>${mi.title}</h2><p>${mi.what}</p><div class="spec">${mi.spec}</div>`;
     h+=`<div class="sub"><div class="glabel">Як підготувати</div><ol class="steps">${mi.steps.map(s=>`<li><span>${s}</span></li>`).join('')}</ol></div>`;
     if(id==='mma')h+=`<div class="sub"><div class="glabel">Струм за діаметром електрода (з інструкції)</div><div class="tbwrap"><table class="tb"><tr><th>Електрод, мм</th><th>Метал, мм</th><th>Струм, А</th></tr>${MMATAB.map(r=>`<tr><td>${String(r[0]).replace('.',',')}</td><td>${r[1]}</td><td>${r[2]}–${r[3]}</td></tr>`).join('')}</table></div></div>`;
+    if(id==='co2'||id==='arco2'||id==='flux')h+=`<div class="sub"><div class="glabel">Струм — таблиця на дверцятах відсіку</div>${wtHTML()}</div>`;
     if(id==='co2'||id==='arco2')h+=`<div class="sub"><div class="glabel">Таблиця режимів MIG/MAG з інструкції</div><div class="tbwrap"><table class="tb"><tr><th>Метал, мм</th><th>Зазор</th><th>Дріт</th><th>Напруга, В</th><th>Дріт, м/хв</th><th>Газ, л/хв</th></tr>${MIGTAB.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</table></div></div>`;
     h+=noteHtml(mi.note);
   }else{const c=C[f];if(!c){$('info').innerHTML='';return}
@@ -1092,11 +1331,13 @@ function renderInfo(){
     if(f==='k:cur')h+=`<div class="result">${S.cur} А · ${MODENAME[S.mode]}<br>${hint()}${duty()?'<br>'+duty():''}</div>`;
     if(f==='h:rod'){const r=MMATAB.find(x=>x[0]===S.rod);h+=`<div class="result">Електрод ${String(S.rod).replace('.',',')} мм · метал ${r[1]} мм · струм ${r[2]}–${r[3]} А</div>`}
     if(f==='k:trim')h+=`<div class="result">Зараз: ${S.trim>0?'+':''}${String(S.trim).replace('.',',')} · напруга на дисплеї ${volts().toFixed(1)} В${kind()!=='mig'?'<br>У режимі '+MODENAME[S.mode]+' ця ручка, найімовірніше, не діє':''}</div>`;
+    if(f==='f:table')h+=`<div class="sub">${wtHTML()}</div>`;
     if(c.acts)h+=`<div class="acts">${c.acts.map(([a,t])=>`<button class="chip" data-act="${a}">${t}</button>`).join('')}</div>`;
     if(c.svc){const x=SVC.find(z=>z.id===c.svc);h+=`<div class="acts"><button class="chip" data-gosvc="${c.svc}">Обслуговування: ${x.chip} →</button></div>`}
+    if(f==='t:tip'||f==='t:nozzle')h+=`<div class="sub"><div class="glabel">Пальник у розрізі</div>${tipFigHTML()}</div>`;
     h+=noteHtml(c.note);
   }
-  $('info').innerHTML=h;
+  $('info').innerHTML=h;if(f==='t:tip'||f==='t:nozzle')drawTip();
 }
 function setRowsFor(sc){return `<dl class="setrows">${sc.rows.map(([a,b])=>{const k=rowKey(a);const at=k?` data-hl="${k}" title="Показати на апараті"`:'';return `<dt${at}>${a}</dt><dd${at}>${b}</dd>`}).join('')}</dl>`}
 function renderScen(){const sc=SCEN.find(s=>s.id===S.scen);
@@ -1114,7 +1355,7 @@ const FOCUS_ATTRS=['data-focus','data-scen','data-svc','data-svcset','data-gosvc
 function keepFocus(fn){const a=document.activeElement;let sel=null;
   if(a&&a.tagName==='BUTTON'&&a.closest('#picker,#scenchips,#svcchips,#info,#svc,#fsbar')){const k=FOCUS_ATTRS.find(x=>a.hasAttribute(x));if(k)sel=`#${a.closest('#picker,#scenchips,#svcchips,#info,#svc,#fsbar').id} button[${k}="${a.getAttribute(k)}"]`}
   fn();if(sel&&!a.isConnected){const c=document.querySelector(sel);if(c)c.focus({preventScroll:true})}}
-function render(){keepFocus(()=>{renderFs();drawDevice();renderTabs();renderPicker();renderStatus();if(S.tab==='dev')renderInfo();else if(S.tab==='svc')renderSvc();else renderScen()})}
+function render(){keepFocus(()=>{renderFs();drawDevice();renderTabs();renderPicker();renderStatus();renderWTab();if(S.tab==='dev')renderInfo();else if(S.tab==='svc')renderSvc();else renderScen()})}
 
 /* ---------- actions ---------- */
 const mobile=()=>matchMedia('(max-width:780px)').matches;
@@ -1249,7 +1490,7 @@ const api={on:false};V3=api;
 let T,ren,scene,cam,ray,ready=false,initP=null,raf=0,lastT=0,needR=true;
 const D2R=Math.PI/180,MM=0.01,ZF=2.11,ZR=-2.11;
 const FB='"Onest",system-ui,sans-serif',FM='"JetBrains Mono",ui-monospace,monospace',FD='"Unbounded","Arial Black",sans-serif';
-let V,fp,rp;
+let V,fp,rp,nozzle3=null,tipMesh3=null;
 const M={},picks=[],P={},TL={};
 let lastKind=null,hover=null,doorOpen=false,doorA=0,armA=0,lastView=null,lastScreen='',cableKey='',screenTex,screenCv,arcLight,arcGlow,sparks,spoolG,driveRoll,fanG,rocker,setupBtn,doorPivot,armPivot,gasHose,cablesG,labels={};
 const orb={tgt:null,th:.45,ph:1.25,r:6.8};let tween=null;
@@ -1308,18 +1549,8 @@ function panelTex(){const[c,x]=canvas(192,290,4);
   [[50,215,24],[110,232,16],[152,232,16],[172,178,8]].forEach(([a,b,r])=>{x.beginPath();x.arc(a,b,r,0,7);x.fillStyle='#08080a';x.fill()});
   txt(x,'+',110,211,'700 10px '+FB,'#e6e4df');txt(x,'−',152,211,'700 10px '+FB,'#e6e4df');
   return tex(c)}
-function rearTex(){const[c,x]=canvas(192,290,4);
-  x.fillStyle='#141517';x.fillRect(0,0,192,290);rr(x,12,12,168,266,6);x.fillStyle='#26282c';x.fill();
-  txt(x,'ON',40,17,'600 4.5px '+FM,'#e6e4df');txt(x,'OFF',40,64,'600 4.5px '+FM,'#e6e4df');
-  x.strokeStyle='#e6e4df';x.lineWidth=.5;x.strokeRect(30,20,20,4);
-  txt(x,'GAS INPUT',140,40,'600 4.5px '+FM,'#e6e4df');
-  rr(x,58,106,44,11,1);x.stroke();txt(x,'230V (±10%) 50HZ',80,111.5,'600 3.8px '+FM,'#e6e4df');
-  rr(x,108,78,66,108,1.5);x.fillStyle='#cfd2d6';x.fill();
-  ['MODEL: MG-16DX','EN 60974-6','MIG 20A/12V–160A/22V','MMA 20A/21V–160A/26.4V','X    50%  33%  100%','I2  160A 160A 135A','           125A','U0 = 55V  U1 = 230V','I1max 28A','I1eff 22.4A','IP21S'].forEach((s,i)=>txt(x,s,112,86+i*8.6,'600 4px '+FM,'#1b1c1e','left'));
-  rr(x,108,190,66,9,1);x.fillStyle='#e8551e';x.fill();txt(x,'⚠ УВАГА!',141,194.7,'700 4.4px '+FB,'#fff');
-  x.fillStyle='#ececec';x.fillRect(108,252,66,12);x.fillStyle='#111';for(let i=0;i<40;i++)if((i*7)%3)x.fillRect(110+i*1.55,253.5,.9,9);
-  x.beginPath();x.arc(60,215,44,0,7);x.fillStyle='#0b0b0c';x.fill();
-  return tex(c)}
+function rearTex(){const[c,x]=canvas(192,290,4);x.fillStyle='#141517';x.fillRect(0,0,192,290);rr(x,12,12,168,266,7);x.fillStyle='#1f2124';x.fill();
+  const t=tex(c),img=new Image();img.onload=()=>{x.drawImage(img,0,0,192,290);t.needsUpdate=true;needR=true};img.src=rearDecalURL();return t}
 function sideTex(door){const w=386,h=270;const[c,x]=canvas(w,h,2);x.fillStyle='#202226';x.fillRect(0,0,w,h);
   if(!door){for(let i=0;i<11;i++){rr(x,26,70+i*12,90,5,2.5);x.fillStyle='#0d0e10';x.fill()}
     txt(x,'DNIPRO-M',300,62,'700 30px '+FD,'#d93a22');txt(x,'WELDING MACHINE',318,206,'600 7px '+FB,'#e6e4df');x.fillStyle='#d93a22';x.fillRect(282,212,72,1.2);txt(x,'MG-16DX',318,226,'700 14px '+FD,'#e6e4df')}
@@ -1401,22 +1632,25 @@ function build(){
   scene.add(cylZ(.075,.06,M.rubber,fp(172,178,.03),24));
 
   /* rear */
-  const rk=new T.Group();rk.position.copy(rp(40,40,0));rk.add(boxM(.34,.4,.06,M.dark,0,0,-.03));
-  rocker=new T.Group();rocker.position.z=-.05;rk.add(rocker);rocker.add(boxM(.26,.32,.06,M.red,0,0,0));
+  const rk=new T.Group();rk.position.copy(rp(35.6,40.5,0));rk.add(boxM(.25,.4,.05,M.dark,0,0,-.025));
+  rocker=new T.Group();rocker.position.z=-.05;rk.add(rocker);rocker.add(boxM(.21,.30,.06,M.red,0,0,0));
   const [rc,rx]=canvas(26,32,6);rx.fillStyle='#fff';txt(rx,'I',13,8,'700 7px '+FB,'#fff');txt(rx,'O',13,24,'700 7px '+FB,'#fff');
-  const rl=mesh(new T.PlaneGeometry(.26,.32),new T.MeshBasicMaterial({map:new T.CanvasTexture(rc),transparent:true}));rl.rotation.y=Math.PI;rl.position.z=-.031;rl.userData.shared=true;rocker.add(rl);
+  const rl=mesh(new T.PlaneGeometry(.21,.30),new T.MeshBasicMaterial({map:new T.CanvasTexture(rc),transparent:true}));rl.rotation.y=Math.PI;rl.position.z=-.031;rl.userData.shared=true;rocker.add(rl);
   scene.add(rk);mark(rk,'r:sw');
-  const gf=new T.Group();gf.position.copy(rp(100,40,0));gf.add(cylZ(.075,.05,M.brass,V(0,0,-.025),6));gf.add(cylZ(.042,.16,M.brass,V(0,0,-.1),20));gf.add(cylZ(.018,.17,M.dark,V(0,0,-.1),12));
+  const gf=new T.Group();gf.position.copy(rp(85.6,36,0));gf.add(cylZ(.062,.05,M.brass,V(0,0,-.025),6));gf.add(cylZ(.034,.15,M.brass,V(0,0,-.1),20));gf.add(cylZ(.038,.012,M.brass,V(0,0,-.17),20));gf.add(cylZ(.014,.17,M.dark,V(0,0,-.1),12));
   scene.add(gf);mark(gf,'r:gas');
-  const cd=new T.Group();cd.add(cylZ(.1,.08,M.rubber,rp(40,112,.04),24));
-  const c0=rp(40,112,.05);cd.add(tube([c0,V(c0.x,c0.y,c0.z-.25),V(c0.x+.2,.5,ZR-.9),V(.7,.05,ZR-1.8),V(1.4,.05,ZR-3.2)],.05,M.cable));scene.add(cd);mark(cd,'r:cord');
-  fanG=new T.Group();const fan=new T.Group();fan.position.copy(rp(60,215,0));fan.add(fanG);fanG.position.z=.04;
+  const cd=new T.Group();cd.add(cylZ(.116,.05,M.rubber,rp(38.8,86,.025),24));cd.add(cylZ(.09,.1,M.rubber,rp(38.8,86,.07),12));
+  const c0=rp(38.8,86,.1);cd.add(tube([c0,V(c0.x,c0.y,c0.z-.25),V(c0.x+.2,.5,ZR-.9),V(.7,.05,ZR-1.8),V(1.4,.05,ZR-3.2)],.05,M.cable));scene.add(cd);mark(cd,'r:cord');
+  fanG=new T.Group();const fan=new T.Group();fan.position.copy(rp(55,184,0));fan.add(fanG);fanG.position.z=.04;
   for(let i=0;i<5;i++){const b=mesh(new T.PlaneGeometry(.14,.34),M.bladeM);b.userData.shared=true;b.position.set(Math.sin(i*1.2566)*.2,Math.cos(i*1.2566)*.2,0);b.rotation.z=-i*1.2566;b.rotation.y=.5;fanG.add(b)}
   fanG.position.z=-.03;fanG.add(cylZ(.07,.04,M.grey,V(0,0,0),20));
-  for(let r=.1;r<=.43;r+=.075){const t=mesh(new T.TorusGeometry(r,.007,6,48),M.metal);t.position.z=-.07;fan.add(t)}
-  fan.add(boxM(.86,.014,.014,M.metal,0,0,-.07));fan.add(boxM(.014,.86,.014,M.metal,0,0,-.07));
+  for(let r=.08;r<=.41;r+=.08){const t=mesh(new T.TorusGeometry(r,.006,6,56),M.metal);t.position.z=-.07;fan.add(t)}
+  [1,-1].forEach(sg=>{const w=boxM(1.31,.012,.012,M.metal,0,0,-.072);w.rotation.z=sg*Math.atan2(.51,.41);fan.add(w)});
+  [[.41,.51],[-.41,.51],[.41,-.51],[-.41,-.51]].forEach(([a,b])=>fan.add(cylZ(.036,.02,M.metal,V(a,b,-.075),16)));
   const fh=hitPlane(.9,.9,V(0,0,-.075),Math.PI);fan.add(fh);scene.add(fan);mark(fan,'r:fan');
-  gasHose=new T.Group();const g0=rp(100,40,.18);gasHose.add(tube([g0,V(g0.x,g0.y+.05,g0.z-.35),V(g0.x-.2,1.2,ZR-1.3),V(-.6,.04,ZR-2.4),V(-1.6,.04,ZR-3.4)],.028,M.cable));scene.add(gasHose);
+  const gs3=new T.Group();gs3.add(cylZ(.044,.02,M.metal,rp(26.3,265,.01),20));scene.add(gs3);mark(gs3,'r:ground');
+  [['r:plate',135.5,91,.72,.73],['r:warn',131.3,167,.55,.79],['r:icons',146.6,230.4,.5,.4]].forEach(([k,cx,cy,w,h])=>{const hp=hitPlane(w,h,rp(cx,cy,.006),Math.PI);scene.add(hp);mark(hp,k)});
+  gasHose=new T.Group();const g0=rp(85.6,36,.18);gasHose.add(tube([g0,V(g0.x,g0.y+.05,g0.z-.35),V(g0.x-.2,1.2,ZR-1.3),V(-.6,.04,ZR-2.4),V(-1.6,.04,ZR-3.4)],.028,M.cable));scene.add(gasHose);
 
   /* feed compartment (left side, -x) */
   const cmp=new T.Group();scene.add(cmp);
@@ -1473,8 +1707,8 @@ function buildTools(){
   const P0=V(.45,0,0),P1=V(.06,0,0),P2=V(0,-.42,0);const neck=new T.QuadraticBezierCurve3(P0,P1,P2);body.add(mesh(new T.TubeGeometry(neck,30,.045,10,false),M.rubber));
   const dd=new T.Vector3().subVectors(P2,P1).normalize();const at=k=>P2.clone().addScaledVector(dd,k);
   const dc=decal('DNIPRO-M',.42,.09);dc.position.set(1.0,.04,-.156);dc.rotation.y=Math.PI;body.add(dc);
-  const nz=new T.Group();nz.add(cylBetween(at(-.02),at(.3),.088,.072,M.nozzle,32));mig.add(nz);mark(nz,'t:nozzle');
-  const tp=new T.Group();tp.add(cylBetween(at(.29),at(.37),.026,.022,M.copper,16));tp.add(cylBetween(at(.37),at(.44),.009,.009,M.wire,8));tp.add(hitCyl(at(.28),at(.46),.06));mig.add(tp);mark(tp,'t:tip');
+  const nz=new T.Group();nz.add(cylBetween(at(-.02),at(.3),.088,.072,M.nozzle,32));mig.add(nz);mark(nz,'t:nozzle');nozzle3=nz;
+  const tp=new T.Group();tp.add(cylBetween(at(.29),at(.37),.026,.022,M.copper,16));tp.add(cylBetween(at(.37),at(.44),.009,.009,M.wire,8));tp.add(hitCyl(at(.28),at(.46),.06));mig.add(tp);mark(tp,'t:tip');tipMesh3=tp;
   labels.tip=label('0.8');labels.tip.position.copy(at(.36)).add(V(-.2,.04,-.1));mig.add(labels.tip);
   const tg=new T.Group();const trig=boxM(.17,.13,.09,M.red,.82,-.15,0);tg.add(trig);tg.add(Object.assign(boxM(.3,.28,.2,new T.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}),.85,-.17,0),{}));
   tg.children[1].userData.ghost=true;mig.add(tg);mark(tg,'t:trig',{hold:'trig'});TL.trig=trig;
@@ -1558,6 +1792,9 @@ api.sync=function(){if(!ready)return;
   P['k:cur'].userData.target=-ang(KC,S.cur)*D2R;P['k:trim'].userData.target=-ang(KT,S.trim)*D2R;
   setupBtn.userData.cap.position.z=S.inch?.025:.04;
   rocker.rotation.x=S.power?.22:-.22;
+  if(nozzle3){const tipOn=S.hl==='t:tip'||(S.tab==='dev'&&S.focus==='t:tip');if(!!nozzle3.userData.see!==tipOn){nozzle3.userData.see=tipOn;nozzle3.traverse(o=>{if(o.isMesh){o.material.transparent=tipOn;o.material.opacity=tipOn?.18:1;o.material.depthWrite=!tipOn;o.material.needsUpdate=true}});needR=true;
+    if(tipOn&&tipMesh3){const w=new T.Vector3();new T.Box3().setFromObject(tipMesh3).getCenter(w);const to={t:w,th:VIEWS.torch.th,ph:VIEWS.torch.ph,r:fitV({rad:.5})};if(reduce){orb.tgt.copy(to.t);orb.th=to.th;orb.ph=to.ph;orb.r=to.r;camUpdate()}else tween={from:{t:orb.tgt.clone(),th:orb.th,ph:orb.ph,r:orb.r},to,t0:performance.now(),dur:700}}
+    else if(!tipOn)goView(S.view)}}
   const tk=kind();['mig','mma','tig'].forEach(t=>TL[t].visible=tk===t);
   labels.spool.userData.set(S.wire+' мм');labels.roll.userData.set(String(S.roll));labels.tip.userData.set(String(S.tip));labels.rod.userData.set(String(S.rod).replace('.',',')+' мм');
   const rr2=S.rod*.0085;TL.rodParts.forEach(o=>{o.scale.x=rr2;o.scale.z=rr2});
